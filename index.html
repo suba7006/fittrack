@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coaching Fitness - 104→95kg</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -179,7 +180,7 @@
             color: #555;
         }
         
-        .input-group input {
+        .input-group input, .input-group textarea {
             width: 100%;
             padding: 10px;
             border: 2px solid #ddd;
@@ -188,7 +189,7 @@
             transition: border-color 0.3s ease;
         }
         
-        .input-group input:focus {
+        .input-group input:focus, .input-group textarea:focus {
             outline: none;
             border-color: #3498db;
         }
@@ -370,6 +371,21 @@
                 </div>
                 
                 <div class="card">
+                    <h3>Import Garmin CSV</h3>
+                    <div class="input-group">
+                        <label>File CSV da Garmin Connect</label>
+                        <input type="file" id="garminFileInput" accept=".csv" onchange="handleGarminImport(event)">
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                            Esporta da connect.garmin.com → Attività → Ingranaggio → Esporta CSV
+                        </div>
+                    </div>
+                    <button class="btn" onclick="document.getElementById('garminFileInput').click()" style="background: #27ae60;">
+                        📁 Seleziona File Garmin
+                    </button>
+                    <div id="garminImportStatus" style="margin: 8px 0; font-size: 12px;"></div>
+                </div>
+
+                <div class="card">
                     <h3>Quick Log Completo</h3>
                     <div class="input-group">
                         <label>Peso (kg)</label>
@@ -400,7 +416,7 @@
                     </div>
                     <div class="input-group">
                         <label>Note</label>
-                        <textarea id="notesInput" placeholder="Come ti sei sentito oggi?" rows="2" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"></textarea>
+                        <textarea id="notesInput" placeholder="Come ti sei sentito oggi?" rows="2"></textarea>
                     </div>
                     <button class="btn btn-success" onclick="logData()">Salva Dati Completi</button>
                     <button class="btn" onclick="exportData()" style="background: #f39c12;">Esporta CSV</button>
@@ -582,6 +598,15 @@
                 </div>
                 
                 <div class="card">
+                    <h3>Attività Garmin Recenti</h3>
+                    <div id="garminDataHistory" style="max-height: 200px; overflow-y: auto;">
+                        <div style="text-align: center; color: #666; padding: 20px;">
+                            Nessuna attività Garmin importata
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
                     <h3>Storico Completo</h3>
                     <div id="dataHistory" style="max-height: 200px; overflow-y: auto;">
                         <div style="text-align: center; color: #666; padding: 20px;">
@@ -658,6 +683,212 @@
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
+        // Handle Garmin CSV import
+        async function handleGarminImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const statusDiv = document.getElementById('garminImportStatus');
+            statusDiv.innerHTML = '<div style="color: #3498db;">📊 Caricamento e analisi CSV...</div>';
+            
+            try {
+                const text = await file.text();
+                
+                // Parse CSV with Papa Parse
+                const parseResult = Papa.parse(text, {
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true,
+                    transformHeader: header => header.trim().toLowerCase()
+                });
+                
+                if (parseResult.errors.length > 0) {
+                    throw new Error('Errore nel parsing CSV: ' + parseResult.errors[0].message);
+                }
+                
+                const garminData = parseResult.data;
+                let processedCount = 0;
+                
+                // Process each activity
+                garminData.forEach(row => {
+                    try {
+                        const processedActivity = processGarminRow(row);
+                        if (processedActivity) {
+                            saveGarminActivity(processedActivity);
+                            processedCount++;
+                        }
+                    } catch (e) {
+                        console.warn('Errore processamento riga:', e);
+                    }
+                });
+                
+                statusDiv.innerHTML = `<div style="color: #27ae60;">✅ Importate ${processedCount} attività Garmin</div>`;
+                
+                // Update displays
+                updateProgressStats();
+                updateGarminDataHistory();
+                
+                // Clear file input
+                event.target.value = '';
+                
+                // Show success message after a delay
+                setTimeout(() => {
+                    statusDiv.innerHTML = '';
+                    alert(`Import completato! ${processedCount} attività Garmin elaborate e integrate.`);
+                }, 2000);
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<div style="color: #e74c3c;">❌ Errore: ${error.message}</div>`;
+                console.error('Errore import Garmin:', error);
+            }
+        }
+
+        // Process individual Garmin CSV row
+        function processGarminRow(row) {
+            // Handle various Garmin CSV formats
+            const dateFields = ['date', 'start time', 'starttime', 'timestamp'];
+            const hrFields = ['avg hr', 'average heart rate', 'avghr', 'heart_rate'];
+            const paceFields = ['avg pace', 'average pace', 'avgpace', 'pace'];
+            const calorieFields = ['calories', 'total calories', 'kcal'];
+            const distanceFields = ['distance', 'total distance', 'km'];
+            const durationFields = ['time', 'duration', 'moving time', 'elapsed time'];
+            
+            // Extract date
+            let dateValue = null;
+            for (const field of dateFields) {
+                if (row[field]) {
+                    dateValue = new Date(row[field]);
+                    break;
+                }
+            }
+            
+            if (!dateValue || isNaN(dateValue)) return null;
+            
+            // Extract heart rate
+            let avgHR = null;
+            for (const field of hrFields) {
+                if (row[field] && !isNaN(row[field])) {
+                    avgHR = parseInt(row[field]);
+                    break;
+                }
+            }
+            
+            // Extract pace (convert to MM:SS format if needed)
+            let pace = null;
+            for (const field of paceFields) {
+                if (row[field]) {
+                    pace = formatPaceFromGarmin(row[field]);
+                    break;
+                }
+            }
+            
+            // Extract calories
+            let calories = null;
+            for (const field of calorieFields) {
+                if (row[field] && !isNaN(row[field])) {
+                    calories = parseInt(row[field]);
+                    break;
+                }
+            }
+            
+            // Extract distance
+            let distance = null;
+            for (const field of distanceFields) {
+                if (row[field] && !isNaN(row[field])) {
+                    distance = parseFloat(row[field]);
+                    break;
+                }
+            }
+            
+            // Extract duration
+            let duration = null;
+            for (const field of durationFields) {
+                if (row[field]) {
+                    duration = formatDurationFromGarmin(row[field]);
+                    break;
+                }
+            }
+            
+            // Determine activity type
+            const activityType = detectActivityType(row);
+            
+            return {
+                date: dateValue.toISOString(),
+                source: 'garmin',
+                activityType: activityType,
+                heartRate: avgHR,
+                pace: pace,
+                calories: calories,
+                distance: distance,
+                duration: duration,
+                rawData: row
+            };
+        }
+
+        // Save Garmin activity to separate storage
+        function saveGarminActivity(activity) {
+            const garminData = JSON.parse(localStorage.getItem('garminData') || '[]');
+            
+            // Check for duplicates based on date and type
+            const existingIndex = garminData.findIndex(item => 
+                new Date(item.date).toDateString() === new Date(activity.date).toDateString() &&
+                item.activityType === activity.activityType
+            );
+            
+            if (existingIndex >= 0) {
+                garminData[existingIndex] = activity; // Update existing
+            } else {
+                garminData.push(activity); // Add new
+            }
+            
+            localStorage.setItem('garminData', JSON.stringify(garminData));
+        }
+
+        // Format pace from various Garmin formats
+        function formatPaceFromGarmin(paceValue) {
+            if (typeof paceValue === 'string') {
+                // Already in MM:SS format
+                if (/^\d{1,2}:\d{2}$/.test(paceValue)) return paceValue;
+                
+                // Handle decimal minutes (e.g., "17.75" = 17:45)
+                const decimal = parseFloat(paceValue);
+                if (!isNaN(decimal)) {
+                    const minutes = Math.floor(decimal);
+                    const seconds = Math.round((decimal - minutes) * 60);
+                    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }
+            
+            return null;
+        }
+
+        // Format duration from Garmin
+        function formatDurationFromGarmin(duration) {
+            if (typeof duration === 'string') {
+                // Handle HH:MM:SS format
+                if (/^\d{1,2}:\d{2}:\d{2}$/.test(duration)) return duration;
+            }
+            return null;
+        }
+
+        // Detect activity type from row data
+        function detectActivityType(row) {
+            const activityFields = ['activity type', 'sport', 'type', 'activity'];
+            
+            for (const field of activityFields) {
+                if (row[field]) {
+                    const value = row[field].toString().toLowerCase();
+                    if (value.includes('run')) return 'running';
+                    if (value.includes('walk')) return 'walking';
+                    if (value.includes('cardio')) return 'cardio';
+                    if (value.includes('strength')) return 'strength';
+                    return value;
+                }
+            }
+            
+            return 'unknown';
+        }
+
         // Update fatigue slider display
         function updateFatigueDisplay() {
             const value = document.getElementById('fatigueInput').value;
@@ -728,21 +959,36 @@
         // Export data to CSV
         function exportData() {
             const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
+            const garminData = JSON.parse(localStorage.getItem('garminData') || '[]');
             
-            if (savedData.length === 0) {
+            if (savedData.length === 0 && garminData.length === 0) {
                 alert('Nessun dato da esportare');
                 return;
             }
             
-            const csv = ['Data,Peso,FC,Passo,Sonno,Calorie,Fatica,Note']
-                .concat(savedData.map(entry => [
+            // Combine all data for export
+            const allData = [
+                ...savedData.map(entry => ({
+                    ...entry,
+                    source: 'manual',
+                    activityType: 'manual_log'
+                })),
+                ...garminData
+            ].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            const csv = ['Data,Source,Tipo,Peso,FC,Passo,Sonno,Calorie,Fatica,Distanza,Durata,Note']
+                .concat(allData.map(entry => [
                     new Date(entry.date).toLocaleDateString('it-IT'),
+                    entry.source || 'manual',
+                    entry.activityType || 'manual_log',
                     entry.weight || '',
                     entry.heartRate || '',
                     entry.pace || '',
                     entry.sleep || '',
                     entry.calories || '',
                     entry.fatigue || '',
+                    entry.distance || '',
+                    entry.duration || '',
                     (entry.notes || '').replace(/,/g, ';')
                 ].join(',')))
                 .join('\n');
@@ -751,28 +997,17 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `fitness_data_${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = `fitness_data_complete_${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
             URL.revokeObjectURL(url);
         }
 
-        // Clear all data with confirmation
-        function clearAllData() {
-            if (confirm('Sei sicuro di voler cancellare tutti i dati? Questa azione non può essere annullata.')) {
-                localStorage.removeItem('fitnessData');
-                updateProgressStats();
-                updateDataHistory();
-                document.getElementById('progressText').textContent = '0%';
-                document.querySelector('.progress-fill').style.strokeDashoffset = 188.4;
-                alert('Tutti i dati sono stati cancellati');
-            }
-        }
-
-        // Update progress statistics with analysis
+        // Update progress statistics with analysis (enhanced with Garmin data)
         function updateProgressStats() {
             const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
+            const garminData = JSON.parse(localStorage.getItem('garminData') || '[]');
             
-            if (savedData.length === 0) {
+            if (savedData.length === 0 && garminData.length === 0) {
                 document.getElementById('currentWeight').textContent = '--';
                 document.getElementById('avgHR').textContent = '--';
                 document.getElementById('avgPace').textContent = '--';
@@ -780,14 +1015,14 @@
                 return;
             }
             
-            // Get recent data (last 7 entries or all if less)
-            const recentData = savedData.slice(-7);
+            // Combine and sort all data by date
+            const allData = [...savedData, ...garminData].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const recentData = allData.slice(-7); // Last 7 entries
             
-            // Current values (latest entry)
-            const latest = savedData[savedData.length - 1];
-            const oldest = savedData[0];
+            const latest = allData[allData.length - 1];
+            const oldest = allData[0];
             
-            // Weight analysis
+            // Weight analysis (from manual data only)
             const weights = savedData.filter(d => d.weight).map(d => d.weight);
             if (weights.length > 0) {
                 const currentWeight = weights[weights.length - 1];
@@ -800,7 +1035,11 @@
                 
                 // Weight loss rate analysis
                 if (weights.length > 1) {
-                    const weeksSinceStart = Math.max(1, (new Date(latest.date) - new Date(oldest.date)) / (7 * 24 * 60 * 60 * 1000));
+                    const weightData = savedData.filter(d => d.weight);
+                    const oldestWeight = weightData[0];
+                    const latestWeight = weightData[weightData.length - 1];
+                    
+                    const weeksSinceStart = Math.max(1, (new Date(latestWeight.date) - new Date(oldestWeight.date)) / (7 * 24 * 60 * 60 * 1000));
                     const weeklyRate = Math.abs(weightChange) / weeksSinceStart;
                     let rateAnalysis = `${weeklyRate.toFixed(2)}kg/settimana`;
                     
@@ -812,7 +1051,7 @@
                 }
             }
             
-            // Heart rate analysis
+            // Heart rate analysis (combine manual and Garmin data)
             const heartRates = recentData.filter(d => d.heartRate).map(d => d.heartRate);
             if (heartRates.length > 0) {
                 const avgHR = heartRates.reduce((a, b) => a + b, 0) / heartRates.length;
@@ -827,60 +1066,218 @@
                     document.getElementById('hrTrend').textContent = 
                         trend < -2 ? 'Migliorando' : trend > 2 ? 'Peggiorando' : 'Stabile';
                     
+                    const garminHRCount = garminData.filter(d => d.heartRate).length;
+                    const analysis = avgHR < 80 ? 'Molto buono' : avgHR < 90 ? 'Buono' : 'Da migliorare';
                     document.getElementById('heartRateAnalysis').textContent = 
-                        avgHR < 80 ? 'Molto buono' : avgHR < 90 ? 'Buono' : 'Da migliorare';
+                        garminHRCount > 0 ? `${analysis} (${garminHRCount} attività Garmin)` : analysis;
                 }
             }
             
-            // Sleep analysis  
-            const sleepHours = recentData.filter(d => d.sleep).map(d => d.sleep);
+            // Pace analysis (from Garmin data primarily)
+            const paces = garminData.filter(d => d.pace && d.activityType === 'running').map(d => d.pace);
+            if (paces.length > 0) {
+                // Convert pace strings to seconds for averaging
+                const paceSeconds = paces.map(pace => {
+                    const [min, sec] = pace.split(':').map(Number);
+                    return min * 60 + sec;
+                });
+                const avgPaceSeconds = paceSeconds.reduce((a, b) => a + b, 0) / paceSeconds.length;
+                const avgMin = Math.floor(avgPaceSeconds / 60);
+                const avgSec = Math.round(avgPaceSeconds % 60);
+                
+                document.getElementById('avgPace').textContent = `${avgMin}:${avgSec.toString().padStart(2, '0')}`;
+                
+                // Pace trend
+                if (paceSeconds.length >= 3) {
+                    const recent3 = paceSeconds.slice(-3);
+                    const older3 = paceSeconds.slice(-6, -3);
+                    if (older3.length > 0) {
+                        const recentAvg = recent3.reduce((a, b) => a + b, 0) / recent3.length;
+                        const olderAvg = older3.reduce((a, b) => a + b, 0) / older3.length;
+                        const improvement = olderAvg - recentAvg; // Positive = faster pace
+                        
+                        document.getElementById('paceTrend').textContent = 
+                            improvement > 10 ? 'Migliorando' : improvement < -10 ? 'Peggiorando' : 'Stabile';
+                    }
+                }
+            }
+            
+            // Sleep analysis (from manual data only)
+            const sleepHours = savedData.filter(d => d.sleep).map(d => d.sleep);
             if (sleepHours.length > 0) {
-                const avgSleep = sleepHours.reduce((a, b) => a + b, 0) / sleepHours.length;
+                const recentSleep = sleepHours.slice(-7);
+                const avgSleep = recentSleep.reduce((a, b) => a + b, 0) / recentSleep.length;
                 document.getElementById('avgSleep').textContent = avgSleep.toFixed(1) + 'h';
                 
                 document.getElementById('sleepAnalysis').textContent = 
                     avgSleep >= 7.5 ? 'Ottimale' : avgSleep >= 6.5 ? 'Sufficiente' : 'Insufficiente';
             }
             
-            // Consistency analysis
+            // Enhanced consistency analysis
             const totalDays = Math.max(1, (new Date() - new Date(oldest.date)) / (24 * 60 * 60 * 1000));
-            const loggedDays = savedData.length;
-            const consistency = (loggedDays / totalDays * 100);
+            const manualEntries = savedData.length;
+            const garminEntries = garminData.length;
+            const totalEntries = manualEntries + garminEntries;
             
-            document.getElementById('consistencyAnalysis').textContent = 
-                consistency >= 80 ? 'Eccellente' : consistency >= 60 ? 'Buona' : 'Da migliorare';
+            const consistency = Math.min(100, (totalEntries / totalDays * 100));
+            let consistencyText = consistency >= 80 ? 'Eccellente' : consistency >= 60 ? 'Buona' : 'Da migliorare';
+            
+            if (garminEntries > 0) {
+                consistencyText += ` (${garminEntries} Garmin + ${manualEntries} manuali)`;
+            }
+            
+            document.getElementById('consistencyAnalysis').textContent = consistencyText;
         }
 
-        // Update data history display
+        // Update Garmin data history display
+        function updateGarminDataHistory() {
+            const garminData = JSON.parse(localStorage.getItem('garminData') || '[]');
+            const historyDiv = document.getElementById('garminDataHistory');
+            
+            if (garminData.length === 0) {
+                historyDiv.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Nessuna attività Garmin importata</div>';
+                return;
+            }
+            
+            const recentActivities = garminData.slice(-10).reverse(); // Last 10 activities, newest first
+            
+            historyDiv.innerHTML = recentActivities.map(activity => {
+                const date = new Date(activity.date).toLocaleDateString('it-IT', {
+                    day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                });
+                
+                const activityIcon = {
+                    'running': '🏃‍♂️',
+                    'walking': '🚶‍♂️',
+                    'cardio': '💓',
+                    'strength': '💪',
+                    'unknown': '⚡'
+                };
+                
+                const metrics = [];
+                if (activity.distance) metrics.push(`${activity.distance.toFixed(1)}km`);
+                if (activity.duration) metrics.push(activity.duration);
+                if (activity.pace) metrics.push(`${activity.pace}/km`);
+                if (activity.heartRate) metrics.push(`FC ${activity.heartRate}`);
+                if (activity.calories) metrics.push(`${activity.calories} kcal`);
+                
+                return `
+                    <div style="border-bottom: 1px solid #eee; padding: 8px 0;">
+                        <div style="font-weight: bold; font-size: 12px; color: #666; display: flex; align-items: center; gap: 6px;">
+                            ${activityIcon[activity.activityType] || activityIcon.unknown}
+                            ${date}
+                            <span style="background: #27ae60; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;">GARMIN</span>
+                        </div>
+                        <div style="font-size: 13px; margin: 2px 0; text-transform: capitalize;">${activity.activityType}</div>
+                        <div style="font-size: 12px; color: #555;">${metrics.join(' • ')}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Clear all data with confirmation (enhanced to include Garmin data)
+        function clearAllData() {
+            const manualCount = JSON.parse(localStorage.getItem('fitnessData') || '[]').length;
+            const garminCount = JSON.parse(localStorage.getItem('garminData') || '[]').length;
+            const totalCount = manualCount + garminCount;
+            
+            if (totalCount === 0) {
+                alert('Non ci sono dati da cancellare.');
+                return;
+            }
+            
+            const message = `Sei sicuro di voler cancellare tutti i dati?\n\n` +
+                           `• ${manualCount} inserimenti manuali\n` +
+                           `• ${garminCount} attività Garmin\n\n` +
+                           `Questa azione non può essere annullata.`;
+                           
+            if (confirm(message)) {
+                localStorage.removeItem('fitnessData');
+                localStorage.removeItem('garminData');
+                updateProgressStats();
+                updateDataHistory();
+                updateGarminDataHistory();
+                document.getElementById('progressText').textContent = '0%';
+                document.querySelector('.progress-fill').style.strokeDashoffset = 188.4;
+                alert('Tutti i dati sono stati cancellati');
+            }
+        }
+
+        // Update data history display (enhanced to show combined data)
         function updateDataHistory() {
             const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
+            const garminData = JSON.parse(localStorage.getItem('garminData') || '[]');
             const historyDiv = document.getElementById('dataHistory');
             
-            if (savedData.length === 0) {
+            if (savedData.length === 0 && garminData.length === 0) {
                 historyDiv.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Nessun dato salvato ancora</div>';
                 return;
             }
             
-            const recentEntries = savedData.slice(-10).reverse(); // Last 10 entries, newest first
+            // Combine and sort all data by date
+            const allEntries = [
+                ...savedData.map(entry => ({...entry, source: 'manual'})),
+                ...garminData.map(entry => ({...entry, source: 'garmin'}))
+            ].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const recentEntries = allEntries.slice(0, 15); // Show last 15 entries
             
             historyDiv.innerHTML = recentEntries.map(entry => {
                 const date = new Date(entry.date).toLocaleDateString('it-IT', {
                     day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
                 });
                 
-                const metrics = [];
-                if (entry.weight) metrics.push(`${entry.weight}kg`);
-                if (entry.heartRate) metrics.push(`FC ${entry.heartRate}`);
-                if (entry.pace) metrics.push(`${entry.pace}/km`);
-                if (entry.sleep) metrics.push(`${entry.sleep}h sonno`);
-                if (entry.calories) metrics.push(`${entry.calories} kcal`);
+                const isGarmin = entry.source === 'garmin';
+                const sourceLabel = isGarmin ? 'GARMIN' : 'MANUALE';
+                const sourceBg = isGarmin ? '#27ae60' : '#3498db';
                 
-                return `
-                    <div style="border-bottom: 1px solid #eee; padding: 8px 0;">
-                        <div style="font-weight: bold; font-size: 12px; color: #666;">${date}</div>
+                let content = '';
+                
+                if (isGarmin) {
+                    const activityIcon = {
+                        'running': '🏃‍♂️',
+                        'walking': '🚶‍♂️',
+                        'cardio': '💓',
+                        'strength': '💪',
+                        'unknown': '⚡'
+                    };
+                    
+                    const metrics = [];
+                    if (entry.distance) metrics.push(`${entry.distance.toFixed(1)}km`);
+                    if (entry.duration) metrics.push(entry.duration);
+                    if (entry.pace) metrics.push(`${entry.pace}/km`);
+                    if (entry.heartRate) metrics.push(`FC ${entry.heartRate}`);
+                    if (entry.calories) metrics.push(`${entry.calories} kcal`);
+                    
+                    content = `
+                        <div style="display: flex; align-items: center; gap: 6px; margin: 2px 0;">
+                            ${activityIcon[entry.activityType] || activityIcon.unknown}
+                            <span style="text-transform: capitalize;">${entry.activityType}</span>
+                        </div>
+                        <div style="font-size: 12px; color: #555;">${metrics.join(' • ')}</div>
+                    `;
+                } else {
+                    const metrics = [];
+                    if (entry.weight) metrics.push(`${entry.weight}kg`);
+                    if (entry.heartRate) metrics.push(`FC ${entry.heartRate}`);
+                    if (entry.pace) metrics.push(`${entry.pace}/km`);
+                    if (entry.sleep) metrics.push(`${entry.sleep}h sonno`);
+                    if (entry.calories) metrics.push(`${entry.calories} kcal`);
+                    
+                    content = `
                         <div style="font-size: 13px; margin: 2px 0;">${metrics.join(' • ')}</div>
                         <div style="font-size: 11px; color: #999;">Fatica: ${entry.fatigue}/10</div>
                         ${entry.notes ? `<div style="font-size: 11px; color: #555; font-style: italic;">"${entry.notes}"</div>` : ''}
+                    `;
+                }
+                
+                return `
+                    <div style="border-bottom: 1px solid #eee; padding: 8px 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="font-weight: bold; font-size: 12px; color: #666;">${date}</div>
+                            <span style="background: ${sourceBg}; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;">${sourceLabel}</span>
+                        </div>
+                        ${content}
                     </div>
                 `;
             }).join('');
@@ -915,6 +1312,7 @@
             // Load and display saved data
             updateProgressStats();
             updateDataHistory();
+            updateGarminDataHistory();
             
             // Load saved weight data to update progress ring
             const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
