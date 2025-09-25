@@ -370,7 +370,7 @@
                 </div>
                 
                 <div class="card">
-                    <h3>Quick Log</h3>
+                    <h3>Quick Log Completo</h3>
                     <div class="input-group">
                         <label>Peso (kg)</label>
                         <input type="number" id="weightInput" placeholder="es. 102.5" step="0.1">
@@ -379,7 +379,31 @@
                         <label>FC Media (bpm)</label>
                         <input type="number" id="hrInput" placeholder="es. 85">
                     </div>
-                    <button class="btn btn-success" onclick="logData()">Salva Dati</button>
+                    <div class="input-group">
+                        <label>Passo Corsa (min:sec/km)</label>
+                        <input type="text" id="paceInput" placeholder="es. 17:45" pattern="[0-9]{1,2}:[0-5][0-9]">
+                    </div>
+                    <div class="input-group">
+                        <label>Ore Sonno</label>
+                        <input type="number" id="sleepInput" placeholder="es. 7.5" step="0.1" min="0" max="12">
+                    </div>
+                    <div class="input-group">
+                        <label>Calorie Bruciate</label>
+                        <input type="number" id="caloriesInput" placeholder="es. 620">
+                    </div>
+                    <div class="input-group">
+                        <label>Fatica (1-10)</label>
+                        <input type="range" id="fatigueInput" min="1" max="10" value="5">
+                        <div style="text-align: center; margin-top: 5px;">
+                            <span id="fatigueValue">5</span> - <span id="fatigueLabel">Moderato</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Note</label>
+                        <textarea id="notesInput" placeholder="Come ti sei sentito oggi?" rows="2" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"></textarea>
+                    </div>
+                    <button class="btn btn-success" onclick="logData()">Salva Dati Completi</button>
+                    <button class="btn" onclick="exportData()" style="background: #f39c12;">Esporta CSV</button>
                 </div>
             </div>
             
@@ -492,60 +516,79 @@
             
             <div id="progress" class="tab-content">
                 <div class="card">
-                    <h3>Statistiche Settimana</h3>
+                    <h3>Trend Settimanali</h3>
                     <div class="stats-grid">
                         <div class="stat-item">
-                            <div class="stat-value" style="color: #27ae60;">102.1</div>
+                            <div class="stat-value" style="color: #27ae60;" id="currentWeight">--</div>
                             <div class="stat-label">Peso (kg)</div>
+                            <div style="font-size: 11px; color: #666;" id="weightTrend">--</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value" style="color: #3498db;">83</div>
+                            <div class="stat-value" style="color: #3498db;" id="avgHR">--</div>
                             <div class="stat-label">FC Media</div>
+                            <div style="font-size: 11px; color: #666;" id="hrTrend">--</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value" style="color: #f39c12;">17:45</div>
-                            <div class="stat-label">Passo/km</div>
+                            <div class="stat-value" style="color: #f39c12;" id="avgPace">--</div>
+                            <div class="stat-label">Passo</div>
+                            <div style="font-size: 11px; color: #666;" id="paceTrend">--</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value" style="color: #9b59b6;">7.2h</div>
+                            <div class="stat-value" style="color: #9b59b6;" id="avgSleep">--</div>
                             <div class="stat-label">Sonno</div>
+                            <div style="font-size: 11px; color: #666;" id="sleepTrend">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Analisi Performance</h3>
+                    <div id="analysisResults">
+                        <div class="nutrition-item">
+                            <span><strong>Perdita Peso:</strong></span>
+                            <span id="weightLossRate">Calcolo in corso...</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span><strong>Trend FC:</strong></span>
+                            <span id="heartRateAnalysis">Inserisci più dati</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span><strong>Qualità Sonno:</strong></span>
+                            <span id="sleepAnalysis">Dati insufficienti</span>
+                        </div>
+                        <div class="nutrition-item">
+                            <span><strong>Coerenza Allenamenti:</strong></span>
+                            <span id="consistencyAnalysis">--</span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="card">
-                    <h3>Milestone Raggiunti</h3>
-                    <div style="font-size: 14px;">
-                        <div style="color: #27ae60; margin: 4px 0;">✅ Settimana 2: 1' run continuo</div>
-                        <div style="color: #27ae60; margin: 4px 0;">✅ Settimana 4: 5' run continuo</div>
-                        <div style="color: #f39c12; margin: 4px 0;">🔄 Settimana 6: 10' run continuo</div>
-                        <div style="color: #bdc3c7; margin: 4px 0;">⏳ Settimana 8: 20' run continuo</div>
-                        <div style="color: #bdc3c7; margin: 4px 0;">⏳ Settimana 12: 35' run TARGET!</div>
+                    <h3>Milestone Progress</h3>
+                    <div class="running-progress" style="margin: 8px 0;">
+                        <div class="running-progress-fill" id="runningProgress" style="width: 15%"></div>
+                    </div>
+                    <div style="text-align: center; margin: 8px 0;">
+                        <strong id="runningStatus">Settimana 1 di 12</strong>
+                    </div>
+                    <div style="font-size: 14px;" id="milestoneList">
+                        <div style="color: #27ae60; margin: 4px 0;">✅ Settimana 1: Baseline stabilito</div>
+                        <div style="color: #f39c12; margin: 4px 0;">🔄 Settimana 2: -1.5kg + 1' run continuo</div>
+                        <div style="color: #bdc3c7; margin: 4px 0;">⏳ Settimana 4: -3kg + 5' run continuo</div>
+                        <div style="color: #bdc3c7; margin: 4px 0;">⏳ Settimana 6: -4.5kg + 10' run continuo</div>
+                        <div style="color: #bdc3c7; margin: 4px 0;">⏳ Settimana 8: -6kg + 20' run continuo</div>
+                        <div style="color: #bdc3c7; margin: 4px 0;">⏳ Settimana 12: -9kg + 35' TARGET!</div>
                     </div>
                 </div>
                 
                 <div class="card">
-                    <h3>Trend Perdita Peso</h3>
-                    <div style="text-align: center; margin: 16px 0;">
-                        <div style="font-size: 24px; color: #27ae60; font-weight: bold;">-1.9 kg</div>
-                        <div style="font-size: 14px; color: #666;">in 3 settimane</div>
-                        <div style="font-size: 12px; color: #27ae60; margin-top: 8px;">
-                            Target: -0.75kg/settimana ✅
+                    <h3>Storico Completo</h3>
+                    <div id="dataHistory" style="max-height: 200px; overflow-y: auto;">
+                        <div style="text-align: center; color: #666; padding: 20px;">
+                            Nessun dato salvato ancora
                         </div>
                     </div>
-                    <div style="font-size: 13px; color: #666; text-align: center;">
-                        Proiezione obiettivo: 18 novembre
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3>Prossimi Obiettivi</h3>
-                    <div style="font-size: 13px; line-height: 1.4;">
-                        <p><strong>Questa settimana:</strong></p>
-                        <p>🏃‍♂️ Raggiungere 10' di corsa continua</p>
-                        <p>⚖️ Scendere sotto i 102kg</p>
-                        <p>💪 FC recovery <3 minuti</p>
-                    </div>
+                    <button class="btn" onclick="clearAllData()" style="background: #e74c3c; margin-top: 10px;">Cancella Storico</button>
                 </div>
             </div>
         </div>
@@ -615,35 +658,232 @@
                 `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
-        // Data logging
+        // Update fatigue slider display
+        function updateFatigueDisplay() {
+            const value = document.getElementById('fatigueInput').value;
+            const labels = ['', 'Molto facile', 'Facile', 'Leggero', 'Moderato', 'Medio', 
+                           'Impegnativo', 'Difficile', 'Molto difficile', 'Estremo', 'Massimo'];
+            document.getElementById('fatigueValue').textContent = value;
+            document.getElementById('fatigueLabel').textContent = labels[value] || 'Moderato';
+        }
+
+        // Enhanced data logging with all metrics
         function logData() {
             const weight = document.getElementById('weightInput').value;
             const hr = document.getElementById('hrInput').value;
+            const pace = document.getElementById('paceInput').value;
+            const sleep = document.getElementById('sleepInput').value;
+            const calories = document.getElementById('caloriesInput').value;
+            const fatigue = document.getElementById('fatigueInput').value;
+            const notes = document.getElementById('notesInput').value;
             
-            if (weight || hr) {
-                // Simulate saving data
-                const data = {
-                    date: new Date().toISOString(),
-                    weight: weight || null,
-                    heartRate: hr || null
-                };
-                
-                // Store in localStorage
-                const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
-                savedData.push(data);
-                localStorage.setItem('fitnessData', JSON.stringify(savedData));
-                
-                alert('Dati salvati! 📊');
-                document.getElementById('weightInput').value = '';
-                document.getElementById('hrInput').value = '';
-                
-                // Update progress ring if weight was logged
-                if (weight) {
-                    updateProgressRing(weight);
-                }
-            } else {
+            if (!weight && !hr && !pace && !sleep && !calories && !notes) {
                 alert('Inserisci almeno un valore per salvare');
+                return;
             }
+            
+            // Validate pace format if provided
+            if (pace && !/^\d{1,2}:[0-5]\d$/.test(pace)) {
+                alert('Formato passo non valido. Usa MM:SS (es. 17:45)');
+                return;
+            }
+            
+            const data = {
+                date: new Date().toISOString(),
+                weight: weight ? parseFloat(weight) : null,
+                heartRate: hr ? parseInt(hr) : null,
+                pace: pace || null,
+                sleep: sleep ? parseFloat(sleep) : null,
+                calories: calories ? parseInt(calories) : null,
+                fatigue: parseInt(fatigue),
+                notes: notes || null
+            };
+            
+            // Store in localStorage
+            const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
+            savedData.push(data);
+            localStorage.setItem('fitnessData', JSON.stringify(savedData));
+            
+            // Clear inputs
+            document.getElementById('weightInput').value = '';
+            document.getElementById('hrInput').value = '';
+            document.getElementById('paceInput').value = '';
+            document.getElementById('sleepInput').value = '';
+            document.getElementById('caloriesInput').value = '';
+            document.getElementById('fatigueInput').value = '5';
+            document.getElementById('notesInput').value = '';
+            updateFatigueDisplay();
+            
+            // Update displays
+            updateProgressStats();
+            updateDataHistory();
+            
+            if (weight) {
+                updateProgressRing(weight);
+            }
+            
+            alert('Dati salvati! I trend sono stati aggiornati.');
+        }
+
+        // Export data to CSV
+        function exportData() {
+            const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
+            
+            if (savedData.length === 0) {
+                alert('Nessun dato da esportare');
+                return;
+            }
+            
+            const csv = ['Data,Peso,FC,Passo,Sonno,Calorie,Fatica,Note']
+                .concat(savedData.map(entry => [
+                    new Date(entry.date).toLocaleDateString('it-IT'),
+                    entry.weight || '',
+                    entry.heartRate || '',
+                    entry.pace || '',
+                    entry.sleep || '',
+                    entry.calories || '',
+                    entry.fatigue || '',
+                    (entry.notes || '').replace(/,/g, ';')
+                ].join(',')))
+                .join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fitness_data_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Clear all data with confirmation
+        function clearAllData() {
+            if (confirm('Sei sicuro di voler cancellare tutti i dati? Questa azione non può essere annullata.')) {
+                localStorage.removeItem('fitnessData');
+                updateProgressStats();
+                updateDataHistory();
+                document.getElementById('progressText').textContent = '0%';
+                document.querySelector('.progress-fill').style.strokeDashoffset = 188.4;
+                alert('Tutti i dati sono stati cancellati');
+            }
+        }
+
+        // Update progress statistics with analysis
+        function updateProgressStats() {
+            const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
+            
+            if (savedData.length === 0) {
+                document.getElementById('currentWeight').textContent = '--';
+                document.getElementById('avgHR').textContent = '--';
+                document.getElementById('avgPace').textContent = '--';
+                document.getElementById('avgSleep').textContent = '--';
+                return;
+            }
+            
+            // Get recent data (last 7 entries or all if less)
+            const recentData = savedData.slice(-7);
+            
+            // Current values (latest entry)
+            const latest = savedData[savedData.length - 1];
+            const oldest = savedData[0];
+            
+            // Weight analysis
+            const weights = savedData.filter(d => d.weight).map(d => d.weight);
+            if (weights.length > 0) {
+                const currentWeight = weights[weights.length - 1];
+                const startWeight = weights[0] || 104;
+                const weightChange = currentWeight - startWeight;
+                
+                document.getElementById('currentWeight').textContent = currentWeight.toFixed(1);
+                document.getElementById('weightTrend').textContent = 
+                    weightChange >= 0 ? `+${weightChange.toFixed(1)}kg` : `${weightChange.toFixed(1)}kg`;
+                
+                // Weight loss rate analysis
+                if (weights.length > 1) {
+                    const weeksSinceStart = Math.max(1, (new Date(latest.date) - new Date(oldest.date)) / (7 * 24 * 60 * 60 * 1000));
+                    const weeklyRate = Math.abs(weightChange) / weeksSinceStart;
+                    let rateAnalysis = `${weeklyRate.toFixed(2)}kg/settimana`;
+                    
+                    if (weeklyRate > 1.0) rateAnalysis += ' - Troppo veloce!';
+                    else if (weeklyRate < 0.5) rateAnalysis += ' - Troppo lenta';
+                    else rateAnalysis += ' - Ottimale';
+                    
+                    document.getElementById('weightLossRate').textContent = rateAnalysis;
+                }
+            }
+            
+            // Heart rate analysis
+            const heartRates = recentData.filter(d => d.heartRate).map(d => d.heartRate);
+            if (heartRates.length > 0) {
+                const avgHR = heartRates.reduce((a, b) => a + b, 0) / heartRates.length;
+                document.getElementById('avgHR').textContent = Math.round(avgHR);
+                
+                if (heartRates.length > 3) {
+                    const firstHalf = heartRates.slice(0, Math.floor(heartRates.length / 2));
+                    const secondHalf = heartRates.slice(Math.floor(heartRates.length / 2));
+                    const trend = (secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length) - 
+                                 (firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length);
+                    
+                    document.getElementById('hrTrend').textContent = 
+                        trend < -2 ? 'Migliorando' : trend > 2 ? 'Peggiorando' : 'Stabile';
+                    
+                    document.getElementById('heartRateAnalysis').textContent = 
+                        avgHR < 80 ? 'Molto buono' : avgHR < 90 ? 'Buono' : 'Da migliorare';
+                }
+            }
+            
+            // Sleep analysis  
+            const sleepHours = recentData.filter(d => d.sleep).map(d => d.sleep);
+            if (sleepHours.length > 0) {
+                const avgSleep = sleepHours.reduce((a, b) => a + b, 0) / sleepHours.length;
+                document.getElementById('avgSleep').textContent = avgSleep.toFixed(1) + 'h';
+                
+                document.getElementById('sleepAnalysis').textContent = 
+                    avgSleep >= 7.5 ? 'Ottimale' : avgSleep >= 6.5 ? 'Sufficiente' : 'Insufficiente';
+            }
+            
+            // Consistency analysis
+            const totalDays = Math.max(1, (new Date() - new Date(oldest.date)) / (24 * 60 * 60 * 1000));
+            const loggedDays = savedData.length;
+            const consistency = (loggedDays / totalDays * 100);
+            
+            document.getElementById('consistencyAnalysis').textContent = 
+                consistency >= 80 ? 'Eccellente' : consistency >= 60 ? 'Buona' : 'Da migliorare';
+        }
+
+        // Update data history display
+        function updateDataHistory() {
+            const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
+            const historyDiv = document.getElementById('dataHistory');
+            
+            if (savedData.length === 0) {
+                historyDiv.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Nessun dato salvato ancora</div>';
+                return;
+            }
+            
+            const recentEntries = savedData.slice(-10).reverse(); // Last 10 entries, newest first
+            
+            historyDiv.innerHTML = recentEntries.map(entry => {
+                const date = new Date(entry.date).toLocaleDateString('it-IT', {
+                    day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                });
+                
+                const metrics = [];
+                if (entry.weight) metrics.push(`${entry.weight}kg`);
+                if (entry.heartRate) metrics.push(`FC ${entry.heartRate}`);
+                if (entry.pace) metrics.push(`${entry.pace}/km`);
+                if (entry.sleep) metrics.push(`${entry.sleep}h sonno`);
+                if (entry.calories) metrics.push(`${entry.calories} kcal`);
+                
+                return `
+                    <div style="border-bottom: 1px solid #eee; padding: 8px 0;">
+                        <div style="font-weight: bold; font-size: 12px; color: #666;">${date}</div>
+                        <div style="font-size: 13px; margin: 2px 0;">${metrics.join(' • ')}</div>
+                        <div style="font-size: 11px; color: #999;">Fatica: ${entry.fatigue}/10</div>
+                        ${entry.notes ? `<div style="font-size: 11px; color: #555; font-style: italic;">"${entry.notes}"</div>` : ''}
+                    </div>
+                `;
+            }).join('');
         }
 
         // Update progress ring based on weight loss
@@ -668,12 +908,20 @@
             updateBcaaTimer();
             setInterval(updateBcaaTimer, 1000);
             
-            // Load saved weight data to update progress
+            // Initialize fatigue slider
+            document.getElementById('fatigueInput').addEventListener('input', updateFatigueDisplay);
+            updateFatigueDisplay();
+            
+            // Load and display saved data
+            updateProgressStats();
+            updateDataHistory();
+            
+            // Load saved weight data to update progress ring
             const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
             if (savedData.length > 0) {
-                const lastEntry = savedData[savedData.length - 1];
-                if (lastEntry.weight) {
-                    updateProgressRing(lastEntry.weight);
+                const weights = savedData.filter(d => d.weight).map(d => d.weight);
+                if (weights.length > 0) {
+                    updateProgressRing(weights[weights.length - 1]);
                 }
             }
         }
