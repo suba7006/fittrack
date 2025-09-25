@@ -342,21 +342,21 @@
         
         <div class="content">
             <div id="today" class="tab-content active">
-                <div class="phase-indicator">FASE 1 - Build Aerobico</div>
+                <div class="phase-indicator" id="currentPhase">FASE 0 - Adattamento + Test Baseline</div>
                 
                 <div class="today-card card">
-                    <h3>Oggi - Martedì 15/10</h3>
+                    <h3 id="todayTitle">Oggi - Mercoledì 25/09</h3>
                     <div class="workout-item">
                         <div class="workout-time">06:15 - Pre-Workout</div>
-                        <div class="workout-desc">☕ Caffè + 10g BCAA frutti rossi</div>
+                        <div class="workout-desc" id="preworkoutDesc">☕ Caffè + 10g BCAA frutti rossi</div>
                     </div>
                     <div class="workout-item">
                         <div class="workout-time">06:30 - Functional</div>
-                        <div class="workout-desc">💪 Self Functional 55' (650 kcal)</div>
+                        <div class="workout-desc">💪 Functional Casa 55' (650 kcal)</div>
                     </div>
                     <div class="workout-item">
-                        <div class="workout-time">18:00 - Cardio</div>
-                        <div class="workout-desc">🏃‍♂️ 1'30" run/2' walk x7 (400 kcal)</div>
+                        <div class="workout-time" id="cardioTime">18:00 - Cardio</div>
+                        <div class="workout-desc" id="cardioDesc">🚶‍♂️ Walk di recupero 45' (200 kcal)</div>
                     </div>
                 </div>
                 
@@ -661,8 +661,10 @@
             document.getElementById('progressText').textContent = Math.round(percentage) + '%';
         }
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize app with correct date and plan
+        function initializeApp() {
+            const today = new Date();
+            updateTodaySection(today);
             updateBcaaTimer();
             setInterval(updateBcaaTimer, 1000);
             
@@ -674,6 +676,109 @@
                     updateProgressRing(lastEntry.weight);
                 }
             }
+        }
+
+        // Update today section based on current date
+        function updateTodaySection(date) {
+            const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+            const dayOfWeek = date.getDay();
+            const dayName = dayNames[dayOfWeek];
+            const dateStr = date.getDate().toString().padStart(2, '0') + '/' + 
+                          (date.getMonth() + 1).toString().padStart(2, '0');
+            
+            // Update title
+            document.getElementById('todayTitle').textContent = `Oggi - ${dayName} ${dateStr}`;
+            
+            // Determine current phase
+            const phase0Start = new Date(2024, 8, 24); // 24/09
+            const phase0End = new Date(2024, 8, 30);   // 30/09
+            const pause1Start = new Date(2024, 9, 1);  // 01/10
+            const pause1End = new Date(2024, 9, 4);    // 04/10
+            const phase1Start = new Date(2024, 9, 5);  // 05/10
+            const phase1End = new Date(2024, 9, 31);   // 31/10
+            const pause2Start = new Date(2024, 10, 1); // 01/11
+            const pause2End = new Date(2024, 10, 3);   // 03/11
+            const phase2Start = new Date(2024, 10, 4); // 04/11
+            const phase2End = new Date(2024, 11, 20);  // 20/12
+            
+            let phase, cardioActivity;
+            
+            if (date >= phase0Start && date <= phase0End) {
+                phase = "FASE 0 - Adattamento + Test Baseline";
+                // Phase 0 cardio logic
+                if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) { // L/M/V
+                    cardioActivity = "🚶‍♂️ Walk di recupero 45' (200 kcal)";
+                } else if (dayOfWeek === 2 || dayOfWeek === 4) { // M/G
+                    cardioActivity = "🚶‍♂️ Walk 6km + 30\" run x10 (350 kcal)";
+                } else if (dayOfWeek === 6) { // S
+                    cardioActivity = "🚶‍♂️ Long Walk 10km + test run 2' (450 kcal)";
+                } else { // D
+                    cardioActivity = "😌 Riposo attivo - Stretching (100 kcal)";
+                }
+            } else if (date >= pause1Start && date <= pause1End) {
+                phase = "PAUSA (01/10-04/10) - Recupero Attivo";
+                cardioActivity = "🚶‍♂️ Walk leggera 30' (200 kcal)";
+            } else if (date >= phase1Start && date <= phase1End) {
+                phase = "FASE 1 - Build Aerobico";
+                // Phase 1 cardio logic
+                const weekInPhase = Math.floor((date - phase1Start) / (7 * 24 * 60 * 60 * 1000));
+                if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) { // L/M/V
+                    cardioActivity = "🚶‍♂️ Walk di recupero 45' (200 kcal)";
+                } else if (dayOfWeek === 2 || dayOfWeek === 4) { // M/G
+                    if (weekInPhase <= 1) {
+                        cardioActivity = "🏃‍♂️ 1' run/2' walk x8 (380 kcal)";
+                    } else {
+                        cardioActivity = "🏃‍♂️ 1'30\" run/2' walk x7 (400 kcal)";
+                    }
+                } else if (dayOfWeek === 6) { // S
+                    cardioActivity = "🚶‍♂️ Long Walk 12km + 2x3' run (500 kcal)";
+                } else { // D
+                    cardioActivity = "😌 Riposo attivo - Yoga/Stretching (150 kcal)";
+                }
+            } else if (date >= pause2Start && date <= pause2End) {
+                phase = "PAUSA (01/11-03/11) - Recupero Attivo";
+                cardioActivity = "🚶‍♂️ Walk leggera 30' (200 kcal)";
+            } else if (date >= phase2Start && date <= phase2End) {
+                phase = "FASE 2 - Intensificazione + Target";
+                // Phase 2 cardio logic
+                const weekInPhase = Math.floor((date - phase2Start) / (7 * 24 * 60 * 60 * 1000));
+                if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) { // L/M/V
+                    cardioActivity = "🚶‍♂️ Walk di recupero 45' (200 kcal)";
+                } else if (dayOfWeek === 2 || dayOfWeek === 4) { // M/G
+                    if (weekInPhase <= 2) {
+                        cardioActivity = "🏃‍♂️ 5' run/1' walk x5 (450 kcal)";
+                    } else if (weekInPhase <= 4) {
+                        cardioActivity = "🏃‍♂️ Corsa continua 25' (480 kcal)";
+                    } else {
+                        cardioActivity = "🏃‍♂️ Corsa continua 35' TARGET! (520 kcal)";
+                    }
+                } else if (dayOfWeek === 6) { // S
+                    cardioActivity = "🚶‍♂️ Long Walk 15km + 2x5' run (550 kcal)";
+                } else { // D
+                    cardioActivity = "😌 Riposo attivo - Recovery (200 kcal)";
+                }
+            } else {
+                phase = "Piano completato - Mantenimento";
+                cardioActivity = "🏃‍♂️ Corsa libera 35' + functional";
+            }
+            
+            // Update UI
+            document.getElementById('currentPhase').textContent = phase;
+            document.getElementById('cardioDesc').textContent = cardioActivity;
+            
+            // Update pre-workout BCAA rotation
+            const bcaaOptions = [
+                "☕ Caffè + 10g BCAA frutti rossi",
+                "☕ Caffè + 🍯 Miele 5g + H2O",
+                "🥤 BCAA 12g limone + H2O"
+            ];
+            const bcaaIndex = date.getDate() % 3;
+            document.getElementById('preworkoutDesc').textContent = bcaaOptions[bcaaIndex];
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
         });
     </script>
 </body>
