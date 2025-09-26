@@ -3,1428 +3,440 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coaching Fitness - 104→95kg</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <title>Piano Coaching Avanzato 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
         }
-        
-        .app-container {
-            max-width: 400px;
-            margin: 0 auto;
-            background: white;
-            min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #2c3e50, #3498db);
-            color: white;
-            padding: 20px;
+        /* Stili per le input fields per un aspetto più pulito */
+        .data-input {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background-color: transparent;
             text-align: center;
+            font-size: 0.875rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .data-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+        }
+        /* Stili per la tabella "sticky header" */
+        .sticky-header {
             position: sticky;
             top: 0;
-            z-index: 100;
-        }
-        
-        .header h1 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-        
-        .header .subtitle {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-        
-        .progress-ring {
-            margin: 15px auto;
-            width: 80px;
-            height: 80px;
-            position: relative;
-        }
-        
-        .progress-ring svg {
-            transform: rotate(-90deg);
-        }
-        
-        .progress-ring circle {
-            fill: none;
-            stroke-width: 4;
-        }
-        
-        .progress-bg {
-            stroke: rgba(255,255,255,0.3);
-        }
-        
-        .progress-fill {
-            stroke: #00ff88;
-            stroke-dasharray: 188.4;
-            stroke-dashoffset: 150;
-            transition: stroke-dashoffset 0.5s ease;
-        }
-        
-        .progress-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        
-        .tabs {
-            display: flex;
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .tab {
-            flex: 1;
-            padding: 12px;
-            text-align: center;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s ease;
-        }
-        
-        .tab.active {
-            background: white;
-            color: #3498db;
-            font-weight: bold;
-            border-bottom: 2px solid #3498db;
-        }
-        
-        .content {
-            padding: 20px;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-left: 4px solid #3498db;
-        }
-        
-        .card h3 {
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: #2c3e50;
-        }
-        
-        .today-card {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            color: white;
-            border-left: 4px solid #d63031;
-        }
-        
-        .today-card h3 {
-            color: white;
-        }
-        
-        .timer-card {
-            background: linear-gradient(135deg, #00b894, #00a085);
-            color: white;
-            text-align: center;
-            border-left: 4px solid #00695c;
-        }
-        
-        .timer {
-            font-size: 32px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        
-        .bcaa-timing {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-            padding: 8px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 8px;
-        }
-        
-        .input-group {
-            margin: 12px 0;
-        }
-        
-        .input-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: #555;
-        }
-        
-        .input-group input, .input-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
-        
-        .input-group input:focus, .input-group textarea:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-        
-        .btn {
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin: 8px 0;
-        }
-        
-        .btn:hover {
-            background: #2980b9;
-            transform: translateY(-1px);
-        }
-        
-        .btn-success {
-            background: #27ae60;
-        }
-        
-        .btn-success:hover {
-            background: #219a52;
-        }
-        
-        .btn-danger {
-            background: #e74c3c;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin: 16px 0;
-        }
-        
-        .stat-item {
-            text-align: center;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .stat-value {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #666;
-            margin-top: 4px;
-        }
-        
-        .workout-item {
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin: 8px 0;
-            border-left: 4px solid #27ae60;
-        }
-        
-        .workout-time {
-            font-weight: bold;
-            color: #27ae60;
-        }
-        
-        .workout-desc {
-            font-size: 14px;
-            margin: 4px 0;
-        }
-        
-        .nutrition-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .phase-indicator {
-            background: #3498db;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 8px;
-        }
-        
-        .milestone {
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 8px 0;
-        }
-        
-        .milestone h4 {
-            margin-bottom: 4px;
-        }
-        
-        .running-progress {
-            background: #ecf0f1;
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 8px 0;
-        }
-        
-        .running-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00b894, #00a085);
-            transition: width 0.5s ease;
-        }
-        
-        @media (max-width: 480px) {
-            .app-container {
-                max-width: 100%;
-            }
+            z-index: 10;
         }
     </style>
 </head>
-<body>
-    <div class="app-container">
-        <div class="header">
-            <h1>Coaching Fitness</h1>
-            <div class="subtitle">104kg → 95kg | 0' → 35' corsa</div>
-            <div class="progress-ring">
-                <svg width="80" height="80">
-                    <circle class="progress-bg" cx="40" cy="40" r="30"></circle>
-                    <circle class="progress-fill" cx="40" cy="40" r="30"></circle>
-                </svg>
-                <div class="progress-text" id="progressText">25%</div>
-            </div>
-        </div>
-        
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('today')">Oggi</button>
-            <button class="tab" onclick="showTab('workout')">Workout</button>
-            <button class="tab" onclick="showTab('nutrition')">Nutrizione</button>
-            <button class="tab" onclick="showTab('progress')">Progressi</button>
-        </div>
-        
-        <div class="content">
-            <div id="today" class="tab-content active">
-                <div class="phase-indicator" id="currentPhase">FASE 0 - Adattamento + Test Baseline</div>
-                
-                <div class="today-card card">
-                    <h3 id="todayTitle">Oggi - Mercoledì 25/09</h3>
-                    <div class="workout-item">
-                        <div class="workout-time">06:15 - Pre-Workout</div>
-                        <div class="workout-desc" id="preworkoutDesc">☕ Caffè + 10g BCAA frutti rossi</div>
-                    </div>
-                    <div class="workout-item">
-                        <div class="workout-time">06:30 - Functional</div>
-                        <div class="workout-desc">💪 Functional Casa 55' (650 kcal)</div>
-                    </div>
-                    <div class="workout-item">
-                        <div class="workout-time" id="cardioTime">18:00 - Cardio</div>
-                        <div class="workout-desc" id="cardioDesc">🚶‍♂️ Walk di recupero 45' (200 kcal)</div>
-                    </div>
-                </div>
-                
-                <div class="timer-card card">
-                    <h3>Prossimo BCAA</h3>
-                    <div class="timer" id="nextBcaaTimer">05:42:30</div>
-                    <div class="bcaa-timing">
-                        <span>⚡ 10g BCAA</span>
-                        <span>15 min pre-workout</span>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3>Import Garmin CSV</h3>
-                    <div class="input-group">
-                        <label>File CSV da Garmin Connect</label>
-                        <input type="file" id="garminFileInput" accept=".csv" onchange="handleGarminImport(event)">
-                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
-                            Esporta da connect.garmin.com → Attività → Ingranaggio → Esporta CSV
-                        </div>
-                    </div>
-                    <button class="btn" onclick="document.getElementById('garminFileInput').click()" style="background: #27ae60;">
-                        📁 Seleziona File Garmin
-                    </button>
-                    <div id="garminImportStatus" style="margin: 8px 0; font-size: 12px;"></div>
-                </div>
+<body class="p-2 sm:p-4 md:p-8">
 
-                <div class="card">
-                    <h3>Quick Log Completo</h3>
-                    <div class="input-group">
-                        <label>Peso (kg)</label>
-                        <input type="number" id="weightInput" placeholder="es. 102.5" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>FC Media (bpm)</label>
-                        <input type="number" id="hrInput" placeholder="es. 85">
-                    </div>
-                    <div class="input-group">
-                        <label>Passo Corsa (min:sec/km)</label>
-                        <input type="text" id="paceInput" placeholder="es. 17:45" pattern="[0-9]{1,2}:[0-5][0-9]">
-                    </div>
-                    <div class="input-group">
-                        <label>Ore Sonno</label>
-                        <input type="number" id="sleepInput" placeholder="es. 7.5" step="0.1" min="0" max="12">
-                    </div>
-                    <div class="input-group">
-                        <label>Calorie Bruciate</label>
-                        <input type="number" id="caloriesInput" placeholder="es. 620">
-                    </div>
-                    <div class="input-group">
-                        <label>Fatica (1-10)</label>
-                        <input type="range" id="fatigueInput" min="1" max="10" value="5">
-                        <div style="text-align: center; margin-top: 5px;">
-                            <span id="fatigueValue">5</span> - <span id="fatigueLabel">Moderato</span>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Note</label>
-                        <textarea id="notesInput" placeholder="Come ti sei sentito oggi?" rows="2"></textarea>
-                    </div>
-                    <button class="btn btn-success" onclick="logData()">Salva Dati Completi</button>
-                    <button class="btn" onclick="exportData()" style="background: #f39c12;">Esporta CSV</button>
-                </div>
-            </div>
-            
-            <div id="workout" class="tab-content">
-                <div class="card">
-                    <h3>Progressione Corsa</h3>
-                    <div class="running-progress">
-                        <div class="running-progress-fill" style="width: 35%"></div>
-                    </div>
-                    <div style="text-align: center; margin: 8px 0;">
-                        <strong>12 minuti continui</strong> di 35 target
-                    </div>
-                </div>
-                
-                <div class="milestone">
-                    <h4>Settimana 6 - Milestone</h4>
-                    <div>🏃‍♂️ 10' run continuo | ⚖️ -4.5kg (99.5kg)</div>
-                </div>
-                
-                <div class="card">
-                    <h3>Functional Timing</h3>
-                    <div class="nutrition-item">
-                        <span><strong>06:15</strong> - Pre-workout</span>
-                        <span>BCAA + Caffè</span>
-                    </div>
-                    <div class="nutrition-item">
-                        <span><strong>06:30</strong> - Start</span>
-                        <span>Functional 55'</span>
-                    </div>
-                    <div class="nutrition-item">
-                        <span><strong>07:25</strong> - Fine</span>
-                        <span>Cool down</span>
-                    </div>
-                    <div class="nutrition-item">
-                        <span><strong>08:00</strong> - Post-workout</span>
-                        <span>Colazione completa</span>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3>Timer Workout</h3>
-                    <div style="text-align: center;">
-                        <div class="timer" id="workoutTimer">55:00</div>
-                        <button class="btn" id="timerBtn" onclick="toggleTimer()">Start Functional</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="nutrition" class="tab-content">
-                <div class="card">
-                    <h3>Piano Oggi</h3>
-                    <div class="nutrition-item">
-                        <span><strong>08:00 - Colazione</strong></span>
-                        <span>580 kcal</span>
-                    </div>
-                    <div style="font-size: 13px; color: #666; padding: 4px 0;">
-                        🧀 Ricotta 110g + 🥓 Prosciutto 50g + 🍞 Pane 45g + 🍎 Mela + ☕ Caffè
-                    </div>
-                    
-                    <div class="nutrition-item">
-                        <span><strong>13:00 - Pranzo</strong></span>
-                        <span>520 kcal</span>
-                    </div>
-                    <div style="font-size: 13px; color: #666; padding: 4px 0;">
-                        🍝 Pasta 75g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml
-                    </div>
-                    
-                    <div class="nutrition-item">
-                        <span><strong>20:00 - Cena</strong></span>
-                        <span>480 kcal</span>
-                    </div>
-                    <div style="font-size: 13px; color: #666; padding: 4px 0;">
-                        🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3>Target Giornalieri</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value">2050</div>
-                            <div class="stat-label">Kcal Target</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">165g</div>
-                            <div class="stat-label">Proteine</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">3L</div>
-                            <div class="stat-label">Acqua</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">10g</div>
-                            <div class="stat-label">BCAA</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3>BCAA Info</h3>
-                    <div style="font-size: 13px; line-height: 1.4;">
-                        <p><strong>Leucina + Isoleucina + Valina</strong></p>
-                        <p>⚡ Assorbimento: 15 minuti</p>
-                        <p>💪 Protezione muscolare durante workout</p>
-                        <p>🔥 Massima ossidazione grassi</p>
-                        <p>🛒 Optimum, Yamamoto, Named (8-12€/mese)</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="progress" class="tab-content">
-                <div class="card">
-                    <h3>Trend Settimanali</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-value" style="color: #27ae60;" id="currentWeight">--</div>
-                            <div class="stat-label">Peso (kg)</div>
-                            <div style="font-size: 11px; color: #666;" id="weightTrend">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" style="color: #3498db;" id="avgHR">--</div>
-                            <div class="stat-label">FC Media</div>
-                            <div style="font-size: 11px; color: #666;" id="hrTrend">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" style="color: #f39c12;" id="avgPace">--</div>
-                            <div class="stat-label">Passo</div>
-                            <div style="font-size: 11px; color: #666;" id="paceTrend">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value" style="color: #9b59b6;" id="avgSleep">--</div>
-                            <div class="stat-label">Sonno</div>
-                            <div style="font-size: 11px; color: #666;" id="sleepTrend">--</div>
-                        </div>
-                    </div>
-                </div>
+    <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+        <!-- Header Principale -->
+        <header class="w-full p-4 mb-6 rounded-lg bg-[#2c3e50] text-white text-center">
+            <h1 class="text-xl sm:text-2xl font-bold">🏃‍♂️ PIANO COACHING AVANZATO 2025: 104kg → 95kg | 0' → 35' CORSA | TIMING OTTIMIZZATO BCAA 🎯</h1>
+        </header>
 
-                <div class="card">
-                    <h3>Analisi Performance</h3>
-                    <div id="analysisResults">
-                        <div class="nutrition-item">
-                            <span><strong>Perdita Peso:</strong></span>
-                            <span id="weightLossRate">Calcolo in corso...</span>
-                        </div>
-                        <div class="nutrition-item">
-                            <span><strong>Trend FC:</strong></span>
-                            <span id="heartRateAnalysis">Inserisci più dati</span>
-                        </div>
-                        <div class="nutrition-item">
-                            <span><strong>Qualità Sonno:</strong></span>
-                            <span id="sleepAnalysis">Dati insufficienti</span>
-                        </div>
-                        <div class="nutrition-item">
-                            <span><strong>Coerenza Allenamenti:</strong></span>
-                            <span id="consistencyAnalysis">--</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3>Milestone Progress</h3>
-                    <div class="running-progress" style="margin: 8px 0;">
-                        <div class="running-progress-fill" id="runningProgress" style="width: 15%"></div>
-                    </div>
-                    <div style="text-align: center; margin: 8px 0;">
-                        <strong id="runningStatus">Settimana 1 di 12</strong>
-                    </div>
-                    <div style="font-size: 14px;" id="milestoneList">
-                        <div style="color: #27ae60; margin: 4px 0;">✅ Settimana 1: Baseline stabilito</div>
-                        <div style="color: #f39c12; margin: 4px 0;">🔄 Settimana 2: -1.5kg + 1' run continuo</div>
-                        <div style="color: #bdc3c7; margin: 4px 0;">⏳ Settimana 4: -3kg + 5' run continuo</div>
-                        <div style="color: #bdc3c7; margin: 4px 0;">⏳ Settimana 6: -4.5kg + 10' run continuo</div>
-                        <div style="color: #bdc3c7; margin: 4px 0;">⏳ Settimana 8: -6kg + 20' run continuo</div>
-                        <div style="color: #bdc3c7; margin: 4px 0;">⏳ Settimana 12: -9kg + 35' TARGET!</div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3>Attività Garmin Recenti</h3>
-                    <div id="garminDataHistory" style="max-height: 200px; overflow-y: auto;">
-                        <div style="text-align: center; color: #666; padding: 20px;">
-                            Nessuna attività Garmin importata
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h3>Storico Completo</h3>
-                    <div id="dataHistory" style="max-height: 200px; overflow-y: auto;">
-                        <div style="text-align: center; color: #666; padding: 20px;">
-                            Nessun dato salvato ancora
-                        </div>
-                    </div>
-                    <button class="btn" onclick="clearAllData()" style="background: #e74c3c; margin-top: 10px;">Cancella Storico</button>
-                </div>
-            </div>
+        <!-- Sezione Parametri Metabolici -->
+        <section id="metabolic-parameters" class="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+             <!-- Verrà popolata da JavaScript -->
+        </section>
+
+        <!-- Tabella Piano di Allenamento -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-[#34495e] sticky-header">
+                    <tr>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[90px]">📅 Data</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">📋 Giorno</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[120px]">⚡ Pre-Workout</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[140px]">🌅 Functional</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[160px]">🌆 Cardio/Corsa</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🥣 Colazione</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🍝 Pranzo</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🍗 Cena</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">⚖️ Peso</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">💓 FC Med</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">⏱️ Passo</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">😴 Sonno</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[80px]">🔥 Cal Out</th>
+                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[90px]">📊 Bilancio</th>
+                    </tr>
+                </thead>
+                <tbody id="training-plan-body" class="bg-white divide-y divide-gray-200">
+                    <!-- Le righe del piano verranno inserite qui da JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+         <!-- Sezioni Analitiche Aggiuntive -->
+        <div class="mt-10 space-y-8">
+            <section id="progress-tracking"></section>
+            <section id="nutrition-guide"></section>
+            <section id="advanced-goals"></section>
         </div>
     </div>
 
     <script>
-        // Tab switching
-        function showTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            // Funzioni di utilità per date e nomi dei giorni
+            const formatDate = (date) => {
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                return `${day}/${month}`;
+            };
+            const getDayName = (date) => {
+                const giorni = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
+                return giorni[date.getDay()];
+            };
 
-        // Timer functionality
-        let timerInterval;
-        let timerSeconds = 55 * 60; // 55 minutes
-        let isTimerRunning = false;
+            const tbody = document.getElementById('training-plan-body');
 
-        function toggleTimer() {
-            const btn = document.getElementById('timerBtn');
-            
-            if (isTimerRunning) {
-                clearInterval(timerInterval);
-                btn.textContent = 'Riprendi';
-                btn.style.background = '#27ae60';
-                isTimerRunning = false;
-            } else {
-                timerInterval = setInterval(updateTimer, 1000);
-                btn.textContent = 'Pausa';
-                btn.style.background = '#e74c3c';
-                isTimerRunning = true;
-            }
-        }
+            // --- FUNZIONI PER CREARE SEZIONI E RIGHE ---
 
-        function updateTimer() {
-            if (timerSeconds <= 0) {
-                clearInterval(timerInterval);
-                document.getElementById('timerBtn').textContent = 'Completato!';
-                document.getElementById('timerBtn').style.background = '#27ae60';
-                alert('Workout completato! Ben fatto! 💪');
-                return;
-            }
-            
-            const minutes = Math.floor(timerSeconds / 60);
-            const seconds = timerSeconds % 60;
-            document.getElementById('workoutTimer').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            timerSeconds--;
-        }
+            function addMetabolicParameters() {
+                const container = document.getElementById('metabolic-parameters');
+                const paramData = [
+                    { title: "📊 PARAMETRI METABOLICI", items: [
+                        ["BMR stimato:", "2100 kcal"],
+                        ["TDEE attuale:", "2900 kcal"],
+                        ["Intake target:", "2075 kcal"],
+                        ["Proteine target:", "165g (1.6g/kg)"],
+                        ["Colazione timing:", "POST-workout 08:00"]
+                    ]},
+                    { title: "🎯 TARGET SETTIMANALI", items: [
+                        ["Deficit:", "-825 kcal/giorno"],
+                        ["Perdita:", "-0.75 kg"],
+                        ["Controllo peso:", "Giovedì mattina"],
+                        ["Idratazione:", "3L + 500ml/ora sport"],
+                        ["Window anabolica:", "30' post-functional"]
+                    ]},
+                    { title: "📈 PROGRESSIONE CORSA", items: [
+                        ["Settimana 1-2:", "Walk + 30\" run x10"],
+                        ["Settimana 3-4:", "1' run / 2' walk x8"],
+                        ["Settimana 5-6:", "2' run / 1' walk x8"],
+                        ["Settimana 7-8:", "5' run / 1' walk x5"],
+                        ["Settimana 9-12:", "35' corsa continua"]
+                    ]},
+                    { title: "💊 TIMING BCAA", items: [
+                        ["06:15 Pre-workout"],
+                        ["10-15g BCAA/Caffè"],
+                        ["Leucina + Isoleucina"],
+                        ["Protezione muscolare"],
+                        ["Massima ossidazione 🔥"]
+                    ]}
+                ];
 
-        // BCAA countdown timer
-        function updateBcaaTimer() {
-            const now = new Date();
-            const tomorrow = new Date(now);
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(6, 15, 0, 0);
-            
-            const diff = tomorrow - now;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            document.getElementById('nextBcaaTimer').textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
+                paramData.forEach(section => {
+                    const sectionDiv = document.createElement('div');
+                    sectionDiv.className = 'bg-[#ecf0f1] rounded-lg p-3';
+                    
+                    const titleEl = document.createElement('h3');
+                    titleEl.className = 'text-sm font-bold bg-[#34495e] text-white -mt-3 -mx-3 mb-3 p-2 rounded-t-lg';
+                    titleEl.textContent = section.title;
+                    sectionDiv.appendChild(titleEl);
 
-        // Handle Garmin CSV import
-        async function handleGarminImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const statusDiv = document.getElementById('garminImportStatus');
-            statusDiv.innerHTML = '<div style="color: #3498db;">📊 Caricamento e analisi CSV...</div>';
-            
-            try {
-                const text = await file.text();
-                
-                // Parse CSV with Papa Parse
-                const parseResult = Papa.parse(text, {
-                    header: true,
-                    dynamicTyping: true,
-                    skipEmptyLines: true,
-                    transformHeader: header => header.trim().toLowerCase()
-                });
-                
-                if (parseResult.errors.length > 0) {
-                    throw new Error('Errore nel parsing CSV: ' + parseResult.errors[0].message);
-                }
-                
-                const garminData = parseResult.data;
-                let processedCount = 0;
-                
-                // Process each activity
-                garminData.forEach(row => {
-                    try {
-                        const processedActivity = processGarminRow(row);
-                        if (processedActivity) {
-                            saveGarminActivity(processedActivity);
-                            processedCount++;
+                    const list = document.createElement('ul');
+                    list.className = 'space-y-1';
+                    section.items.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'flex justify-between';
+                        const key = document.createElement('span');
+                        key.className = 'font-semibold';
+                        key.textContent = item[0];
+                        li.appendChild(key);
+                        if(item[1]) {
+                            const value = document.createElement('span');
+                            value.textContent = item[1];
+                            li.appendChild(value);
                         }
-                    } catch (e) {
-                        console.warn('Errore processamento riga:', e);
+                        list.appendChild(li);
+                    });
+                    sectionDiv.appendChild(list);
+                    container.appendChild(sectionDiv);
+                });
+            }
+
+
+            function addPhaseSection(title, color) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="14" class="py-3 px-4 text-center text-sm font-bold text-white" style="background-color: ${color};">${title}</td>`;
+                tbody.appendChild(tr);
+            }
+
+            function addDataRow(data, color, kcalTarget) {
+                const tr = document.createElement('tr');
+                tr.style.backgroundColor = color;
+                tr.className = 'text-xs text-gray-700 align-middle';
+
+                // Creazione celle standard
+                data.slice(0, 8).forEach(cellData => {
+                    const td = document.createElement('td');
+                    td.className = 'px-2 py-3 border-b border-gray-200';
+                    td.innerHTML = cellData;
+                    tr.appendChild(td);
+                });
+
+                // Peso (input)
+                const tdPeso = document.createElement('td');
+                tdPeso.className = 'px-2 py-3 border-b border-gray-200';
+                const inputPeso = document.createElement('input');
+                inputPeso.type = 'number';
+                inputPeso.className = 'data-input';
+                inputPeso.step = '0.1';
+                inputPeso.addEventListener('input', (e) => {
+                    const weight = parseFloat(e.target.value);
+                    if (!isNaN(weight) && weight <= 95) {
+                        e.target.classList.add('bg-green-100', 'text-green-800', 'font-bold');
+                    } else {
+                        e.target.classList.remove('bg-green-100', 'text-green-800', 'font-bold');
                     }
                 });
-                
-                statusDiv.innerHTML = `<div style="color: #27ae60;">✅ Importate ${processedCount} attività Garmin</div>`;
-                
-                // Update displays
-                updateProgressStats();
-                updateGarminDataHistory();
-                
-                // Clear file input
-                event.target.value = '';
-                
-                // Show success message after a delay
-                setTimeout(() => {
-                    statusDiv.innerHTML = '';
-                    alert(`Import completato! ${processedCount} attività Garmin elaborate e integrate.`);
-                }, 2000);
-                
-            } catch (error) {
-                statusDiv.innerHTML = `<div style="color: #e74c3c;">❌ Errore: ${error.message}</div>`;
-                console.error('Errore import Garmin:', error);
-            }
-        }
+                tdPeso.appendChild(inputPeso);
+                tr.appendChild(tdPeso);
 
-        // Process individual Garmin CSV row
-        function processGarminRow(row) {
-            // Handle various Garmin CSV formats
-            const dateFields = ['date', 'start time', 'starttime', 'timestamp'];
-            const hrFields = ['avg hr', 'average heart rate', 'avghr', 'heart_rate'];
-            const paceFields = ['avg pace', 'average pace', 'avgpace', 'pace'];
-            const calorieFields = ['calories', 'total calories', 'kcal'];
-            const distanceFields = ['distance', 'total distance', 'km'];
-            const durationFields = ['time', 'duration', 'moving time', 'elapsed time'];
-            
-            // Extract date
-            let dateValue = null;
-            for (const field of dateFields) {
-                if (row[field]) {
-                    dateValue = new Date(row[field]);
-                    break;
+                // FC Med, Passo, Sonno (input)
+                for (let i = 0; i < 3; i++) {
+                     const td = document.createElement('td');
+                    td.className = 'px-2 py-3 border-b border-gray-200';
+                    td.innerHTML = `<input type="text" class="data-input">`;
+                    tr.appendChild(td);
                 }
-            }
-            
-            if (!dateValue || isNaN(dateValue)) return null;
-            
-            // Extract heart rate
-            let avgHR = null;
-            for (const field of hrFields) {
-                if (row[field] && !isNaN(row[field])) {
-                    avgHR = parseInt(row[field]);
-                    break;
-                }
-            }
-            
-            // Extract pace (convert to MM:SS format if needed)
-            let pace = null;
-            for (const field of paceFields) {
-                if (row[field]) {
-                    pace = formatPaceFromGarmin(row[field]);
-                    break;
-                }
-            }
-            
-            // Extract calories
-            let calories = null;
-            for (const field of calorieFields) {
-                if (row[field] && !isNaN(row[field])) {
-                    calories = parseInt(row[field]);
-                    break;
-                }
-            }
-            
-            // Extract distance
-            let distance = null;
-            for (const field of distanceFields) {
-                if (row[field] && !isNaN(row[field])) {
-                    distance = parseFloat(row[field]);
-                    break;
-                }
-            }
-            
-            // Extract duration
-            let duration = null;
-            for (const field of durationFields) {
-                if (row[field]) {
-                    duration = formatDurationFromGarmin(row[field]);
-                    break;
-                }
-            }
-            
-            // Determine activity type
-            const activityType = detectActivityType(row);
-            
-            return {
-                date: dateValue.toISOString(),
-                source: 'garmin',
-                activityType: activityType,
-                heartRate: avgHR,
-                pace: pace,
-                calories: calories,
-                distance: distance,
-                duration: duration,
-                rawData: row
-            };
-        }
 
-        // Save Garmin activity to separate storage
-        function saveGarminActivity(activity) {
-            const garminData = JSON.parse(localStorage.getItem('garminData') || '[]');
-            
-            // Check for duplicates based on date and type
-            const existingIndex = garminData.findIndex(item => 
-                new Date(item.date).toDateString() === new Date(activity.date).toDateString() &&
-                item.activityType === activity.activityType
-            );
-            
-            if (existingIndex >= 0) {
-                garminData[existingIndex] = activity; // Update existing
-            } else {
-                garminData.push(activity); // Add new
-            }
-            
-            localStorage.setItem('garminData', JSON.stringify(garminData));
-        }
-
-        // Format pace from various Garmin formats
-        function formatPaceFromGarmin(paceValue) {
-            if (typeof paceValue === 'string') {
-                // Already in MM:SS format
-                if (/^\d{1,2}:\d{2}$/.test(paceValue)) return paceValue;
+                // Cal Out (input) e Bilancio (span)
+                const tdCalOut = document.createElement('td');
+                tdCalOut.className = 'px-2 py-3 border-b border-gray-200 text-center';
+                const inputCalOut = document.createElement('input');
+                inputCalOut.type = 'number';
+                inputCalOut.className = 'data-input';
+                inputCalOut.value = data[12] || '';
+                tdCalOut.appendChild(inputCalOut);
                 
-                // Handle decimal minutes (e.g., "17.75" = 17:45)
-                const decimal = parseFloat(paceValue);
-                if (!isNaN(decimal)) {
-                    const minutes = Math.floor(decimal);
-                    const seconds = Math.round((decimal - minutes) * 60);
-                    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                }
-            }
-            
-            return null;
-        }
+                const tdBilancio = document.createElement('td');
+                tdBilancio.className = 'px-2 py-3 border-b border-gray-200 text-center font-semibold';
+                const spanBilancio = document.createElement('span');
+                tdBilancio.appendChild(spanBilancio);
 
-        // Format duration from Garmin
-        function formatDurationFromGarmin(duration) {
-            if (typeof duration === 'string') {
-                // Handle HH:MM:SS format
-                if (/^\d{1,2}:\d{2}:\d{2}$/.test(duration)) return duration;
-            }
-            return null;
-        }
-
-        // Detect activity type from row data
-        function detectActivityType(row) {
-            const activityFields = ['activity type', 'sport', 'type', 'activity'];
-            
-            for (const field of activityFields) {
-                if (row[field]) {
-                    const value = row[field].toString().toLowerCase();
-                    if (value.includes('run')) return 'running';
-                    if (value.includes('walk')) return 'walking';
-                    if (value.includes('cardio')) return 'cardio';
-                    if (value.includes('strength')) return 'strength';
-                    return value;
-                }
-            }
-            
-            return 'unknown';
-        }
-
-        // Update fatigue slider display
-        function updateFatigueDisplay() {
-            const value = document.getElementById('fatigueInput').value;
-            const labels = ['', 'Molto facile', 'Facile', 'Leggero', 'Moderato', 'Medio', 
-                           'Impegnativo', 'Difficile', 'Molto difficile', 'Estremo', 'Massimo'];
-            document.getElementById('fatigueValue').textContent = value;
-            document.getElementById('fatigueLabel').textContent = labels[value] || 'Moderato';
-        }
-
-        // Enhanced data logging with all metrics
-        function logData() {
-            const weight = document.getElementById('weightInput').value;
-            const hr = document.getElementById('hrInput').value;
-            const pace = document.getElementById('paceInput').value;
-            const sleep = document.getElementById('sleepInput').value;
-            const calories = document.getElementById('caloriesInput').value;
-            const fatigue = document.getElementById('fatigueInput').value;
-            const notes = document.getElementById('notesInput').value;
-            
-            if (!weight && !hr && !pace && !sleep && !calories && !notes) {
-                alert('Inserisci almeno un valore per salvare');
-                return;
-            }
-            
-            // Validate pace format if provided
-            if (pace && !/^\d{1,2}:[0-5]\d$/.test(pace)) {
-                alert('Formato passo non valido. Usa MM:SS (es. 17:45)');
-                return;
-            }
-            
-            const data = {
-                date: new Date().toISOString(),
-                weight: weight ? parseFloat(weight) : null,
-                heartRate: hr ? parseInt(hr) : null,
-                pace: pace || null,
-                sleep: sleep ? parseFloat(sleep) : null,
-                calories: calories ? parseInt(calories) : null,
-                fatigue: parseInt(fatigue),
-                notes: notes || null
-            };
-            
-            // Store in localStorage
-            const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
-            savedData.push(data);
-            localStorage.setItem('fitnessData', JSON.stringify(savedData));
-            
-            // Clear inputs
-            document.getElementById('weightInput').value = '';
-            document.getElementById('hrInput').value = '';
-            document.getElementById('paceInput').value = '';
-            document.getElementById('sleepInput').value = '';
-            document.getElementById('caloriesInput').value = '';
-            document.getElementById('fatigueInput').value = '5';
-            document.getElementById('notesInput').value = '';
-            updateFatigueDisplay();
-            
-            // Update displays
-            updateProgressStats();
-            updateDataHistory();
-            
-            if (weight) {
-                updateProgressRing(weight);
-            }
-            
-            alert('Dati salvati! I trend sono stati aggiornati.');
-        }
-
-        // Export data to CSV
-        function exportData() {
-            const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
-            const garminData = JSON.parse(localStorage.getItem('garminData') || '[]');
-            
-            if (savedData.length === 0 && garminData.length === 0) {
-                alert('Nessun dato da esportare');
-                return;
-            }
-            
-            // Combine all data for export
-            const allData = [
-                ...savedData.map(entry => ({
-                    ...entry,
-                    source: 'manual',
-                    activityType: 'manual_log'
-                })),
-                ...garminData
-            ].sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            const csv = ['Data,Source,Tipo,Peso,FC,Passo,Sonno,Calorie,Fatica,Distanza,Durata,Note']
-                .concat(allData.map(entry => [
-                    new Date(entry.date).toLocaleDateString('it-IT'),
-                    entry.source || 'manual',
-                    entry.activityType || 'manual_log',
-                    entry.weight || '',
-                    entry.heartRate || '',
-                    entry.pace || '',
-                    entry.sleep || '',
-                    entry.calories || '',
-                    entry.fatigue || '',
-                    entry.distance || '',
-                    entry.duration || '',
-                    (entry.notes || '').replace(/,/g, ';')
-                ].join(',')))
-                .join('\n');
-            
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `fitness_data_complete_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // Update progress statistics with analysis (enhanced with Garmin data)
-        function updateProgressStats() {
-            const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
-            const garminData = JSON.parse(localStorage.getItem('garminData') || '[]');
-            
-            if (savedData.length === 0 && garminData.length === 0) {
-                document.getElementById('currentWeight').textContent = '--';
-                document.getElementById('avgHR').textContent = '--';
-                document.getElementById('avgPace').textContent = '--';
-                document.getElementById('avgSleep').textContent = '--';
-                return;
-            }
-            
-            // Combine and sort all data by date
-            const allData = [...savedData, ...garminData].sort((a, b) => new Date(a.date) - new Date(b.date));
-            const recentData = allData.slice(-7); // Last 7 entries
-            
-            const latest = allData[allData.length - 1];
-            const oldest = allData[0];
-            
-            // Weight analysis (from manual data only)
-            const weights = savedData.filter(d => d.weight).map(d => d.weight);
-            if (weights.length > 0) {
-                const currentWeight = weights[weights.length - 1];
-                const startWeight = weights[0] || 104;
-                const weightChange = currentWeight - startWeight;
-                
-                document.getElementById('currentWeight').textContent = currentWeight.toFixed(1);
-                document.getElementById('weightTrend').textContent = 
-                    weightChange >= 0 ? `+${weightChange.toFixed(1)}kg` : `${weightChange.toFixed(1)}kg`;
-                
-                // Weight loss rate analysis
-                if (weights.length > 1) {
-                    const weightData = savedData.filter(d => d.weight);
-                    const oldestWeight = weightData[0];
-                    const latestWeight = weightData[weightData.length - 1];
-                    
-                    const weeksSinceStart = Math.max(1, (new Date(latestWeight.date) - new Date(oldestWeight.date)) / (7 * 24 * 60 * 60 * 1000));
-                    const weeklyRate = Math.abs(weightChange) / weeksSinceStart;
-                    let rateAnalysis = `${weeklyRate.toFixed(2)}kg/settimana`;
-                    
-                    if (weeklyRate > 1.0) rateAnalysis += ' - Troppo veloce!';
-                    else if (weeklyRate < 0.5) rateAnalysis += ' - Troppo lenta';
-                    else rateAnalysis += ' - Ottimale';
-                    
-                    document.getElementById('weightLossRate').textContent = rateAnalysis;
-                }
-            }
-            
-            // Heart rate analysis (combine manual and Garmin data)
-            const heartRates = recentData.filter(d => d.heartRate).map(d => d.heartRate);
-            if (heartRates.length > 0) {
-                const avgHR = heartRates.reduce((a, b) => a + b, 0) / heartRates.length;
-                document.getElementById('avgHR').textContent = Math.round(avgHR);
-                
-                if (heartRates.length > 3) {
-                    const firstHalf = heartRates.slice(0, Math.floor(heartRates.length / 2));
-                    const secondHalf = heartRates.slice(Math.floor(heartRates.length / 2));
-                    const trend = (secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length) - 
-                                 (firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length);
-                    
-                    document.getElementById('hrTrend').textContent = 
-                        trend < -2 ? 'Migliorando' : trend > 2 ? 'Peggiorando' : 'Stabile';
-                    
-                    const garminHRCount = garminData.filter(d => d.heartRate).length;
-                    const analysis = avgHR < 80 ? 'Molto buono' : avgHR < 90 ? 'Buono' : 'Da migliorare';
-                    document.getElementById('heartRateAnalysis').textContent = 
-                        garminHRCount > 0 ? `${analysis} (${garminHRCount} attività Garmin)` : analysis;
-                }
-            }
-            
-            // Pace analysis (from Garmin data primarily)
-            const paces = garminData.filter(d => d.pace && d.activityType === 'running').map(d => d.pace);
-            if (paces.length > 0) {
-                // Convert pace strings to seconds for averaging
-                const paceSeconds = paces.map(pace => {
-                    const [min, sec] = pace.split(':').map(Number);
-                    return min * 60 + sec;
-                });
-                const avgPaceSeconds = paceSeconds.reduce((a, b) => a + b, 0) / paceSeconds.length;
-                const avgMin = Math.floor(avgPaceSeconds / 60);
-                const avgSec = Math.round(avgPaceSeconds % 60);
-                
-                document.getElementById('avgPace').textContent = `${avgMin}:${avgSec.toString().padStart(2, '0')}`;
-                
-                // Pace trend
-                if (paceSeconds.length >= 3) {
-                    const recent3 = paceSeconds.slice(-3);
-                    const older3 = paceSeconds.slice(-6, -3);
-                    if (older3.length > 0) {
-                        const recentAvg = recent3.reduce((a, b) => a + b, 0) / recent3.length;
-                        const olderAvg = older3.reduce((a, b) => a + b, 0) / older3.length;
-                        const improvement = olderAvg - recentAvg; // Positive = faster pace
-                        
-                        document.getElementById('paceTrend').textContent = 
-                            improvement > 10 ? 'Migliorando' : improvement < -10 ? 'Peggiorando' : 'Stabile';
+                const calculateBalance = () => {
+                    const calOutVal = parseFloat(inputCalOut.value);
+                    if (!isNaN(calOutVal)) {
+                        const balance = calOutVal - kcalTarget;
+                        spanBilancio.textContent = balance > 0 ? `+${balance}` : balance;
+                        // Conditional formatting
+                        if (balance >= -900 && balance <= -700) {
+                            spanBilancio.className = 'px-2 py-1 rounded-md bg-green-100 text-green-800';
+                        } else if (balance < -900) {
+                             spanBilancio.className = 'px-2 py-1 rounded-md bg-red-100 text-red-800';
+                        }
+                        else {
+                            spanBilancio.className = 'px-2 py-1 rounded-md bg-yellow-100 text-yellow-800';
+                        }
+                    } else {
+                        spanBilancio.textContent = '';
+                        spanBilancio.className = '';
                     }
-                }
-            }
-            
-            // Sleep analysis (from manual data only)
-            const sleepHours = savedData.filter(d => d.sleep).map(d => d.sleep);
-            if (sleepHours.length > 0) {
-                const recentSleep = sleepHours.slice(-7);
-                const avgSleep = recentSleep.reduce((a, b) => a + b, 0) / recentSleep.length;
-                document.getElementById('avgSleep').textContent = avgSleep.toFixed(1) + 'h';
-                
-                document.getElementById('sleepAnalysis').textContent = 
-                    avgSleep >= 7.5 ? 'Ottimale' : avgSleep >= 6.5 ? 'Sufficiente' : 'Insufficiente';
-            }
-            
-            // Enhanced consistency analysis
-            const totalDays = Math.max(1, (new Date() - new Date(oldest.date)) / (24 * 60 * 60 * 1000));
-            const manualEntries = savedData.length;
-            const garminEntries = garminData.length;
-            const totalEntries = manualEntries + garminEntries;
-            
-            const consistency = Math.min(100, (totalEntries / totalDays * 100));
-            let consistencyText = consistency >= 80 ? 'Eccellente' : consistency >= 60 ? 'Buona' : 'Da migliorare';
-            
-            if (garminEntries > 0) {
-                consistencyText += ` (${garminEntries} Garmin + ${manualEntries} manuali)`;
-            }
-            
-            document.getElementById('consistencyAnalysis').textContent = consistencyText;
-        }
-
-        // Update Garmin data history display
-        function updateGarminDataHistory() {
-            const garminData = JSON.parse(localStorage.getItem('garminData') || '[]');
-            const historyDiv = document.getElementById('garminDataHistory');
-            
-            if (garminData.length === 0) {
-                historyDiv.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Nessuna attività Garmin importata</div>';
-                return;
-            }
-            
-            const recentActivities = garminData.slice(-10).reverse(); // Last 10 activities, newest first
-            
-            historyDiv.innerHTML = recentActivities.map(activity => {
-                const date = new Date(activity.date).toLocaleDateString('it-IT', {
-                    day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
-                });
-                
-                const activityIcon = {
-                    'running': '🏃‍♂️',
-                    'walking': '🚶‍♂️',
-                    'cardio': '💓',
-                    'strength': '💪',
-                    'unknown': '⚡'
                 };
                 
-                const metrics = [];
-                if (activity.distance) metrics.push(`${activity.distance.toFixed(1)}km`);
-                if (activity.duration) metrics.push(activity.duration);
-                if (activity.pace) metrics.push(`${activity.pace}/km`);
-                if (activity.heartRate) metrics.push(`FC ${activity.heartRate}`);
-                if (activity.calories) metrics.push(`${activity.calories} kcal`);
-                
-                return `
-                    <div style="border-bottom: 1px solid #eee; padding: 8px 0;">
-                        <div style="font-weight: bold; font-size: 12px; color: #666; display: flex; align-items: center; gap: 6px;">
-                            ${activityIcon[activity.activityType] || activityIcon.unknown}
-                            ${date}
-                            <span style="background: #27ae60; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;">GARMIN</span>
-                        </div>
-                        <div style="font-size: 13px; margin: 2px 0; text-transform: capitalize;">${activity.activityType}</div>
-                        <div style="font-size: 12px; color: #555;">${metrics.join(' • ')}</div>
+                inputCalOut.addEventListener('input', calculateBalance);
+                calculateBalance(); // Calcolo iniziale
+
+                tr.appendChild(tdCalOut);
+                tr.appendChild(tdBilancio);
+
+                tbody.appendChild(tr);
+            }
+            
+            function createStaticTable(containerId, title, titleColor, headers, data, headerColor, dataColor) {
+                const container = document.getElementById(containerId);
+                container.innerHTML = `
+                    <h2 class="text-lg font-bold text-white text-center p-3 rounded-t-lg" style="background-color: ${titleColor};">${title}</h2>
+                    <div class="overflow-x-auto border border-t-0 rounded-b-lg">
+                        <table class="min-w-full">
+                            <thead style="background-color: ${headerColor};">
+                                <tr>
+                                    ${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody style="background-color: ${dataColor};">
+                                ${data.map(row => `
+                                    <tr class="border-t">
+                                        ${row.map(cell => `<td class="px-4 py-2 text-sm text-gray-700">${cell}</td>`).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
                     </div>
                 `;
-            }).join('');
-        }
-
-        // Clear all data with confirmation (enhanced to include Garmin data)
-        function clearAllData() {
-            const manualCount = JSON.parse(localStorage.getItem('fitnessData') || '[]').length;
-            const garminCount = JSON.parse(localStorage.getItem('garminData') || '[]').length;
-            const totalCount = manualCount + garminCount;
-            
-            if (totalCount === 0) {
-                alert('Non ci sono dati da cancellare.');
-                return;
             }
-            
-            const message = `Sei sicuro di voler cancellare tutti i dati?\n\n` +
-                           `• ${manualCount} inserimenti manuali\n` +
-                           `• ${garminCount} attività Garmin\n\n` +
-                           `Questa azione non può essere annullata.`;
-                           
-            if (confirm(message)) {
-                localStorage.removeItem('fitnessData');
-                localStorage.removeItem('garminData');
-                updateProgressStats();
-                updateDataHistory();
-                updateGarminDataHistory();
-                document.getElementById('progressText').textContent = '0%';
-                document.querySelector('.progress-fill').style.strokeDashoffset = 188.4;
-                alert('Tutti i dati sono stati cancellati');
+
+
+            // --- DATI E LOGICA DI GENERAZIONE DEL PIANO ---
+
+            function generatePhase0() {
+                const data = [
+                    ["24/09", "Mer", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10 (target 350 kcal)", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g", "", "", "", "", "350"],
+                    ["25/09", "Gio", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10 (target 350 kcal)", "🥚 Uova 2 + 🥓 Prosciutto 50g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🍚 Riso 80g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 10ml", "🐟 Pesce 150g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml", "", "", "", "", "350"],
+                    ["26/09", "Ven", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk di recupero 45' (target 200 kcal)", "🥛 Yogurt Greco 200g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🍝 Pasta 80g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori", "", "", "", "", "200"],
+                    ["27/09", "Sab", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Long Walk 10km + test run 2' (target 450 kcal)", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g", "", "", "", "", "450"],
+                    ["28/09", "Dom", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55' (target 650 kcal)", "😌 Riposo attivo - Stretching", "🥚 Uova 2 + 🥓 Prosciutto 50g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🍚 Riso 80g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 10ml", "🐟 Pesce 150g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml", "", "", "", "", "100"],
+                    ["29/09", "Lun", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk di recupero 45' (target 200 kcal)", "🥛 Yogurt Greco 200g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🍝 Pasta 80g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori", "", "", "", "", "200"],
+                    ["30/09", "Mar", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10 (target 350 kcal)", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g", "", "", "", "", "350"]
+                ];
+                data.forEach(row => addDataRow(row, "#fff5f5", 2075));
             }
-        }
 
-        // Update data history display (enhanced to show combined data)
-        function updateDataHistory() {
-            const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
-            const garminData = JSON.parse(localStorage.getItem('garminData') || '[]');
-            const historyDiv = document.getElementById('dataHistory');
-            
-            if (savedData.length === 0 && garminData.length === 0) {
-                historyDiv.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Nessun dato salvato ancora</div>';
-                return;
-            }
-            
-            // Combine and sort all data by date
-            const allEntries = [
-                ...savedData.map(entry => ({...entry, source: 'manual'})),
-                ...garminData.map(entry => ({...entry, source: 'garmin'}))
-            ].sort((a, b) => new Date(b.date) - new Date(a.date));
-            
-            const recentEntries = allEntries.slice(0, 15); // Show last 15 entries
-            
-            historyDiv.innerHTML = recentEntries.map(entry => {
-                const date = new Date(entry.date).toLocaleDateString('it-IT', {
-                    day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
-                });
-                
-                const isGarmin = entry.source === 'garmin';
-                const sourceLabel = isGarmin ? 'GARMIN' : 'MANUALE';
-                const sourceBg = isGarmin ? '#27ae60' : '#3498db';
-                
-                let content = '';
-                
-                if (isGarmin) {
-                    const activityIcon = {
-                        'running': '🏃‍♂️',
-                        'walking': '🚶‍♂️',
-                        'cardio': '💓',
-                        'strength': '💪',
-                        'unknown': '⚡'
-                    };
-                    
-                    const metrics = [];
-                    if (entry.distance) metrics.push(`${entry.distance.toFixed(1)}km`);
-                    if (entry.duration) metrics.push(entry.duration);
-                    if (entry.pace) metrics.push(`${entry.pace}/km`);
-                    if (entry.heartRate) metrics.push(`FC ${entry.heartRate}`);
-                    if (entry.calories) metrics.push(`${entry.calories} kcal`);
-                    
-                    content = `
-                        <div style="display: flex; align-items: center; gap: 6px; margin: 2px 0;">
-                            ${activityIcon[entry.activityType] || activityIcon.unknown}
-                            <span style="text-transform: capitalize;">${entry.activityType}</span>
-                        </div>
-                        <div style="font-size: 12px; color: #555;">${metrics.join(' • ')}</div>
-                    `;
-                } else {
-                    const metrics = [];
-                    if (entry.weight) metrics.push(`${entry.weight}kg`);
-                    if (entry.heartRate) metrics.push(`FC ${entry.heartRate}`);
-                    if (entry.pace) metrics.push(`${entry.pace}/km`);
-                    if (entry.sleep) metrics.push(`${entry.sleep}h sonno`);
-                    if (entry.calories) metrics.push(`${entry.calories} kcal`);
-                    
-                    content = `
-                        <div style="font-size: 13px; margin: 2px 0;">${metrics.join(' • ')}</div>
-                        <div style="font-size: 11px; color: #999;">Fatica: ${entry.fatigue}/10</div>
-                        ${entry.notes ? `<div style="font-size: 11px; color: #555; font-style: italic;">"${entry.notes}"</div>` : ''}
-                    `;
-                }
-                
-                return `
-                    <div style="border-bottom: 1px solid #eee; padding: 8px 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div style="font-weight: bold; font-size: 12px; color: #666;">${date}</div>
-                            <span style="background: ${sourceBg}; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;">${sourceLabel}</span>
-                        </div>
-                        ${content}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Update progress ring based on weight loss
-        function updateProgressRing(currentWeight) {
-            const startWeight = 104;
-            const targetWeight = 95;
-            const totalLoss = startWeight - targetWeight;
-            const currentLoss = startWeight - currentWeight;
-            const percentage = Math.max(0, Math.min(100, (currentLoss / totalLoss) * 100));
-            
-            const circumference = 2 * Math.PI * 30;
-            const offset = circumference - (percentage / 100) * circumference;
-            
-            document.querySelector('.progress-fill').style.strokeDashoffset = offset;
-            document.getElementById('progressText').textContent = Math.round(percentage) + '%';
-        }
-
-        // Initialize app with correct date and plan
-        function initializeApp() {
-            const today = new Date();
-            updateTodaySection(today);
-            updateBcaaTimer();
-            setInterval(updateBcaaTimer, 1000);
-            
-            // Initialize fatigue slider
-            document.getElementById('fatigueInput').addEventListener('input', updateFatigueDisplay);
-            updateFatigueDisplay();
-            
-            // Load and display saved data
-            updateProgressStats();
-            updateDataHistory();
-            updateGarminDataHistory();
-            
-            // Load saved weight data to update progress ring
-            const savedData = JSON.parse(localStorage.getItem('fitnessData') || '[]');
-            if (savedData.length > 0) {
-                const weights = savedData.filter(d => d.weight).map(d => d.weight);
-                if (weights.length > 0) {
-                    updateProgressRing(weights[weights.length - 1]);
+            function generatePause(startDate, endDate) {
+                const current = new Date(startDate);
+                while (current <= endDate) {
+                    const rowData = [formatDate(current), getDayName(current), "💤 Niente", "😴 Riposo", "🚶‍♂️ Walk leggera 30' (target 200 kcal)", "🧀 Colazione normale + ☕ Caffè", "🍝 Pranzo normale", "🍗 Cena normale", "", "", "", "", "200"];
+                    addDataRow(rowData, "#f8f9fa", 2200);
+                    current.setDate(current.getDate() + 1);
                 }
             }
-        }
 
-        // Update today section based on current date
-        function updateTodaySection(date) {
-            const dayNames = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
-            const dayOfWeek = date.getDay();
-            const dayName = dayNames[dayOfWeek];
-            const dateStr = date.getDate().toString().padStart(2, '0') + '/' + 
-                          (date.getMonth() + 1).toString().padStart(2, '0');
-            
-            // Update title
-            document.getElementById('todayTitle').textContent = `Oggi - ${dayName} ${dateStr}`;
-            
-            // Determine current phase
-            const phase0Start = new Date(2024, 8, 24); // 24/09
-            const phase0End = new Date(2024, 8, 30);   // 30/09
-            const pause1Start = new Date(2024, 9, 1);  // 01/10
-            const pause1End = new Date(2024, 9, 4);    // 04/10
-            const phase1Start = new Date(2024, 9, 5);  // 05/10
-            const phase1End = new Date(2024, 9, 31);   // 31/10
-            const pause2Start = new Date(2024, 10, 1); // 01/11
-            const pause2End = new Date(2024, 10, 3);   // 03/11
-            const phase2Start = new Date(2024, 10, 4); // 04/11
-            const phase2End = new Date(2024, 11, 20);  // 20/12
-            
-            let phase, cardioActivity;
-            
-            if (date >= phase0Start && date <= phase0End) {
-                phase = "FASE 0 - Adattamento + Test Baseline";
-                // Phase 0 cardio logic
-                if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) { // L/M/V
-                    cardioActivity = "🚶‍♂️ Walk di recupero 45' (200 kcal)";
-                } else if (dayOfWeek === 2 || dayOfWeek === 4) { // M/G
-                    cardioActivity = "🚶‍♂️ Walk 6km + 30\" run x10 (350 kcal)";
-                } else if (dayOfWeek === 6) { // S
-                    cardioActivity = "🚶‍♂️ Long Walk 10km + test run 2' (450 kcal)";
-                } else { // D
-                    cardioActivity = "😌 Riposo attivo - Stretching (100 kcal)";
-                }
-            } else if (date >= pause1Start && date <= pause1End) {
-                phase = "PAUSA (01/10-04/10) - Recupero Attivo";
-                cardioActivity = "🚶‍♂️ Walk leggera 30' (200 kcal)";
-            } else if (date >= phase1Start && date <= phase1End) {
-                phase = "FASE 1 - Build Aerobico";
-                // Phase 1 cardio logic
-                const weekInPhase = Math.floor((date - phase1Start) / (7 * 24 * 60 * 60 * 1000));
-                if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) { // L/M/V
-                    cardioActivity = "🚶‍♂️ Walk di recupero 45' (200 kcal)";
-                } else if (dayOfWeek === 2 || dayOfWeek === 4) { // M/G
-                    if (weekInPhase <= 1) {
-                        cardioActivity = "🏃‍♂️ 1' run/2' walk x8 (380 kcal)";
-                    } else {
-                        cardioActivity = "🏃‍♂️ 1'30\" run/2' walk x7 (400 kcal)";
+            function generatePhase1() {
+                const startDate = new Date(2025, 9, 5);
+                const endDate = new Date(2025, 9, 31);
+                const preWorkouts = ["☕ Caffè + 10g BCAA frutti rossi", "☕ Caffè + 🍯 Miele 5g + H2O", "🥤 BCAA 12g limone + H2O", "☕ Caffè + 10g BCAA arancia"];
+                const colazioni = ["🧀 Ricotta 110g + 🥓 Prosciutto 50g + 🍞 Pane 45g + 🍎 Mela + ☕ Caffè", "🥚 Uova 2 + 🥓 Prosciutto 50g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🥛 Yogurt Greco 180g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🧀 Ricotta 110g + 🍯 Miele + 🥜 Mandorle 20g + 🍊 Arancia + ☕ Caffè"];
+                const pranzi = ["🍝 Pasta 75g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍚 Riso 75g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 10ml", "🍝 Pasta 75g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🫘 Legumi 100g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml"];
+                const cene = ["🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g", "🐟 Pesce 150g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori", "🥚 Frittata 3 uova + 🥬 Verdure + 🍞 Pane 40g"];
+                
+                const current = new Date(startDate);
+                let dayCount = 0;
+                while (current <= endDate) {
+                    const dayOfWeek = current.getDay();
+                    const weekInPhase = Math.floor(dayCount / 7);
+                    let functional = "", cardio = "", cal = "";
+
+                    if ([1, 3, 5].includes(dayOfWeek)) { // Lun, Mer, Ven
+                        functional = "💪 Self Functional 55' (target 650 kcal)";
+                        cardio = "🚶‍♂️ Walk di recupero 45' (target 200 kcal)";
+                        cal = "200";
+                    } else if ([2, 4].includes(dayOfWeek)) { // Mar, Gio
+                        functional = "💪 Self Functional 55' (target 650 kcal)";
+                        cardio = weekInPhase <= 1 ? "🏃‍♂️ 1' run/2' walk x8 + cool down (target 380 kcal)" : "🏃‍♂️ 1'30\" run/2' walk x7 + cool down (target 400 kcal)";
+                        cal = weekInPhase <= 1 ? "380" : "400";
+                    } else if (dayOfWeek === 6) { // Sab
+                        functional = "💪 Self Functional 55' (target 650 kcal)";
+                        cardio = "🚶‍♂️ Long Walk 12km + 2x3' run (target 500 kcal)";
+                        cal = "500";
+                    } else { // Dom
+                        functional = "😌 Riposo";
+                        cardio = "😌 Riposo attivo - Yoga/Stretching (target 150 kcal)";
+                        cal = "150";
                     }
-                } else if (dayOfWeek === 6) { // S
-                    cardioActivity = "🚶‍♂️ Long Walk 12km + 2x3' run (500 kcal)";
-                } else { // D
-                    cardioActivity = "😌 Riposo attivo - Yoga/Stretching (150 kcal)";
+                    
+                    const rowData = [formatDate(current), getDayName(current), preWorkouts[dayCount % 4], functional, cardio, colazioni[dayCount % 4], pranzi[dayCount % 4], cene[dayCount % 4], "", "", "", "", cal];
+                    addDataRow(rowData, "#f0fffe", 2050);
+                    
+                    current.setDate(current.getDate() + 1);
+                    dayCount++;
                 }
-            } else if (date >= pause2Start && date <= pause2End) {
-                phase = "PAUSA (01/11-03/11) - Recupero Attivo";
-                cardioActivity = "🚶‍♂️ Walk leggera 30' (200 kcal)";
-            } else if (date >= phase2Start && date <= phase2End) {
-                phase = "FASE 2 - Intensificazione + Target";
-                // Phase 2 cardio logic
-                const weekInPhase = Math.floor((date - phase2Start) / (7 * 24 * 60 * 60 * 1000));
-                if (dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5) { // L/M/V
-                    cardioActivity = "🚶‍♂️ Walk di recupero 45' (200 kcal)";
-                } else if (dayOfWeek === 2 || dayOfWeek === 4) { // M/G
-                    if (weekInPhase <= 2) {
-                        cardioActivity = "🏃‍♂️ 5' run/1' walk x5 (450 kcal)";
-                    } else if (weekInPhase <= 4) {
-                        cardioActivity = "🏃‍♂️ Corsa continua 25' (480 kcal)";
+            }
+
+            function generatePhase2() {
+                 const startDate = new Date(2025, 10, 4);
+                 const endDate = new Date(2025, 11, 20);
+                 const preWorkouts = ["☕ Caffè + 10g BCAA frutti rossi", "☕ Caffè + 🍯 Miele 5g", "🥤 BCAA 12g limone + H2O", "☕ Caffè + 10g BCAA arancia", "🥤 BCAA 10g + ☕ Caffè"];
+                 const colazioni = ["🧀 Ricotta 100g + 🥓 Prosciutto 45g + 🍞 Pane 40g + 🍎 Mela + ☕ Caffè", "🥚 Uova 2 + 🥓 Prosciutto 45g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🥛 Yogurt Greco 170g + 🥜 Noci 22g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🧀 Ricotta 100g + 🍯 Miele + 🥜 Mandorle 18g + 🍊 Arancia + ☕ Caffè", "🥚 Frittata 2 uova + 🍞 Pane 35g + 🍅 Pomodori + 🥬 Rucola + ☕ Caffè"];
+                 const pranzi = ["🍝 Pasta 70g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 8ml", "🍚 Riso 70g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 8ml", "🍝 Pasta 70g + 🍅 Pomodoro + 🧀 Ricotta 70g + 🥬 Rucola", "🫘 Legumi 100g + 🍚 Riso 55g + 🥬 Verdure + 🫒 Olio 8ml", "🍲 Minestrone + 🍞 Pane 40g + 🧀 Parmigiano 20g"];
+                 const cene = ["🍗 Pollo 140g + 🥔 Patate 120g + 🥬 Verdure + 🍞 Pane 25g", "🐟 Pesce 140g + 🍚 Riso 50g + 🥬 Verdure + 🫒 Olio 8ml", "🦃 Tacchino 140g + 🥬 Insalata + 🍞 Pane 35g + 🍅 Pomodori", "🥚 Frittata 3 uova + 🥬 Verdure + 🍞 Pane 30g", "🐟 Salmone 120g + 🥬 Verdure + 🥔 Patate 100g"];
+
+                 const current = new Date(startDate);
+                 let dayCount = 0;
+                 while (current <= endDate) {
+                    const dayOfWeek = current.getDay();
+                    const weekInPhase = Math.floor(dayCount / 7);
+                    let functional = "", cardio = "", cal = "";
+
+                    if ([1, 3, 5].includes(dayOfWeek)) {
+                        functional = "💪 Functional Palestra 55' (target 650 kcal)";
+                        cardio = "🚶‍♂️ Walk di recupero 45' (target 200 kcal)";
+                        cal = "200";
+                    } else if ([2, 4].includes(dayOfWeek)) {
+                        functional = "💪 Functional Palestra 55' (target 650 kcal)";
+                        if (weekInPhase <= 2) {
+                            cardio = "🏃‍♂️ 5' run/1' walk x5 + warm/cool (target 450 kcal)"; cal = "450";
+                        } else if (weekInPhase <= 4) {
+                            cardio = "🏃‍♂️ Corsa continua 25' + warm/cool (target 480 kcal)"; cal = "480";
+                        } else {
+                            cardio = "🏃‍♂️ Corsa continua 35' + warm/cool (target 520 kcal)"; cal = "520";
+                        }
+                    } else if (dayOfWeek === 6) {
+                        functional = "💪 Functional Palestra 55' (target 650 kcal)";
+                        cardio = "🚶‍♂️ Long Walk 15km + 2x5' run (target 550 kcal)"; cal = "550";
                     } else {
-                        cardioActivity = "🏃‍♂️ Corsa continua 35' TARGET! (520 kcal)";
+                        functional = "😌 Riposo";
+                        cardio = "😌 Riposo attivo - Recovery (target 200 kcal)"; cal = "200";
                     }
-                } else if (dayOfWeek === 6) { // S
-                    cardioActivity = "🚶‍♂️ Long Walk 15km + 2x5' run (550 kcal)";
-                } else { // D
-                    cardioActivity = "😌 Riposo attivo - Recovery (200 kcal)";
+
+                    const rowData = [formatDate(current), getDayName(current), preWorkouts[dayCount % 5], functional, cardio, colazioni[dayCount % 5], pranzi[dayCount % 5], cene[dayCount % 5], "", "", "", "", cal];
+                    addDataRow(rowData, "#f0f8ff", 2000);
+
+                    current.setDate(current.getDate() + 1);
+                    dayCount++;
                 }
-            } else {
-                phase = "Piano completato - Mantenimento";
-                cardioActivity = "🏃‍♂️ Corsa libera 35' + functional";
             }
             
-            // Update UI
-            document.getElementById('currentPhase').textContent = phase;
-            document.getElementById('cardioDesc').textContent = cardioActivity;
-            
-            // Update pre-workout BCAA rotation
-            const bcaaOptions = [
-                "☕ Caffè + 10g BCAA frutti rossi",
-                "☕ Caffè + 🍯 Miele 5g + H2O",
-                "🥤 BCAA 12g limone + H2O"
-            ];
-            const bcaaIndex = date.getDate() % 3;
-            document.getElementById('preworkoutDesc').textContent = bcaaOptions[bcaaIndex];
-        }
+            function generateAnalyticalSections() {
+                createStaticTable('progress-tracking', '📊 TRACKING PROGRESSI E PERFORMANCE', '#9b59b6', 
+                    ["Settimana", "Peso", "Passo Medio", "FC Riposo", "Sonno Medio", "Cal/Giorno", "Trend"], 
+                    [
+                        ["Settimana 1", "", "", "", "", "", "Baseline"],
+                        ["Settimana 2", "", "", "", "", "", "Adattamento"],
+                        ["Settimana 4", "", "", "", "", "", "Progressione"],
+                        ["Settimana 6", "", "", "", "", "", "Sviluppo"],
+                        ["Settimana 8", "", "", "", "", "", "Consolidamento"],
+                        ["Settimana 10", "", "", "", "", "", "Intensificazione"],
+                        ["Settimana 12", "", "", "", "", "", "TARGET!"]
+                    ], '#8e44ad', '#f4f1f7');
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
+                createStaticTable('nutrition-guide', '🥗 GUIDA NUTRIZIONALE E TIMING BCAA', '#27ae60',
+                    ["Timing", "Cosa", "Macro", "Obiettivo"],
+                    [
+                        ["06:15", "Pre-workout", "☕ Caffè + 10g BCAA", "Energia + protezione muscolare"],
+                        ["08:00", "Post-workout", "Colazione completa", "Recovery + sazietà"],
+                        ["13:00", "Pranzo", "Proteine + Carboidrati", "Energia pomeriggio"],
+                        ["20:00", "Cena", "Proteine + Verdure", "Recovery notturno"]
+                    ], '#229954', '#eafaf1');
+                
+                createStaticTable('advanced-goals', '🎯 OBIETTIVI E MILESTONE', '#e74c3c',
+                    ["Corsa", "Peso", "Fitness", "Focus"],
+                    [
+                        ["Sett 2: 1' run continuo", "Sett 2: -1.5kg (102.5)", "FC <85 bpm", "Consistenza"],
+                        ["Sett 4: 5' run continuo", "Sett 4: -3kg (101kg)", "Passo <18:00", "Progressione"],
+                        ["Sett 8: 20' run continuo", "Sett 8: -6kg (98kg)", "Passo <17:00", "Velocità"],
+                        ["Sett 12: 35' run continuo", "Sett 12: -9kg (95kg)", "Passo <16:30", "TARGET!"]
+                    ], '#c0392b', '#fadbd8');
+            }
+
+
+            // --- ESECUZIONE ---
+            addMetabolicParameters();
+
+            addPhaseSection("FASE 0 (24/09 - 30/09/2025): Adattamento + Test Baseline", "#ff6b6b");
+            generatePhase0();
+
+            addPhaseSection("PAUSA (01/10 - 04/10/2025): Recupero Attivo", "#95a5a6");
+            generatePause(new Date(2025, 9, 1), new Date(2025, 9, 4));
+
+            addPhaseSection("FASE 1 (05/10 - 31/10/2025): Build Aerobico", "#4ecdc4");
+            generatePhase1();
+            
+            addPhaseSection("PAUSA (01/11 - 03/11/2025): Recupero Attivo", "#95a5a6");
+            generatePause(new Date(2025, 10, 1), new Date(2025, 10, 3));
+
+            addPhaseSection("FASE 2 (04/11 - 20/12/2025): Intensificazione + Target", "#45b7d1");
+            generatePhase2();
+            
+            generateAnalyticalSections();
         });
     </script>
 </body>
