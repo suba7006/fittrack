@@ -79,7 +79,8 @@
                                 <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">💓 FC Med</th>
                                 <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">⏱️ Passo</th>
                                 <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">😴 Sonno</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[80px]">🔥 Cal Out</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[80px]">🔥 Cal Bruciate (TDEE)</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[80px]">🍽️ Cal Ingerite</th>
                                 <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[90px]">📊 Bilancio</th>
                             </tr>
                         </thead>
@@ -174,8 +175,7 @@
                     const metricsToAverage = [
                         { key: 'passo', unit: ' min/km' },
                         { key: 'fc', unit: ' bpm' },
-                        { key: 'sonno', unit: ' ore' },
-                        { key: 'calout', unit: ' kcal' }
+                        { key: 'sonno', unit: ' ore' }
                     ];
 
                     metricsToAverage.forEach(metricInfo => {
@@ -200,6 +200,29 @@
                             }
                         }
                     });
+
+                    // Calcolo Deficit Medio
+                    const deficitValues = [];
+                    dailyRows.forEach(row => {
+                        const balanceSpan = row.querySelector('td:last-child span');
+                        if (balanceSpan && balanceSpan.textContent) {
+                            const deficit = parseFloat(balanceSpan.textContent);
+                            if (!isNaN(deficit)) {
+                                deficitValues.push(deficit);
+                            }
+                        }
+                    });
+
+                    const deficitCell = document.getElementById(`track-w${weekNum}-deficit`);
+                    if(deficitCell) {
+                        if (deficitValues.length > 0) {
+                            const sum = deficitValues.reduce((a, b) => a + b, 0);
+                            const avgDeficit = sum / deficitValues.length;
+                            deficitCell.textContent = Math.round(avgDeficit) + ' kcal';
+                        } else {
+                            deficitCell.textContent = '';
+                        }
+                    }
                 });
             }
 
@@ -243,7 +266,7 @@
 
             function addPhaseSection(title, color) {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="14" class="py-3 px-4 text-center text-sm font-bold text-white" style="background-color: ${color};">${title}</td>`;
+                tr.innerHTML = `<td colspan="15" class="py-3 px-4 text-center text-sm font-bold text-white" style="background-color: ${color};">${title}</td>`;
                 tbody.appendChild(tr);
             }
 
@@ -298,16 +321,28 @@
                     tr.appendChild(td);
                 });
 
-                // Cal Out (input) e Bilancio (span)
+                // Cal Bruciate (input)
                 const tdCalOut = document.createElement('td');
                 tdCalOut.className = 'px-2 py-3 border-b border-gray-200 text-center';
                 const inputCalOut = document.createElement('input');
                 inputCalOut.type = 'number';
                 inputCalOut.className = 'data-input';
-                inputCalOut.value = data[12] || '';
                 inputCalOut.dataset.metric = 'calout';
                 tdCalOut.appendChild(inputCalOut);
+                tr.appendChild(tdCalOut);
+
+                // Cal Ingerite (input)
+                const tdCalIn = document.createElement('td');
+                tdCalIn.className = 'px-2 py-3 border-b border-gray-200 text-center';
+                const inputCalIn = document.createElement('input');
+                inputCalIn.type = 'number';
+                inputCalIn.className = 'data-input';
+                inputCalIn.value = kcalTarget; // Pre-fill con il target del piano
+                inputCalIn.dataset.metric = 'calin';
+                tdCalIn.appendChild(inputCalIn);
+                tr.appendChild(tdCalIn);
                 
+                // Bilancio (span)
                 const tdBilancio = document.createElement('td');
                 tdBilancio.className = 'px-2 py-3 border-b border-gray-200 text-center font-semibold';
                 const spanBilancio = document.createElement('span');
@@ -315,8 +350,9 @@
 
                 const calculateBalance = () => {
                     const calOutVal = parseFloat(inputCalOut.value);
-                    if (!isNaN(calOutVal)) {
-                        const balance = calOutVal - kcalTarget;
+                    const calInVal = parseFloat(inputCalIn.value);
+                    if (!isNaN(calOutVal) && !isNaN(calInVal)) {
+                        const balance = calOutVal - calInVal;
                         spanBilancio.textContent = balance > 0 ? `+${balance}` : balance;
                         if (balance >= -900 && balance <= -700) {
                             spanBilancio.className = 'px-2 py-1 rounded-md bg-green-100 text-green-800';
@@ -329,15 +365,13 @@
                         spanBilancio.textContent = '';
                         spanBilancio.className = '';
                     }
+                    updateProgressTracking();
                 };
                 
-                inputCalOut.addEventListener('input', () => {
-                    calculateBalance();
-                    updateProgressTracking();
-                });
+                inputCalOut.addEventListener('input', calculateBalance);
+                inputCalIn.addEventListener('input', calculateBalance);
                 calculateBalance(); // Calcolo iniziale
 
-                tr.appendChild(tdCalOut);
                 tr.appendChild(tdBilancio);
                 tbody.appendChild(tr);
             }
@@ -361,7 +395,7 @@
 
             function generateProgressTrackingTable() {
                 const container = document.getElementById('progress-tracking');
-                const headers = ["Settimana", "Peso", "Passo Medio", "FC Riposo", "Sonno Medio", "Cal/Giorno", "Trend"];
+                const headers = ["Settimana", "Peso", "Passo Medio", "FC Riposo", "Sonno Medio", "Deficit Medio", "Trend"];
                 const weeks = [
                     { num: 1, trend: 'Baseline' }, { num: 2, trend: 'Adattamento' },
                     { num: 4, trend: 'Progressione' }, { num: 6, trend: 'Sviluppo' },
@@ -377,7 +411,7 @@
                             <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-passo"></td>
                             <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-fc"></td>
                             <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-sonno"></td>
-                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-calout"></td>
+                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-deficit"></td>
                             <td class="px-4 py-2 text-sm text-gray-700">${week.trend}</td>
                         </tr>
                     `;
@@ -397,13 +431,13 @@
 
             function generatePhase0() {
                 const data = [
-                    ["24/09", "Mer", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10 (target 350 kcal)", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g", "", "", "", "", "350"],
-                    ["25/09", "Gio", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10 (target 350 kcal)", "🥚 Uova 2 + 🥓 Prosciutto 50g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🍚 Riso 80g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 10ml", "🐟 Pesce 150g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml", "", "", "", "", "350"],
-                    ["26/09", "Ven", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk di recupero 45' (target 200 kcal)", "🥛 Yogurt Greco 200g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🍝 Pasta 80g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori", "", "", "", "", "200"],
-                    ["27/09", "Sab", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Long Walk 10km + test run 2' (target 450 kcal)", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g", "", "", "", "", "450"],
-                    ["28/09", "Dom", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55' (target 650 kcal)", "😌 Riposo attivo - Stretching", "🥚 Uova 2 + 🥓 Prosciutto 50g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🍚 Riso 80g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 10ml", "🐟 Pesce 150g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml", "", "", "", "", "100"],
-                    ["29/09", "Lun", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk di recupero 45' (target 200 kcal)", "🥛 Yogurt Greco 200g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🍝 Pasta 80g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori", "", "", "", "", "200"],
-                    ["30/09", "Mar", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10 (target 350 kcal)", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g", "", "", "", "", "350"]
+                    ["24/09", "Mer", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g"],
+                    ["25/09", "Gio", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🍚 Riso 80g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 10ml", "🐟 Pesce 150g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml"],
+                    ["26/09", "Ven", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk di recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🍝 Pasta 80g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori"],
+                    ["27/09", "Sab", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Long Walk 10km + test run 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g"],
+                    ["28/09", "Dom", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55' (target 650 kcal)", "😌 Riposo attivo - Stretching", "🥚 Uova 2 + 🥓 Prosciutto 50g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🍚 Riso 80g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 10ml", "🐟 Pesce 150g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml"],
+                    ["29/09", "Lun", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk di recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🍝 Pasta 80g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori"],
+                    ["30/09", "Mar", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g"]
                 ];
                 const startDate = new Date(2025, 8, 24);
                 data.forEach((row, index) => {
@@ -416,7 +450,7 @@
             function generatePause(startDate, endDate) {
                 const current = new Date(startDate);
                 while (current <= endDate) {
-                    const rowData = [formatDate(current), getDayName(current), "💤 Niente", "😴 Riposo", "🚶‍♂️ Walk leggera 30' (target 200 kcal)", "🧀 Colazione normale + ☕ Caffè", "🍝 Pranzo normale", "🍗 Cena normale", "", "", "", "", "200"];
+                    const rowData = [formatDate(current), getDayName(current), "💤 Niente", "😴 Riposo", "🚶‍♂️ Walk leggera 30'", "🧀 Colazione normale + ☕ Caffè", "🍝 Pranzo normale", "🍗 Cena normale"];
                     addDataRow(rowData, "#f8f9fa", 2200, new Date(current));
                     current.setDate(current.getDate() + 1);
                 }
@@ -431,12 +465,12 @@
                 const current = new Date(startDate); let dayCount = 0;
                 while (current <= endDate) {
                     const dayOfWeek = current.getDay(); const weekInPhase = Math.floor(dayCount / 7);
-                    let functional = "", cardio = "", cal = "";
-                    if ([1, 3, 5].includes(dayOfWeek)) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = "🚶‍♂️ Walk di recupero 45' (target 200 kcal)"; cal = "200"; } 
-                    else if ([2, 4].includes(dayOfWeek)) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = weekInPhase <= 1 ? "🏃‍♂️ 1' run/2' walk x8 + cool down (target 380 kcal)" : "🏃‍♂️ 1'30\" run/2' walk x7 + cool down (target 400 kcal)"; cal = weekInPhase <= 1 ? "380" : "400"; }
-                    else if (dayOfWeek === 6) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = "🚶‍♂️ Long Walk 12km + 2x3' run (target 500 kcal)"; cal = "500"; } 
-                    else { functional = "😌 Riposo"; cardio = "😌 Riposo attivo - Yoga/Stretching (target 150 kcal)"; cal = "150"; }
-                    const rowData = [formatDate(current), getDayName(current), preWorkouts[dayCount % 4], functional, cardio, colazioni[dayCount % 4], pranzi[dayCount % 4], cene[dayCount % 4], "", "", "", "", cal];
+                    let functional = "", cardio = "";
+                    if ([1, 3, 5].includes(dayOfWeek)) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = "🚶‍♂️ Walk di recupero 45'"; } 
+                    else if ([2, 4].includes(dayOfWeek)) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = weekInPhase <= 1 ? "🏃‍♂️ 1' run/2' walk x8 + cool down" : "🏃‍♂️ 1'30\" run/2' walk x7 + cool down"; }
+                    else if (dayOfWeek === 6) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = "🚶‍♂️ Long Walk 12km + 2x3' run"; } 
+                    else { functional = "😌 Riposo"; cardio = "😌 Riposo attivo - Yoga/Stretching"; }
+                    const rowData = [formatDate(current), getDayName(current), preWorkouts[dayCount % 4], functional, cardio, colazioni[dayCount % 4], pranzi[dayCount % 4], cene[dayCount % 4]];
                     addDataRow(rowData, "#f0fffe", 2050, new Date(current));
                     current.setDate(current.getDate() + 1); dayCount++;
                 }
@@ -451,12 +485,12 @@
                  const current = new Date(startDate); let dayCount = 0;
                  while (current <= endDate) {
                     const dayOfWeek = current.getDay(); const weekInPhase = Math.floor(dayCount / 7);
-                    let functional = "", cardio = "", cal = "";
-                    if ([1, 3, 5].includes(dayOfWeek)) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; cardio = "🚶‍♂️ Walk di recupero 45' (target 200 kcal)"; cal = "200"; } 
-                    else if ([2, 4].includes(dayOfWeek)) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; if (weekInPhase <= 2) { cardio = "🏃‍♂️ 5' run/1' walk x5 + warm/cool (target 450 kcal)"; cal = "450"; } else if (weekInPhase <= 4) { cardio = "🏃‍♂️ Corsa continua 25' + warm/cool (target 480 kcal)"; cal = "480"; } else { cardio = "🏃‍♂️ Corsa continua 35' + warm/cool (target 520 kcal)"; cal = "520"; } } 
-                    else if (dayOfWeek === 6) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; cardio = "🚶‍♂️ Long Walk 15km + 2x5' run (target 550 kcal)"; cal = "550"; } 
-                    else { functional = "😌 Riposo"; cardio = "😌 Riposo attivo - Recovery (target 200 kcal)"; cal = "200"; }
-                    const rowData = [formatDate(current), getDayName(current), preWorkouts[dayCount % 5], functional, cardio, colazioni[dayCount % 5], pranzi[dayCount % 5], cene[dayCount % 5], "", "", "", "", cal];
+                    let functional = "", cardio = "";
+                    if ([1, 3, 5].includes(dayOfWeek)) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; cardio = "🚶‍♂️ Walk di recupero 45'"; } 
+                    else if ([2, 4].includes(dayOfWeek)) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; if (weekInPhase <= 2) { cardio = "🏃‍♂️ 5' run/1' walk x5 + warm/cool"; } else if (weekInPhase <= 4) { cardio = "🏃‍♂️ Corsa continua 25' + warm/cool"; } else { cardio = "🏃‍♂️ Corsa continua 35' + warm/cool"; } } 
+                    else if (dayOfWeek === 6) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; cardio = "🚶‍♂️ Long Walk 15km + 2x5' run"; } 
+                    else { functional = "😌 Riposo"; cardio = "😌 Riposo attivo - Recovery"; }
+                    const rowData = [formatDate(current), getDayName(current), preWorkouts[dayCount % 5], functional, cardio, colazioni[dayCount % 5], pranzi[dayCount % 5], cene[dayCount % 5]];
                     addDataRow(rowData, "#f0f8ff", 2000, new Date(current));
                     current.setDate(current.getDate() + 1); dayCount++;
                 }
