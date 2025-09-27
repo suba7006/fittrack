@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -14,13 +14,14 @@
         /* Stili per le input fields per un aspetto più pulito */
         .data-input {
             width: 100%;
-            padding: 4px 8px;
+            padding: 8px 8px;
             border: 1px solid #d1d5db;
             border-radius: 0.375rem;
             background-color: transparent;
             text-align: center;
-            font-size: 0.875rem;
+            font-size: 0.95rem;
             transition: border-color 0.2s, box-shadow 0.2s;
+            min-height: 42px;
         }
         .data-input:focus {
             outline: none;
@@ -43,48 +44,97 @@
             <h1 class="text-xl sm:text-2xl font-bold">🏃‍♂️ PIANO COACHING AVANZATO 2025: 104kg → 95kg | 0' → 35' CORSA | TIMING OTTIMIZZATO BCAA 🎯</h1>
         </header>
 
-        <!-- Sezione Parametri Metabolici -->
-        <section id="metabolic-parameters" class="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-             <!-- Verrà popolata da JavaScript -->
-        </section>
-
-        <!-- Tabella Piano di Allenamento -->
-        <div class="overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-[#34495e] sticky-header">
-                    <tr>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[90px]">📅 Data</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">📋 Giorno</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[120px]">⚡ Pre-Workout</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[140px]">🌅 Functional</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[160px]">🌆 Cardio/Corsa</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🥣 Colazione</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🍝 Pranzo</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🍗 Cena</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">⚖️ Peso</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">💓 FC Med</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">⏱️ Passo</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">😴 Sonno</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[80px]">🔥 Cal Out</th>
-                        <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[90px]">📊 Bilancio</th>
-                    </tr>
-                </thead>
-                <tbody id="training-plan-body" class="bg-white divide-y divide-gray-200">
-                    <!-- Le righe del piano verranno inserite qui da JavaScript -->
-                </tbody>
-            </table>
+        <!-- Navigazione a Tab -->
+        <div class="border-b border-gray-200 mb-6">
+            <nav class="-mb-px flex space-x-6 sm:space-x-8" aria-label="Tabs">
+                <button data-tab="piano" class="whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm text-blue-600 border-blue-600">
+                    Piano Giornaliero
+                </button>
+                <button data-tab="progressi" class="whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Progressi e Obiettivi
+                </button>
+                <button data-tab="guide" class="whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Guide e Parametri
+                </button>
+            </nav>
         </div>
 
-         <!-- Sezioni Analitiche Aggiuntive -->
-        <div class="mt-10 space-y-8">
-            <section id="progress-tracking"></section>
-            <section id="nutrition-guide"></section>
-            <section id="advanced-goals"></section>
+        <!-- Contenuto delle Tab -->
+        <div>
+            <!-- Tab: Piano Giornaliero -->
+            <div data-tab-content="piano">
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-[#34495e] sticky-header">
+                            <tr>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[90px]">📅 Data</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">📋 Giorno</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[120px]">⚡ Pre-Workout</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[140px]">🌅 Functional</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[160px]">🌆 Cardio/Corsa</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🥣 Colazione</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🍝 Pranzo</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🍗 Cena</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">⚖️ Peso</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">💓 FC Med</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">⏱️ Passo</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">😴 Sonno</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[80px]">🔥 Cal Out</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[90px]">📊 Bilancio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="training-plan-body" class="bg-white divide-y divide-gray-200">
+                            <!-- Le righe del piano verranno inserite qui da JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab: Progressi e Obiettivi -->
+            <div data-tab-content="progressi" class="hidden">
+                 <div class="space-y-8">
+                    <section id="progress-tracking"></section>
+                    <section id="advanced-goals"></section>
+                </div>
+            </div>
+
+            <!-- Tab: Guide e Parametri -->
+            <div data-tab-content="guide" class="hidden">
+                <div class="space-y-8">
+                    <section id="metabolic-parameters" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm"></section>
+                    <section id="nutrition-guide"></section>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- LOGICA DI NAVIGAZIONE TAB ---
+            const tabs = document.querySelectorAll('[data-tab]');
+            const contents = document.querySelectorAll('[data-tab-content]');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetContent = document.querySelector(`[data-tab-content="${tab.dataset.tab}"]`);
+
+                    // Disattiva tutti i tab e nascondi tutti i contenuti
+                    tabs.forEach(t => {
+                        t.classList.remove('text-blue-600', 'border-blue-600');
+                        t.classList.add('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    });
+                    contents.forEach(c => {
+                        c.classList.add('hidden');
+                    });
+
+                    // Attiva il tab cliccato e mostra il suo contenuto
+                    tab.classList.add('text-blue-600', 'border-blue-600');
+                    tab.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    targetContent.classList.remove('hidden');
+                });
+            });
+
+
             const planStartDate = new Date(2025, 8, 24); // 24 Settembre 2025
 
             // Funzioni di utilità per date e nomi dei giorni
@@ -100,7 +150,7 @@
 
             const tbody = document.getElementById('training-plan-body');
 
-            // --- NUOVA LOGICA DI AGGIORNAMENTO DINAMICO ---
+            // --- LOGICA DI AGGIORNAMENTO DINAMICO ---
             function updateProgressTracking() {
                 const trackingWeeks = [1, 2, 4, 6, 8, 10, 12];
                 
@@ -108,7 +158,7 @@
                     const dailyRows = document.querySelectorAll(`tr[data-week='${weekNum}']`);
                     if (dailyRows.length === 0) return;
 
-                    // --- Calcolo Peso (ultimo valore inserito nella settimana) ---
+                    // Calcolo Peso (ultimo valore inserito nella settimana)
                     let lastWeight = '';
                     for (let i = dailyRows.length - 1; i >= 0; i--) {
                         const weightInput = dailyRows[i].querySelector('input[data-metric="peso"]');
@@ -120,7 +170,7 @@
                     const pesoCell = document.getElementById(`track-w${weekNum}-peso`);
                     if(pesoCell) pesoCell.textContent = lastWeight;
 
-                    // --- Calcolo Medie per le altre metriche ---
+                    // Calcolo Medie per le altre metriche
                     const metricsToAverage = [
                         { key: 'passo', unit: ' min/km' },
                         { key: 'fc', unit: ' bpm' },
