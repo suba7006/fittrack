@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -85,6 +85,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const planStartDate = new Date(2025, 8, 24); // 24 Settembre 2025
+
             // Funzioni di utilità per date e nomi dei giorni
             const formatDate = (date) => {
                 const day = String(date.getDate()).padStart(2, '0');
@@ -98,50 +100,76 @@
 
             const tbody = document.getElementById('training-plan-body');
 
+            // --- NUOVA LOGICA DI AGGIORNAMENTO DINAMICO ---
+            function updateProgressTracking() {
+                const trackingWeeks = [1, 2, 4, 6, 8, 10, 12];
+                
+                trackingWeeks.forEach(weekNum => {
+                    const dailyRows = document.querySelectorAll(`tr[data-week='${weekNum}']`);
+                    if (dailyRows.length === 0) return;
+
+                    // --- Calcolo Peso (ultimo valore inserito nella settimana) ---
+                    let lastWeight = '';
+                    for (let i = dailyRows.length - 1; i >= 0; i--) {
+                        const weightInput = dailyRows[i].querySelector('input[data-metric="peso"]');
+                        if (weightInput && weightInput.value) {
+                            lastWeight = parseFloat(weightInput.value).toFixed(1) + ' kg';
+                            break; 
+                        }
+                    }
+                    const pesoCell = document.getElementById(`track-w${weekNum}-peso`);
+                    if(pesoCell) pesoCell.textContent = lastWeight;
+
+                    // --- Calcolo Medie per le altre metriche ---
+                    const metricsToAverage = [
+                        { key: 'passo', unit: ' min/km' },
+                        { key: 'fc', unit: ' bpm' },
+                        { key: 'sonno', unit: ' ore' },
+                        { key: 'calout', unit: ' kcal' }
+                    ];
+
+                    metricsToAverage.forEach(metricInfo => {
+                        const values = [];
+                        dailyRows.forEach(row => {
+                            const input = row.querySelector(`input[data-metric="${metricInfo.key}"]`);
+                            const value = parseFloat(input.value);
+                            if (input && !isNaN(value)) {
+                                values.push(value);
+                            }
+                        });
+
+                        const targetCell = document.getElementById(`track-w${weekNum}-${metricInfo.key}`);
+                        if (targetCell) {
+                            if (values.length > 0) {
+                                const sum = values.reduce((a, b) => a + b, 0);
+                                const avg = sum / values.length;
+                                const formattedAvg = metricInfo.key === 'passo' ? avg.toFixed(2) : Math.round(avg);
+                                targetCell.textContent = formattedAvg + (metricInfo.unit || '');
+                            } else {
+                                targetCell.textContent = '';
+                            }
+                        }
+                    });
+                });
+            }
+
             // --- FUNZIONI PER CREARE SEZIONI E RIGHE ---
 
             function addMetabolicParameters() {
                 const container = document.getElementById('metabolic-parameters');
                 const paramData = [
-                    { title: "📊 PARAMETRI METABOLICI", items: [
-                        ["BMR stimato:", "2100 kcal"],
-                        ["TDEE attuale:", "2900 kcal"],
-                        ["Intake target:", "2075 kcal"],
-                        ["Proteine target:", "165g (1.6g/kg)"],
-                        ["Colazione timing:", "POST-workout 08:00"]
-                    ]},
-                    { title: "🎯 TARGET SETTIMANALI", items: [
-                        ["Deficit:", "-825 kcal/giorno"],
-                        ["Perdita:", "-0.75 kg"],
-                        ["Controllo peso:", "Giovedì mattina"],
-                        ["Idratazione:", "3L + 500ml/ora sport"],
-                        ["Window anabolica:", "30' post-functional"]
-                    ]},
-                    { title: "📈 PROGRESSIONE CORSA", items: [
-                        ["Settimana 1-2:", "Walk + 30\" run x10"],
-                        ["Settimana 3-4:", "1' run / 2' walk x8"],
-                        ["Settimana 5-6:", "2' run / 1' walk x8"],
-                        ["Settimana 7-8:", "5' run / 1' walk x5"],
-                        ["Settimana 9-12:", "35' corsa continua"]
-                    ]},
-                    { title: "💊 TIMING BCAA", items: [
-                        ["06:15 Pre-workout"],
-                        ["10-15g BCAA/Caffè"],
-                        ["Leucina + Isoleucina"],
-                        ["Protezione muscolare"],
-                        ["Massima ossidazione 🔥"]
-                    ]}
+                    { title: "📊 PARAMETRI METABOLICI", items: [["BMR stimato:", "2100 kcal"],["TDEE attuale:", "2900 kcal"],["Intake target:", "2075 kcal"],["Proteine target:", "165g (1.6g/kg)"],["Colazione timing:", "POST-workout 08:00"]]},
+                    { title: "🎯 TARGET SETTIMANALI", items: [["Deficit:", "-825 kcal/giorno"],["Perdita:", "-0.75 kg"],["Controllo peso:", "Giovedì mattina"],["Idratazione:", "3L + 500ml/ora sport"],["Window anabolica:", "30' post-functional"]]},
+                    { title: "📈 PROGRESSIONE CORSA", items: [["Settimana 1-2:", "Walk + 30\" run x10"],["Settimana 3-4:", "1' run / 2' walk x8"],["Settimana 5-6:", "2' run / 1' walk x8"],["Settimana 7-8:", "5' run / 1' walk x5"],["Settimana 9-12:", "35' corsa continua"]]},
+                    { title: "💊 TIMING BCAA", items: [["06:15 Pre-workout"],["10-15g BCAA/Caffè"],["Leucina + Isoleucina"],["Protezione muscolare"],["Massima ossidazione 🔥"]]}
                 ];
-
                 paramData.forEach(section => {
                     const sectionDiv = document.createElement('div');
                     sectionDiv.className = 'bg-[#ecf0f1] rounded-lg p-3';
-                    
                     const titleEl = document.createElement('h3');
                     titleEl.className = 'text-sm font-bold bg-[#34495e] text-white -mt-3 -mx-3 mb-3 p-2 rounded-t-lg';
                     titleEl.textContent = section.title;
                     sectionDiv.appendChild(titleEl);
-
                     const list = document.createElement('ul');
                     list.className = 'space-y-1';
                     section.items.forEach(item => {
@@ -163,19 +191,21 @@
                 });
             }
 
-
             function addPhaseSection(title, color) {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `<td colspan="14" class="py-3 px-4 text-center text-sm font-bold text-white" style="background-color: ${color};">${title}</td>`;
                 tbody.appendChild(tr);
             }
 
-            function addDataRow(data, color, kcalTarget) {
+            function addDataRow(data, color, kcalTarget, currentDate) {
                 const tr = document.createElement('tr');
                 tr.style.backgroundColor = color;
                 tr.className = 'text-xs text-gray-700 align-middle';
 
-                // Creazione celle standard
+                const daysSinceStart = (currentDate - planStartDate) / (1000 * 60 * 60 * 24);
+                const weekNumber = Math.floor(daysSinceStart / 7) + 1;
+                tr.dataset.week = weekNumber;
+
                 data.slice(0, 8).forEach(cellData => {
                     const td = document.createElement('td');
                     td.className = 'px-2 py-3 border-b border-gray-200';
@@ -190,6 +220,7 @@
                 inputPeso.type = 'number';
                 inputPeso.className = 'data-input';
                 inputPeso.step = '0.1';
+                inputPeso.dataset.metric = 'peso';
                 inputPeso.addEventListener('input', (e) => {
                     const weight = parseFloat(e.target.value);
                     if (!isNaN(weight) && weight <= 95) {
@@ -197,17 +228,25 @@
                     } else {
                         e.target.classList.remove('bg-green-100', 'text-green-800', 'font-bold');
                     }
+                    updateProgressTracking();
                 });
                 tdPeso.appendChild(inputPeso);
                 tr.appendChild(tdPeso);
 
                 // FC Med, Passo, Sonno (input)
-                for (let i = 0; i < 3; i++) {
-                     const td = document.createElement('td');
+                const metrics = ['fc', 'passo', 'sonno'];
+                metrics.forEach(metric => {
+                    const td = document.createElement('td');
                     td.className = 'px-2 py-3 border-b border-gray-200';
-                    td.innerHTML = `<input type="text" class="data-input">`;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.placeholder = metric === 'passo' ? 'min.dec' : (metric === 'sonno' ? 'ore.dec' : '');
+                    input.className = 'data-input';
+                    input.dataset.metric = metric;
+                    input.addEventListener('input', updateProgressTracking);
+                    td.appendChild(input);
                     tr.appendChild(td);
-                }
+                });
 
                 // Cal Out (input) e Bilancio (span)
                 const tdCalOut = document.createElement('td');
@@ -216,6 +255,7 @@
                 inputCalOut.type = 'number';
                 inputCalOut.className = 'data-input';
                 inputCalOut.value = data[12] || '';
+                inputCalOut.dataset.metric = 'calout';
                 tdCalOut.appendChild(inputCalOut);
                 
                 const tdBilancio = document.createElement('td');
@@ -228,13 +268,11 @@
                     if (!isNaN(calOutVal)) {
                         const balance = calOutVal - kcalTarget;
                         spanBilancio.textContent = balance > 0 ? `+${balance}` : balance;
-                        // Conditional formatting
                         if (balance >= -900 && balance <= -700) {
                             spanBilancio.className = 'px-2 py-1 rounded-md bg-green-100 text-green-800';
                         } else if (balance < -900) {
                              spanBilancio.className = 'px-2 py-1 rounded-md bg-red-100 text-red-800';
-                        }
-                        else {
+                        } else {
                             spanBilancio.className = 'px-2 py-1 rounded-md bg-yellow-100 text-yellow-800';
                         }
                     } else {
@@ -243,12 +281,14 @@
                     }
                 };
                 
-                inputCalOut.addEventListener('input', calculateBalance);
+                inputCalOut.addEventListener('input', () => {
+                    calculateBalance();
+                    updateProgressTracking();
+                });
                 calculateBalance(); // Calcolo iniziale
 
                 tr.appendChild(tdCalOut);
                 tr.appendChild(tdBilancio);
-
                 tbody.appendChild(tr);
             }
             
@@ -259,22 +299,49 @@
                     <div class="overflow-x-auto border border-t-0 rounded-b-lg">
                         <table class="min-w-full">
                             <thead style="background-color: ${headerColor};">
-                                <tr>
-                                    ${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}
-                                </tr>
+                                <tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr>
                             </thead>
                             <tbody style="background-color: ${dataColor};">
-                                ${data.map(row => `
-                                    <tr class="border-t">
-                                        ${row.map(cell => `<td class="px-4 py-2 text-sm text-gray-700">${cell}</td>`).join('')}
-                                    </tr>
-                                `).join('')}
+                                ${data.map(row => `<tr class="border-t">${row.map(cell => `<td class="px-4 py-2 text-sm text-gray-700">${cell}</td>`).join('')}</tr>`).join('')}
                             </tbody>
                         </table>
                     </div>
                 `;
             }
 
+            function generateProgressTrackingTable() {
+                const container = document.getElementById('progress-tracking');
+                const headers = ["Settimana", "Peso", "Passo Medio", "FC Riposo", "Sonno Medio", "Cal/Giorno", "Trend"];
+                const weeks = [
+                    { num: 1, trend: 'Baseline' }, { num: 2, trend: 'Adattamento' },
+                    { num: 4, trend: 'Progressione' }, { num: 6, trend: 'Sviluppo' },
+                    { num: 8, trend: 'Consolidamento' }, { num: 10, trend: 'Intensificazione' },
+                    { num: 12, trend: 'TARGET!' }
+                ];
+                let tableBodyHtml = '';
+                weeks.forEach(week => {
+                    tableBodyHtml += `
+                        <tr class="border-t">
+                            <td class="px-4 py-2 text-sm text-gray-700 font-semibold">Settimana ${week.num}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-peso"></td>
+                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-passo"></td>
+                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-fc"></td>
+                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-sonno"></td>
+                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-calout"></td>
+                            <td class="px-4 py-2 text-sm text-gray-700">${week.trend}</td>
+                        </tr>
+                    `;
+                });
+                container.innerHTML = `
+                    <h2 class="text-lg font-bold text-white text-center p-3 rounded-t-lg" style="background-color: #9b59b6;">📊 TRACKING PROGRESSI E PERFORMANCE</h2>
+                    <div class="overflow-x-auto border border-t-0 rounded-b-lg">
+                        <table class="min-w-full">
+                            <thead style="background-color: #8e44ad;"><tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr></thead>
+                            <tbody style="background-color: #f4f1f7;">${tableBodyHtml}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
 
             // --- DATI E LOGICA DI GENERAZIONE DEL PIANO ---
 
@@ -288,156 +355,84 @@
                     ["29/09", "Lun", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk di recupero 45' (target 200 kcal)", "🥛 Yogurt Greco 200g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🍝 Pasta 80g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori", "", "", "", "", "200"],
                     ["30/09", "Mar", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10 (target 350 kcal)", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g", "", "", "", "", "350"]
                 ];
-                data.forEach(row => addDataRow(row, "#fff5f5", 2075));
+                const startDate = new Date(2025, 8, 24);
+                data.forEach((row, index) => {
+                    const currentDate = new Date(startDate);
+                    currentDate.setDate(startDate.getDate() + index);
+                    addDataRow(row, "#fff5f5", 2075, currentDate);
+                });
             }
 
             function generatePause(startDate, endDate) {
                 const current = new Date(startDate);
                 while (current <= endDate) {
                     const rowData = [formatDate(current), getDayName(current), "💤 Niente", "😴 Riposo", "🚶‍♂️ Walk leggera 30' (target 200 kcal)", "🧀 Colazione normale + ☕ Caffè", "🍝 Pranzo normale", "🍗 Cena normale", "", "", "", "", "200"];
-                    addDataRow(rowData, "#f8f9fa", 2200);
+                    addDataRow(rowData, "#f8f9fa", 2200, new Date(current));
                     current.setDate(current.getDate() + 1);
                 }
             }
 
             function generatePhase1() {
-                const startDate = new Date(2025, 9, 5);
-                const endDate = new Date(2025, 9, 31);
+                const startDate = new Date(2025, 9, 5); const endDate = new Date(2025, 9, 31);
                 const preWorkouts = ["☕ Caffè + 10g BCAA frutti rossi", "☕ Caffè + 🍯 Miele 5g + H2O", "🥤 BCAA 12g limone + H2O", "☕ Caffè + 10g BCAA arancia"];
                 const colazioni = ["🧀 Ricotta 110g + 🥓 Prosciutto 50g + 🍞 Pane 45g + 🍎 Mela + ☕ Caffè", "🥚 Uova 2 + 🥓 Prosciutto 50g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🥛 Yogurt Greco 180g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🧀 Ricotta 110g + 🍯 Miele + 🥜 Mandorle 20g + 🍊 Arancia + ☕ Caffè"];
                 const pranzi = ["🍝 Pasta 75g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍚 Riso 75g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 10ml", "🍝 Pasta 75g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🫘 Legumi 100g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml"];
                 const cene = ["🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g", "🐟 Pesce 150g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori", "🥚 Frittata 3 uova + 🥬 Verdure + 🍞 Pane 40g"];
-                
-                const current = new Date(startDate);
-                let dayCount = 0;
+                const current = new Date(startDate); let dayCount = 0;
                 while (current <= endDate) {
-                    const dayOfWeek = current.getDay();
-                    const weekInPhase = Math.floor(dayCount / 7);
+                    const dayOfWeek = current.getDay(); const weekInPhase = Math.floor(dayCount / 7);
                     let functional = "", cardio = "", cal = "";
-
-                    if ([1, 3, 5].includes(dayOfWeek)) { // Lun, Mer, Ven
-                        functional = "💪 Self Functional 55' (target 650 kcal)";
-                        cardio = "🚶‍♂️ Walk di recupero 45' (target 200 kcal)";
-                        cal = "200";
-                    } else if ([2, 4].includes(dayOfWeek)) { // Mar, Gio
-                        functional = "💪 Self Functional 55' (target 650 kcal)";
-                        cardio = weekInPhase <= 1 ? "🏃‍♂️ 1' run/2' walk x8 + cool down (target 380 kcal)" : "🏃‍♂️ 1'30\" run/2' walk x7 + cool down (target 400 kcal)";
-                        cal = weekInPhase <= 1 ? "380" : "400";
-                    } else if (dayOfWeek === 6) { // Sab
-                        functional = "💪 Self Functional 55' (target 650 kcal)";
-                        cardio = "🚶‍♂️ Long Walk 12km + 2x3' run (target 500 kcal)";
-                        cal = "500";
-                    } else { // Dom
-                        functional = "😌 Riposo";
-                        cardio = "😌 Riposo attivo - Yoga/Stretching (target 150 kcal)";
-                        cal = "150";
-                    }
-                    
+                    if ([1, 3, 5].includes(dayOfWeek)) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = "🚶‍♂️ Walk di recupero 45' (target 200 kcal)"; cal = "200"; } 
+                    else if ([2, 4].includes(dayOfWeek)) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = weekInPhase <= 1 ? "🏃‍♂️ 1' run/2' walk x8 + cool down (target 380 kcal)" : "🏃‍♂️ 1'30\" run/2' walk x7 + cool down (target 400 kcal)"; cal = weekInPhase <= 1 ? "380" : "400"; }
+                    else if (dayOfWeek === 6) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = "🚶‍♂️ Long Walk 12km + 2x3' run (target 500 kcal)"; cal = "500"; } 
+                    else { functional = "😌 Riposo"; cardio = "😌 Riposo attivo - Yoga/Stretching (target 150 kcal)"; cal = "150"; }
                     const rowData = [formatDate(current), getDayName(current), preWorkouts[dayCount % 4], functional, cardio, colazioni[dayCount % 4], pranzi[dayCount % 4], cene[dayCount % 4], "", "", "", "", cal];
-                    addDataRow(rowData, "#f0fffe", 2050);
-                    
-                    current.setDate(current.getDate() + 1);
-                    dayCount++;
+                    addDataRow(rowData, "#f0fffe", 2050, new Date(current));
+                    current.setDate(current.getDate() + 1); dayCount++;
                 }
             }
 
             function generatePhase2() {
-                 const startDate = new Date(2025, 10, 4);
-                 const endDate = new Date(2025, 11, 20);
+                 const startDate = new Date(2025, 10, 4); const endDate = new Date(2025, 11, 20);
                  const preWorkouts = ["☕ Caffè + 10g BCAA frutti rossi", "☕ Caffè + 🍯 Miele 5g", "🥤 BCAA 12g limone + H2O", "☕ Caffè + 10g BCAA arancia", "🥤 BCAA 10g + ☕ Caffè"];
                  const colazioni = ["🧀 Ricotta 100g + 🥓 Prosciutto 45g + 🍞 Pane 40g + 🍎 Mela + ☕ Caffè", "🥚 Uova 2 + 🥓 Prosciutto 45g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🥛 Yogurt Greco 170g + 🥜 Noci 22g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🧀 Ricotta 100g + 🍯 Miele + 🥜 Mandorle 18g + 🍊 Arancia + ☕ Caffè", "🥚 Frittata 2 uova + 🍞 Pane 35g + 🍅 Pomodori + 🥬 Rucola + ☕ Caffè"];
                  const pranzi = ["🍝 Pasta 70g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 8ml", "🍚 Riso 70g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 8ml", "🍝 Pasta 70g + 🍅 Pomodoro + 🧀 Ricotta 70g + 🥬 Rucola", "🫘 Legumi 100g + 🍚 Riso 55g + 🥬 Verdure + 🫒 Olio 8ml", "🍲 Minestrone + 🍞 Pane 40g + 🧀 Parmigiano 20g"];
                  const cene = ["🍗 Pollo 140g + 🥔 Patate 120g + 🥬 Verdure + 🍞 Pane 25g", "🐟 Pesce 140g + 🍚 Riso 50g + 🥬 Verdure + 🫒 Olio 8ml", "🦃 Tacchino 140g + 🥬 Insalata + 🍞 Pane 35g + 🍅 Pomodori", "🥚 Frittata 3 uova + 🥬 Verdure + 🍞 Pane 30g", "🐟 Salmone 120g + 🥬 Verdure + 🥔 Patate 100g"];
-
-                 const current = new Date(startDate);
-                 let dayCount = 0;
+                 const current = new Date(startDate); let dayCount = 0;
                  while (current <= endDate) {
-                    const dayOfWeek = current.getDay();
-                    const weekInPhase = Math.floor(dayCount / 7);
+                    const dayOfWeek = current.getDay(); const weekInPhase = Math.floor(dayCount / 7);
                     let functional = "", cardio = "", cal = "";
-
-                    if ([1, 3, 5].includes(dayOfWeek)) {
-                        functional = "💪 Functional Palestra 55' (target 650 kcal)";
-                        cardio = "🚶‍♂️ Walk di recupero 45' (target 200 kcal)";
-                        cal = "200";
-                    } else if ([2, 4].includes(dayOfWeek)) {
-                        functional = "💪 Functional Palestra 55' (target 650 kcal)";
-                        if (weekInPhase <= 2) {
-                            cardio = "🏃‍♂️ 5' run/1' walk x5 + warm/cool (target 450 kcal)"; cal = "450";
-                        } else if (weekInPhase <= 4) {
-                            cardio = "🏃‍♂️ Corsa continua 25' + warm/cool (target 480 kcal)"; cal = "480";
-                        } else {
-                            cardio = "🏃‍♂️ Corsa continua 35' + warm/cool (target 520 kcal)"; cal = "520";
-                        }
-                    } else if (dayOfWeek === 6) {
-                        functional = "💪 Functional Palestra 55' (target 650 kcal)";
-                        cardio = "🚶‍♂️ Long Walk 15km + 2x5' run (target 550 kcal)"; cal = "550";
-                    } else {
-                        functional = "😌 Riposo";
-                        cardio = "😌 Riposo attivo - Recovery (target 200 kcal)"; cal = "200";
-                    }
-
+                    if ([1, 3, 5].includes(dayOfWeek)) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; cardio = "🚶‍♂️ Walk di recupero 45' (target 200 kcal)"; cal = "200"; } 
+                    else if ([2, 4].includes(dayOfWeek)) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; if (weekInPhase <= 2) { cardio = "🏃‍♂️ 5' run/1' walk x5 + warm/cool (target 450 kcal)"; cal = "450"; } else if (weekInPhase <= 4) { cardio = "🏃‍♂️ Corsa continua 25' + warm/cool (target 480 kcal)"; cal = "480"; } else { cardio = "🏃‍♂️ Corsa continua 35' + warm/cool (target 520 kcal)"; cal = "520"; } } 
+                    else if (dayOfWeek === 6) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; cardio = "🚶‍♂️ Long Walk 15km + 2x5' run (target 550 kcal)"; cal = "550"; } 
+                    else { functional = "😌 Riposo"; cardio = "😌 Riposo attivo - Recovery (target 200 kcal)"; cal = "200"; }
                     const rowData = [formatDate(current), getDayName(current), preWorkouts[dayCount % 5], functional, cardio, colazioni[dayCount % 5], pranzi[dayCount % 5], cene[dayCount % 5], "", "", "", "", cal];
-                    addDataRow(rowData, "#f0f8ff", 2000);
-
-                    current.setDate(current.getDate() + 1);
-                    dayCount++;
+                    addDataRow(rowData, "#f0f8ff", 2000, new Date(current));
+                    current.setDate(current.getDate() + 1); dayCount++;
                 }
             }
             
             function generateAnalyticalSections() {
-                createStaticTable('progress-tracking', '📊 TRACKING PROGRESSI E PERFORMANCE', '#9b59b6', 
-                    ["Settimana", "Peso", "Passo Medio", "FC Riposo", "Sonno Medio", "Cal/Giorno", "Trend"], 
-                    [
-                        ["Settimana 1", "", "", "", "", "", "Baseline"],
-                        ["Settimana 2", "", "", "", "", "", "Adattamento"],
-                        ["Settimana 4", "", "", "", "", "", "Progressione"],
-                        ["Settimana 6", "", "", "", "", "", "Sviluppo"],
-                        ["Settimana 8", "", "", "", "", "", "Consolidamento"],
-                        ["Settimana 10", "", "", "", "", "", "Intensificazione"],
-                        ["Settimana 12", "", "", "", "", "", "TARGET!"]
-                    ], '#8e44ad', '#f4f1f7');
-
-                createStaticTable('nutrition-guide', '🥗 GUIDA NUTRIZIONALE E TIMING BCAA', '#27ae60',
-                    ["Timing", "Cosa", "Macro", "Obiettivo"],
-                    [
-                        ["06:15", "Pre-workout", "☕ Caffè + 10g BCAA", "Energia + protezione muscolare"],
-                        ["08:00", "Post-workout", "Colazione completa", "Recovery + sazietà"],
-                        ["13:00", "Pranzo", "Proteine + Carboidrati", "Energia pomeriggio"],
-                        ["20:00", "Cena", "Proteine + Verdure", "Recovery notturno"]
-                    ], '#229954', '#eafaf1');
-                
-                createStaticTable('advanced-goals', '🎯 OBIETTIVI E MILESTONE', '#e74c3c',
-                    ["Corsa", "Peso", "Fitness", "Focus"],
-                    [
-                        ["Sett 2: 1' run continuo", "Sett 2: -1.5kg (102.5)", "FC <85 bpm", "Consistenza"],
-                        ["Sett 4: 5' run continuo", "Sett 4: -3kg (101kg)", "Passo <18:00", "Progressione"],
-                        ["Sett 8: 20' run continuo", "Sett 8: -6kg (98kg)", "Passo <17:00", "Velocità"],
-                        ["Sett 12: 35' run continuo", "Sett 12: -9kg (95kg)", "Passo <16:30", "TARGET!"]
-                    ], '#c0392b', '#fadbd8');
+                generateProgressTrackingTable();
+                createStaticTable('nutrition-guide', '🥗 GUIDA NUTRIZIONALE E TIMING BCAA', '#27ae60', ["Timing", "Cosa", "Macro", "Obiettivo"], [["06:15", "Pre-workout", "☕ Caffè + 10g BCAA", "Energia + protezione muscolare"], ["08:00", "Post-workout", "Colazione completa", "Recovery + sazietà"], ["13:00", "Pranzo", "Proteine + Carboidrati", "Energia pomeriggio"], ["20:00", "Cena", "Proteine + Verdure", "Recovery notturno"]], '#229954', '#eafaf1');
+                createStaticTable('advanced-goals', '🎯 OBIETTIVI E MILESTONE', '#e74c3c', ["Corsa", "Peso", "Fitness", "Focus"], [["Sett 2: 1' run continuo", "Sett 2: -1.5kg (102.5)", "FC <85 bpm", "Consistenza"], ["Sett 4: 5' run continuo", "Sett 4: -3kg (101kg)", "Passo <18:00", "Progressione"], ["Sett 8: 20' run continuo", "Sett 8: -6kg (98kg)", "Passo <17:00", "Velocità"], ["Sett 12: 35' run continuo", "Sett 12: -9kg (95kg)", "Passo <16:30", "TARGET!"]], '#c0392b', '#fadbd8');
             }
-
 
             // --- ESECUZIONE ---
             addMetabolicParameters();
-
             addPhaseSection("FASE 0 (24/09 - 30/09/2025): Adattamento + Test Baseline", "#ff6b6b");
             generatePhase0();
-
             addPhaseSection("PAUSA (01/10 - 04/10/2025): Recupero Attivo", "#95a5a6");
             generatePause(new Date(2025, 9, 1), new Date(2025, 9, 4));
-
             addPhaseSection("FASE 1 (05/10 - 31/10/2025): Build Aerobico", "#4ecdc4");
             generatePhase1();
-            
             addPhaseSection("PAUSA (01/11 - 03/11/2025): Recupero Attivo", "#95a5a6");
             generatePause(new Date(2025, 10, 1), new Date(2025, 10, 3));
-
             addPhaseSection("FASE 2 (04/11 - 20/12/2025): Intensificazione + Target", "#45b7d1");
             generatePhase2();
-            
             generateAnalyticalSections();
         });
     </script>
 </body>
 </html>
+
