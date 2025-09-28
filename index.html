@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piano Coaching Avanzato 2025</title>
+    <title>Piano Coaching Avanzato 2025 (EAA)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -11,7 +11,6 @@
             font-family: 'Inter', sans-serif;
             background-color: #f0f4f8;
         }
-        /* Stili per le input fields per un aspetto più pulito */
         .data-input {
             width: 100%;
             padding: 8px 8px;
@@ -28,7 +27,6 @@
             border-color: #3b82f6;
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
         }
-        /* Stili per la tabella "sticky header" */
         .sticky-header {
             position: sticky;
             top: 0;
@@ -39,12 +37,12 @@
 <body class="p-2 sm:p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-6">
-        <!-- Header Principale -->
+        <!-- Main Header -->
         <header class="w-full p-4 mb-6 rounded-lg bg-[#2c3e50] text-white text-center">
-            <h1 class="text-xl sm:text-2xl font-bold">🏃‍♂️ PIANO COACHING AVANZATO 2025: 104kg → 95kg | 0' → 35' CORSA | TIMING OTTIMIZZATO BCAA 🎯</h1>
+            <h1 class="text-xl sm:text-2xl font-bold">🏃‍♂️ PIANO COACHING AVANZATO 2025: 104kg → 95kg | 0' → 35' CORSA | TIMING OTTIMIZZATO EAA 🎯</h1>
         </header>
 
-        <!-- Navigazione a Tab -->
+        <!-- Tab Navigation -->
         <div class="border-b border-gray-200 mb-6">
             <nav class="-mb-px flex space-x-6 sm:space-x-8" aria-label="Tabs">
                 <button data-tab="piano" class="whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm text-blue-600 border-blue-600">
@@ -59,9 +57,9 @@
             </nav>
         </div>
 
-        <!-- Contenuto delle Tab -->
+        <!-- Tab Content -->
         <div>
-            <!-- Tab: Piano Giornaliero -->
+            <!-- Daily Plan Tab -->
             <div data-tab-content="piano">
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -85,13 +83,13 @@
                             </tr>
                         </thead>
                         <tbody id="training-plan-body" class="bg-white divide-y divide-gray-200">
-                            <!-- Le righe del piano verranno inserite qui da JavaScript -->
+                            <!-- Rows will be inserted here by JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Tab: Progressi e Obiettivi -->
+            <!-- Progress & Goals Tab -->
             <div data-tab-content="progressi" class="hidden">
                  <div class="space-y-8">
                     <section id="progress-tracking"></section>
@@ -99,7 +97,7 @@
                 </div>
             </div>
 
-            <!-- Tab: Guide e Parametri -->
+            <!-- Guides & Parameters Tab -->
             <div data-tab-content="guide" class="hidden">
                 <div class="space-y-8">
                     <section id="metabolic-parameters" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm"></section>
@@ -111,8 +109,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- LOGICA DI PERSISTENZA DATI ---
-            const STORAGE_KEY = 'pianoCoachingData2025';
+            // --- DATA PERSISTENCE LOGIC ---
+            const STORAGE_KEY = 'pianoCoachingData2025_EAA';
 
             function getStoredData() {
                 try {
@@ -138,15 +136,13 @@
                 inputs.forEach(input => {
                     if (storedData[input.id] !== undefined) {
                         input.value = storedData[input.id];
-                        // Trigger 'input' event to apply formatting and calculations
                         input.dispatchEvent(new Event('input', { bubbles: true }));
                     }
                 });
-                // A final update for the summary table after all data is loaded
                 updateProgressTracking();
             }
 
-            // --- LOGICA DI NAVIGAZIONE TAB ---
+            // --- TAB NAVIGATION LOGIC ---
             const tabs = document.querySelectorAll('[data-tab]');
             const contents = document.querySelectorAll('[data-tab-content]');
 
@@ -164,9 +160,8 @@
                 });
             });
 
-
-            const planStartDate = new Date(2025, 8, 24); // 24 Settembre 2025
-
+            // --- UTILITY FUNCTIONS ---
+            const planStartDate = new Date(2025, 8, 24); // September 24, 2025
             const formatDate = (date) => {
                 const day = String(date.getDate()).padStart(2, '0');
                 const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -175,7 +170,7 @@
             const getDayName = (date) => ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"][date.getDay()];
             const tbody = document.getElementById('training-plan-body');
 
-            // --- LOGICA DI AGGIORNAMENTO DINAMICO ---
+            // --- DYNAMIC UPDATE LOGIC ---
             function updateProgressTracking() {
                 const trackingWeeks = [1, 2, 4, 6, 8, 10, 12];
                 trackingWeeks.forEach(weekNum => {
@@ -225,14 +220,14 @@
                 });
             }
 
-            // --- FUNZIONI PER CREARE SEZIONI E RIGHE ---
+            // --- UI ELEMENT CREATION FUNCTIONS ---
             function addMetabolicParameters() {
                 const container = document.getElementById('metabolic-parameters');
                 const paramData = [
                     { title: "📊 PARAMETRI METABOLICI", items: [["BMR stimato:", "2100 kcal"],["TDEE attuale:", "2900 kcal"],["Intake target:", "2075 kcal"],["Proteine target:", "165g (1.6g/kg)"],["Colazione timing:", "POST-workout 08:00"]]},
                     { title: "🎯 TARGET SETTIMANALI", items: [["Deficit:", "-825 kcal/giorno"],["Perdita:", "-0.75 kg"],["Controllo peso:", "Giovedì mattina"],["Idratazione:", "3L + 500ml/ora sport"],["Window anabolica:", "30' post-functional"]]},
                     { title: "📈 PROGRESSIONE CORSA", items: [["Settimana 1-2:", "Walk + 30\" run x10"],["Settimana 3-4:", "1' run / 2' walk x8"],["Settimana 5-6:", "2' run / 1' walk x8"],["Settimana 7-8:", "5' run / 1' walk x5"],["Settimana 9-12:", "35' corsa continua"]]},
-                    { title: "💊 TIMING BCAA", items: [["06:15 Pre-workout"],["10-15g BCAA/Caffè"],["Leucina + Isoleucina"],["Protezione muscolare"],["Massima ossidazione 🔥"]]}
+                    { title: "💊 TIMING EAA", items: [["06:15 Pre-workout"],["5 cpr EAA / Caffè"],["Supporto completo"],["Protezione muscolare"],["Massima ossidazione 🔥"]]}
                 ];
                 paramData.forEach(section => {
                     const sectionDiv = document.createElement('div'); sectionDiv.className = 'bg-[#ecf0f1] rounded-lg p-3';
@@ -268,9 +263,7 @@
                     td.appendChild(input); return { td, input };
                 };
                 
-                // --- Creazione Input Cells ---
-                const { td: tdPeso, input: inputPeso } = createInputCell('peso');
-                tr.appendChild(tdPeso);
+                const { td: tdPeso, input: inputPeso } = createInputCell('peso'); tr.appendChild(tdPeso);
                 const { td: tdFc, input: inputFc } = createInputCell('fc', 'text'); tr.appendChild(tdFc);
                 const { td: tdPasso, input: inputPasso } = createInputCell('passo', 'text', 'min.dec'); tr.appendChild(tdPasso);
                 const { td: tdSonno, input: inputSonno } = createInputCell('sonno', 'text', 'ore.dec'); tr.appendChild(tdSonno);
@@ -278,11 +271,9 @@
                 const { td: tdCalIn, input: inputCalIn } = createInputCell('calin'); tr.appendChild(tdCalIn);
                 inputCalIn.value = kcalTarget;
 
-                // Bilancio
                 const tdBilancio = document.createElement('td'); tdBilancio.className = 'px-2 py-3 border-b border-gray-200 text-center font-semibold';
                 const spanBilancio = document.createElement('span'); tdBilancio.appendChild(spanBilancio); tr.appendChild(tdBilancio);
 
-                // --- Event Listeners ---
                 const calculateBalance = () => {
                     const calOutVal = parseFloat(inputCalOut.value); const calInVal = parseFloat(inputCalIn.value);
                     if (!isNaN(calOutVal) && !isNaN(calInVal)) {
@@ -291,9 +282,7 @@
                         if (balance <= -700 && balance >= -900) { spanBilancio.className = 'px-2 py-1 rounded-md bg-green-100 text-green-800'; }
                         else if (balance < -900) { spanBilancio.className = 'px-2 py-1 rounded-md bg-red-100 text-red-800'; }
                         else { spanBilancio.className = 'px-2 py-1 rounded-md bg-yellow-100 text-yellow-800'; }
-                    } else {
-                        spanBilancio.textContent = ''; spanBilancio.className = '';
-                    }
+                    } else { spanBilancio.textContent = ''; spanBilancio.className = ''; }
                     updateProgressTracking();
                 };
 
@@ -306,11 +295,8 @@
                             if (!isNaN(weight) && weight <= 95) e.target.classList.add('bg-green-100', 'text-green-800', 'font-bold');
                             else e.target.classList.remove('bg-green-100', 'text-green-800', 'font-bold');
                         }
-                        if (['calout', 'calin'].includes(e.target.dataset.metric)) {
-                            calculateBalance();
-                        } else {
-                            updateProgressTracking();
-                        }
+                        if (['calout', 'calin'].includes(e.target.dataset.metric)) calculateBalance();
+                        else updateProgressTracking();
                     });
                 });
                 tbody.appendChild(tr);
@@ -318,12 +304,7 @@
 
             function createStaticTable(containerId, title, titleColor, headers, data, headerColor, dataColor) {
                 const container = document.getElementById(containerId);
-                container.innerHTML = `
-                    <h2 class="text-lg font-bold text-white text-center p-3 rounded-t-lg" style="background-color: ${titleColor};">${title}</h2>
-                    <div class="overflow-x-auto border border-t-0 rounded-b-lg">
-                        <table class="min-w-full"><thead style="background-color: ${headerColor};"><tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr></thead>
-                            <tbody style="background-color: ${dataColor};">${data.map(row => `<tr class="border-t">${row.map(cell => `<td class="px-4 py-2 text-sm text-gray-700">${cell}</td>`).join('')}</tr>`).join('')}</tbody>
-                        </table></div>`;
+                container.innerHTML = `<h2 class="text-lg font-bold text-white text-center p-3 rounded-t-lg" style="background-color: ${titleColor};">${title}</h2><div class="overflow-x-auto border border-t-0 rounded-b-lg"><table class="min-w-full"><thead style="background-color: ${headerColor};"><tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr></thead><tbody style="background-color: ${dataColor};">${data.map(row => `<tr class="border-t">${row.map(cell => `<td class="px-4 py-2 text-sm text-gray-700">${cell}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
             }
 
             function generateProgressTrackingTable() {
@@ -331,37 +312,38 @@
                 const headers = ["Settimana", "Peso", "Passo Medio", "FC Riposo", "Sonno Medio", "Deficit Medio", "Trend"];
                 const weeks = [1, 2, 4, 6, 8, 10, 12];
                 const trends = ['Baseline', 'Adattamento', 'Progressione', 'Sviluppo', 'Consolidamento', 'Intensificazione', 'TARGET!'];
-                let tableBodyHtml = weeks.map((week, index) => `
-                    <tr class="border-t">
-                        <td class="px-4 py-2 text-sm text-gray-700 font-semibold">Settimana ${week}</td>
-                        <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-peso"></td>
-                        <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-passo"></td>
-                        <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-fc"></td>
-                        <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-sonno"></td>
-                        <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-deficit"></td>
-                        <td class="px-4 py-2 text-sm text-gray-700">${trends[index]}</td>
-                    </tr>`).join('');
-                container.innerHTML = `
-                    <h2 class="text-lg font-bold text-white text-center p-3 rounded-t-lg" style="background-color: #9b59b6;">📊 TRACKING PROGRESSI E PERFORMANCE</h2>
-                    <div class="overflow-x-auto border border-t-0 rounded-b-lg"><table class="min-w-full">
-                        <thead style="background-color: #8e44ad;"><tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr></thead>
-                        <tbody style="background-color: #f4f1f7;">${tableBodyHtml}</tbody>
-                    </table></div>`;
+                let tableBodyHtml = weeks.map((week, index) => `<tr class="border-t"><td class="px-4 py-2 text-sm text-gray-700 font-semibold">Settimana ${week}</td><td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-peso"></td><td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-passo"></td><td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-fc"></td><td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-sonno"></td><td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-deficit"></td><td class="px-4 py-2 text-sm text-gray-700">${trends[index]}</td></tr>`).join('');
+                container.innerHTML = `<h2 class="text-lg font-bold text-white text-center p-3 rounded-t-lg" style="background-color: #9b59b6;">📊 TRACKING PROGRESSI E PERFORMANCE</h2><div class="overflow-x-auto border border-t-0 rounded-b-lg"><table class="min-w-full"><thead style="background-color: #8e44ad;"><tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr></thead><tbody style="background-color: #f4f1f7;">${tableBodyHtml}</tbody></table></div>`;
             }
 
-            // --- DATI E LOGICA DI GENERAZIONE DEL PIANO ---
+            // --- PLAN GENERATION LOGIC ---
             function generatePhase0() {
-                const data = [["24/09", "Mer", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"],["25/09", "Gio", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🍚 Riso 80g + 🥚 Uova 2", "🐟 Pesce 150g + 🍚 Riso 60g"],["26/09", "Ven", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", "🍝 Pasta 80g + 🍅 Pomodoro", "🦃 Tacchino 150g"],["27/09", "Sab", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"],["28/09", "Dom", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55'", "😌 Riposo attivo", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🍚 Riso 80g + 🥚 Uova 2", "🐟 Pesce 150g + 🍚 Riso 60g"],["29/09", "Lun", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", "🍝 Pasta 80g + 🍅 Pomodoro", "🦃 Tacchino 150g"],["30/09", "Mar", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"]];
+                const preWorkouts = ["☕ Caffè + 5 cpr EAA", "☕ Caffè + 🍯 Miele 5g + H2O"];
+                const data = [
+                    [preWorkouts[0], "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"],
+                    [preWorkouts[1], "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🍚 Riso 80g + 🥚 Uova 2", "🐟 Pesce 150g + 🍚 Riso 60g"],
+                    [preWorkouts[0], "💪 Functional Casa 55'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", "🍝 Pasta 80g + 🍅 Pomodoro", "🦃 Tacchino 150g"],
+                    [preWorkouts[0], "💪 Functional Casa 55'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"],
+                    [preWorkouts[1], "💪 Functional Casa 55'", "😌 Riposo attivo", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🍚 Riso 80g + 🥚 Uova 2", "🐟 Pesce 150g + 🍚 Riso 60g"],
+                    [preWorkouts[0], "💪 Functional Casa 55'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", "🍝 Pasta 80g + 🍅 Pomodoro", "🦃 Tacchino 150g"],
+                    [preWorkouts[0], "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"]
+                ];
                 const startDate = new Date(2025, 8, 24);
-                data.forEach((row, index) => { const currentDate = new Date(startDate); currentDate.setDate(startDate.getDate() + index); addDataRow(row, "#fff5f5", 2075, currentDate); });
+                data.forEach((row, index) => {
+                    const currentDate = new Date(startDate); currentDate.setDate(startDate.getDate() + index);
+                    const rowData = [formatDate(currentDate), getDayName(currentDate), ...row];
+                    addDataRow(rowData, "#fff5f5", 2075, currentDate);
+                });
             }
+
             function generatePause(startDate, endDate) {
                 const current = new Date(startDate);
                 while (current <= endDate) { const rowData = [formatDate(current), getDayName(current), "💤 Niente", "😴 Riposo", "🚶‍♂️ Walk leggera 30'", "Colazione normale", "Pranzo normale", "Cena normale"]; addDataRow(rowData, "#f8f9fa", 2200, new Date(current)); current.setDate(current.getDate() + 1); }
             }
+
             function generatePhase1() {
                 const startDate = new Date(2025, 9, 5), endDate = new Date(2025, 9, 31);
-                const pre = ["☕ Caffè + 10g BCAA", "☕ Caffè + 🍯 Miele 5g", "🥤 BCAA 12g limone", "☕ Caffè + 10g BCAA"];
+                const pre = ["☕ Caffè + 5 cpr EAA", "☕ Caffè + 🍯 Miele 5g", "☕ Caffè + 5 cpr EAA", "☕ Caffè + 5 cpr EAA"];
                 const col = ["🧀 Ricotta 110g + 🥓 Prosciutto 50g", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🥛 Yogurt Greco 180g + 🥜 Noci 25g", "🧀 Ricotta 110g + 🍯 Miele"];
                 const pra = ["🍝 Pasta 75g + 🐟 Tonno 100g", "🍚 Riso 75g + 🥚 Uova 2", "🍝 Pasta 75g + 🍅 Pomodoro", "🫘 Legumi 100g + 🍚 Riso 60g"];
                 const cen = ["🍗 Pollo 150g + 🥔 Patate 150g", "🐟 Pesce 150g + 🍚 Riso 60g", "🦃 Tacchino 150g", "🥚 Frittata 3 uova"];
@@ -373,9 +355,10 @@
                     addDataRow(rowData, "#f0fffe", 2050, new Date(current)); current.setDate(current.getDate() + 1); dayCount++;
                 }
             }
+
             function generatePhase2() {
                  const startDate = new Date(2025, 10, 4), endDate = new Date(2025, 11, 20);
-                 const pre = ["☕ Caffè + 10g BCAA", "☕ Caffè + 🍯 Miele 5g", "🥤 BCAA 12g limone", "☕ Caffè + 10g BCAA", "🥤 BCAA 10g + ☕ Caffè"];
+                 const pre = ["☕ Caffè + 5 cpr EAA", "☕ Caffè + 🍯 Miele 5g", "☕ Caffè + 5 cpr EAA", "☕ Caffè + 5 cpr EAA", "☕ Caffè + 5 cpr EAA"];
                  const col = ["🧀 Ricotta 100g + 🥓 Prosciutto 45g", "🥚 Uova 2 + 🥓 Prosciutto 45g", "🥛 Yogurt Greco 170g + 🥜 Noci 22g", "🧀 Ricotta 100g + 🍯 Miele", "🥚 Frittata 2 uova"];
                  const pra = ["🍝 Pasta 70g + 🐟 Tonno 100g", "🍚 Riso 70g + 🥚 Uova 2", "🍝 Pasta 70g + 🍅 Pomodoro", "🫘 Legumi 100g + 🍚 Riso 55g", "🍲 Minestrone + 🍞 Pane 40g"];
                  const cen = ["🍗 Pollo 140g + 🥔 Patate 120g", "🐟 Pesce 140g + 🍚 Riso 50g", "🦃 Tacchino 140g", "🥚 Frittata 3 uova", "🐟 Salmone 120g + 🥬 Verdure"];
@@ -390,11 +373,11 @@
             
             function generateAnalyticalSections() {
                 generateProgressTrackingTable();
-                createStaticTable('nutrition-guide', '🥗 GUIDA NUTRIZIONALE E TIMING BCAA', '#27ae60', ["Timing", "Cosa", "Macro", "Obiettivo"], [["06:15", "Pre-workout", "☕ Caffè + 10g BCAA", "Energia + prot. muscolare"], ["08:00", "Post-workout", "Colazione completa", "Recovery + sazietà"], ["13:00", "Pranzo", "Proteine + Carboidrati", "Energia pomeriggio"], ["20:00", "Cena", "Proteine + Verdure", "Recovery notturno"]], '#229954', '#eafaf1');
+                createStaticTable('nutrition-guide', '🥗 GUIDA NUTRIZIONALE E TIMING', '#27ae60', ["Timing", "Cosa", "Macro", "Obiettivo"], [["06:15", "Pre-workout", "☕ Caffè + 5 cpr EAA", "Supporto completo muscolare"], ["08:00", "Post-workout", "Colazione completa", "Recovery + sazietà"], ["13:00", "Pranzo", "Proteine + Carboidrati", "Energia pomeriggio"], ["20:00", "Cena", "Proteine + Verdure", "Recovery notturno"]], '#229954', '#eafaf1');
                 createStaticTable('advanced-goals', '🎯 OBIETTIVI E MILESTONE', '#e74c3c', ["Corsa", "Peso", "Fitness", "Focus"], [["Sett 2: 1' run", "Sett 2: -1.5kg (102.5)", "FC <85 bpm", "Consistenza"], ["Sett 4: 5' run", "Sett 4: -3kg (101kg)", "Passo <18:00", "Progressione"], ["Sett 8: 20' run", "Sett 8: -6kg (98kg)", "Passo <17:00", "Velocità"], ["Sett 12: 35' run", "Sett 12: -9kg (95kg)", "Passo <16:30", "TARGET!"]], '#c0392b', '#fadbd8');
             }
 
-            // --- ESECUZIONE ---
+            // --- EXECUTION ---
             addMetabolicParameters();
             addPhaseSection("FASE 0 (24/09 - 30/09/2025): Adattamento + Test Baseline", "#ff6b6b");
             generatePhase0();
@@ -407,7 +390,7 @@
             addPhaseSection("FASE 2 (04/11 - 20/12/2025): Intensificazione + Target", "#45b7d1");
             generatePhase2();
             generateAnalyticalSections();
-            loadAndApplyData(); // Carica i dati salvati alla fine
+            loadAndApplyData(); // Load saved data at the end
         });
     </script>
 </body>
