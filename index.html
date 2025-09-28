@@ -111,6 +111,41 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- LOGICA DI PERSISTENZA DATI ---
+            const STORAGE_KEY = 'pianoCoachingData2025';
+
+            function getStoredData() {
+                try {
+                    const data = localStorage.getItem(STORAGE_KEY);
+                    return data ? JSON.parse(data) : {};
+                } catch (e) {
+                    console.error("Failed to parse data from localStorage", e);
+                    return {};
+                }
+            }
+
+            function saveData(key, value) {
+                const data = getStoredData();
+                data[key] = value;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            }
+
+            function loadAndApplyData() {
+                const storedData = getStoredData();
+                if (Object.keys(storedData).length === 0) return;
+
+                const inputs = document.querySelectorAll('.data-input');
+                inputs.forEach(input => {
+                    if (storedData[input.id] !== undefined) {
+                        input.value = storedData[input.id];
+                        // Trigger 'input' event to apply formatting and calculations
+                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+                // A final update for the summary table after all data is loaded
+                updateProgressTracking();
+            }
+
             // --- LOGICA DI NAVIGAZIONE TAB ---
             const tabs = document.querySelectorAll('[data-tab]');
             const contents = document.querySelectorAll('[data-tab-content]');
@@ -118,17 +153,11 @@
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     const targetContent = document.querySelector(`[data-tab-content="${tab.dataset.tab}"]`);
-
-                    // Disattiva tutti i tab e nascondi tutti i contenuti
                     tabs.forEach(t => {
                         t.classList.remove('text-blue-600', 'border-blue-600');
                         t.classList.add('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
                     });
-                    contents.forEach(c => {
-                        c.classList.add('hidden');
-                    });
-
-                    // Attiva il tab cliccato e mostra il suo contenuto
+                    contents.forEach(c => c.classList.add('hidden'));
                     tab.classList.add('text-blue-600', 'border-blue-600');
                     tab.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
                     targetContent.classList.remove('hidden');
@@ -138,56 +167,37 @@
 
             const planStartDate = new Date(2025, 8, 24); // 24 Settembre 2025
 
-            // Funzioni di utilità per date e nomi dei giorni
             const formatDate = (date) => {
                 const day = String(date.getDate()).padStart(2, '0');
                 const month = String(date.getMonth() + 1).padStart(2, '0');
                 return `${day}/${month}`;
             };
-            const getDayName = (date) => {
-                const giorni = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
-                return giorni[date.getDay()];
-            };
-
+            const getDayName = (date) => ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"][date.getDay()];
             const tbody = document.getElementById('training-plan-body');
 
             // --- LOGICA DI AGGIORNAMENTO DINAMICO ---
             function updateProgressTracking() {
                 const trackingWeeks = [1, 2, 4, 6, 8, 10, 12];
-                
                 trackingWeeks.forEach(weekNum => {
                     const dailyRows = document.querySelectorAll(`tr[data-week='${weekNum}']`);
                     if (dailyRows.length === 0) return;
 
-                    // Calcolo Peso (ultimo valore inserito nella settimana)
                     let lastWeight = '';
                     for (let i = dailyRows.length - 1; i >= 0; i--) {
                         const weightInput = dailyRows[i].querySelector('input[data-metric="peso"]');
                         if (weightInput && weightInput.value) {
                             lastWeight = parseFloat(weightInput.value).toFixed(1) + ' kg';
-                            break; 
+                            break;
                         }
                     }
                     const pesoCell = document.getElementById(`track-w${weekNum}-peso`);
-                    if(pesoCell) pesoCell.textContent = lastWeight;
+                    if (pesoCell) pesoCell.textContent = lastWeight;
 
-                    // Calcolo Medie per le altre metriche
                     const metricsToAverage = [
-                        { key: 'passo', unit: ' min/km' },
-                        { key: 'fc', unit: ' bpm' },
-                        { key: 'sonno', unit: ' ore' }
+                        { key: 'passo', unit: ' min/km' }, { key: 'fc', unit: ' bpm' }, { key: 'sonno', unit: ' ore' }
                     ];
-
                     metricsToAverage.forEach(metricInfo => {
-                        const values = [];
-                        dailyRows.forEach(row => {
-                            const input = row.querySelector(`input[data-metric="${metricInfo.key}"]`);
-                            const value = parseFloat(input.value);
-                            if (input && !isNaN(value)) {
-                                values.push(value);
-                            }
-                        });
-
+                        const values = Array.from(dailyRows).map(row => parseFloat(row.querySelector(`input[data-metric="${metricInfo.key}"]`)?.value)).filter(v => !isNaN(v));
                         const targetCell = document.getElementById(`track-w${weekNum}-${metricInfo.key}`);
                         if (targetCell) {
                             if (values.length > 0) {
@@ -201,20 +211,9 @@
                         }
                     });
 
-                    // Calcolo Deficit Medio
-                    const deficitValues = [];
-                    dailyRows.forEach(row => {
-                        const balanceSpan = row.querySelector('td:last-child span');
-                        if (balanceSpan && balanceSpan.textContent) {
-                            const deficit = parseFloat(balanceSpan.textContent);
-                            if (!isNaN(deficit)) {
-                                deficitValues.push(deficit);
-                            }
-                        }
-                    });
-
+                    const deficitValues = Array.from(dailyRows).map(row => parseFloat(row.querySelector('td:last-child span')?.textContent)).filter(v => !isNaN(v));
                     const deficitCell = document.getElementById(`track-w${weekNum}-deficit`);
-                    if(deficitCell) {
+                    if (deficitCell) {
                         if (deficitValues.length > 0) {
                             const sum = deficitValues.reduce((a, b) => a + b, 0);
                             const avgDeficit = sum / deficitValues.length;
@@ -227,7 +226,6 @@
             }
 
             // --- FUNZIONI PER CREARE SEZIONI E RIGHE ---
-
             function addMetabolicParameters() {
                 const container = document.getElementById('metabolic-parameters');
                 const paramData = [
@@ -237,30 +235,15 @@
                     { title: "💊 TIMING BCAA", items: [["06:15 Pre-workout"],["10-15g BCAA/Caffè"],["Leucina + Isoleucina"],["Protezione muscolare"],["Massima ossidazione 🔥"]]}
                 ];
                 paramData.forEach(section => {
-                    const sectionDiv = document.createElement('div');
-                    sectionDiv.className = 'bg-[#ecf0f1] rounded-lg p-3';
-                    const titleEl = document.createElement('h3');
-                    titleEl.className = 'text-sm font-bold bg-[#34495e] text-white -mt-3 -mx-3 mb-3 p-2 rounded-t-lg';
-                    titleEl.textContent = section.title;
-                    sectionDiv.appendChild(titleEl);
-                    const list = document.createElement('ul');
-                    list.className = 'space-y-1';
+                    const sectionDiv = document.createElement('div'); sectionDiv.className = 'bg-[#ecf0f1] rounded-lg p-3';
+                    const titleEl = document.createElement('h3'); titleEl.className = 'text-sm font-bold bg-[#34495e] text-white -mt-3 -mx-3 mb-3 p-2 rounded-t-lg'; titleEl.textContent = section.title; sectionDiv.appendChild(titleEl);
+                    const list = document.createElement('ul'); list.className = 'space-y-1';
                     section.items.forEach(item => {
-                        const li = document.createElement('li');
-                        li.className = 'flex justify-between';
-                        const key = document.createElement('span');
-                        key.className = 'font-semibold';
-                        key.textContent = item[0];
-                        li.appendChild(key);
-                        if(item[1]) {
-                            const value = document.createElement('span');
-                            value.textContent = item[1];
-                            li.appendChild(value);
-                        }
+                        const li = document.createElement('li'); li.className = 'flex justify-between';
+                        const key = document.createElement('span'); key.className = 'font-semibold'; key.textContent = item[0]; li.appendChild(key);
+                        if (item[1]) { const value = document.createElement('span'); value.textContent = item[1]; li.appendChild(value); }
                         list.appendChild(li);
-                    });
-                    sectionDiv.appendChild(list);
-                    container.appendChild(sectionDiv);
+                    }); sectionDiv.appendChild(list); container.appendChild(sectionDiv);
                 });
             }
 
@@ -271,235 +254,144 @@
             }
 
             function addDataRow(data, color, kcalTarget, currentDate) {
-                const tr = document.createElement('tr');
-                tr.style.backgroundColor = color;
-                tr.className = 'text-xs text-gray-700 align-middle';
+                const tr = document.createElement('tr'); tr.style.backgroundColor = color; tr.className = 'text-xs text-gray-700 align-middle';
+                const daysSinceStart = (currentDate - planStartDate) / (1000 * 3600 * 24); tr.dataset.week = Math.floor(daysSinceStart / 7) + 1;
+                const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
 
-                const daysSinceStart = (currentDate - planStartDate) / (1000 * 60 * 60 * 24);
-                const weekNumber = Math.floor(daysSinceStart / 7) + 1;
-                tr.dataset.week = weekNumber;
-
-                data.slice(0, 8).forEach(cellData => {
-                    const td = document.createElement('td');
-                    td.className = 'px-2 py-3 border-b border-gray-200';
-                    td.innerHTML = cellData;
-                    tr.appendChild(td);
-                });
-
-                // Peso (input)
-                const tdPeso = document.createElement('td');
-                tdPeso.className = 'px-2 py-3 border-b border-gray-200';
-                const inputPeso = document.createElement('input');
-                inputPeso.type = 'number';
-                inputPeso.className = 'data-input';
-                inputPeso.step = '0.1';
-                inputPeso.dataset.metric = 'peso';
-                inputPeso.addEventListener('input', (e) => {
-                    const weight = parseFloat(e.target.value);
-                    if (!isNaN(weight) && weight <= 95) {
-                        e.target.classList.add('bg-green-100', 'text-green-800', 'font-bold');
-                    } else {
-                        e.target.classList.remove('bg-green-100', 'text-green-800', 'font-bold');
-                    }
-                    updateProgressTracking();
-                });
-                tdPeso.appendChild(inputPeso);
-                tr.appendChild(tdPeso);
-
-                // FC Med, Passo, Sonno (input)
-                const metrics = ['fc', 'passo', 'sonno'];
-                metrics.forEach(metric => {
-                    const td = document.createElement('td');
-                    td.className = 'px-2 py-3 border-b border-gray-200';
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.placeholder = metric === 'passo' ? 'min.dec' : (metric === 'sonno' ? 'ore.dec' : '');
-                    input.className = 'data-input';
-                    input.dataset.metric = metric;
-                    input.addEventListener('input', updateProgressTracking);
-                    td.appendChild(input);
-                    tr.appendChild(td);
-                });
-
-                // Cal Bruciate (input)
-                const tdCalOut = document.createElement('td');
-                tdCalOut.className = 'px-2 py-3 border-b border-gray-200 text-center';
-                const inputCalOut = document.createElement('input');
-                inputCalOut.type = 'number';
-                inputCalOut.className = 'data-input';
-                inputCalOut.dataset.metric = 'calout';
-                tdCalOut.appendChild(inputCalOut);
-                tr.appendChild(tdCalOut);
-
-                // Cal Ingerite (input)
-                const tdCalIn = document.createElement('td');
-                tdCalIn.className = 'px-2 py-3 border-b border-gray-200 text-center';
-                const inputCalIn = document.createElement('input');
-                inputCalIn.type = 'number';
-                inputCalIn.className = 'data-input';
-                inputCalIn.value = kcalTarget; // Pre-fill con il target del piano
-                inputCalIn.dataset.metric = 'calin';
-                tdCalIn.appendChild(inputCalIn);
-                tr.appendChild(tdCalIn);
+                data.slice(0, 8).forEach(cellData => { const td = document.createElement('td'); td.className = 'px-2 py-3 border-b border-gray-200'; td.innerHTML = cellData; tr.appendChild(td); });
                 
-                // Bilancio (span)
-                const tdBilancio = document.createElement('td');
-                tdBilancio.className = 'px-2 py-3 border-b border-gray-200 text-center font-semibold';
-                const spanBilancio = document.createElement('span');
-                tdBilancio.appendChild(spanBilancio);
+                const createInputCell = (metric, type = 'number', placeholder = '') => {
+                    const td = document.createElement('td'); td.className = 'px-2 py-3 border-b border-gray-200';
+                    const input = document.createElement('input'); input.type = type; input.className = 'data-input'; input.placeholder = placeholder;
+                    input.dataset.metric = metric; input.id = `${dateKey}-${metric}`;
+                    if(type === 'number') input.step = '0.1';
+                    td.appendChild(input); return { td, input };
+                };
+                
+                // --- Creazione Input Cells ---
+                const { td: tdPeso, input: inputPeso } = createInputCell('peso');
+                tr.appendChild(tdPeso);
+                const { td: tdFc, input: inputFc } = createInputCell('fc', 'text'); tr.appendChild(tdFc);
+                const { td: tdPasso, input: inputPasso } = createInputCell('passo', 'text', 'min.dec'); tr.appendChild(tdPasso);
+                const { td: tdSonno, input: inputSonno } = createInputCell('sonno', 'text', 'ore.dec'); tr.appendChild(tdSonno);
+                const { td: tdCalOut, input: inputCalOut } = createInputCell('calout'); tr.appendChild(tdCalOut);
+                const { td: tdCalIn, input: inputCalIn } = createInputCell('calin'); tr.appendChild(tdCalIn);
+                inputCalIn.value = kcalTarget;
 
+                // Bilancio
+                const tdBilancio = document.createElement('td'); tdBilancio.className = 'px-2 py-3 border-b border-gray-200 text-center font-semibold';
+                const spanBilancio = document.createElement('span'); tdBilancio.appendChild(spanBilancio); tr.appendChild(tdBilancio);
+
+                // --- Event Listeners ---
                 const calculateBalance = () => {
-                    const calOutVal = parseFloat(inputCalOut.value);
-                    const calInVal = parseFloat(inputCalIn.value);
+                    const calOutVal = parseFloat(inputCalOut.value); const calInVal = parseFloat(inputCalIn.value);
                     if (!isNaN(calOutVal) && !isNaN(calInVal)) {
                         const balance = calOutVal - calInVal;
-                        spanBilancio.textContent = balance > 0 ? `+${balance}` : balance;
-                        if (balance >= -900 && balance <= -700) {
-                            spanBilancio.className = 'px-2 py-1 rounded-md bg-green-100 text-green-800';
-                        } else if (balance < -900) {
-                             spanBilancio.className = 'px-2 py-1 rounded-md bg-red-100 text-red-800';
-                        } else {
-                            spanBilancio.className = 'px-2 py-1 rounded-md bg-yellow-100 text-yellow-800';
-                        }
+                        spanBilancio.textContent = balance > 0 ? `+${Math.round(balance)}` : Math.round(balance);
+                        if (balance <= -700 && balance >= -900) { spanBilancio.className = 'px-2 py-1 rounded-md bg-green-100 text-green-800'; }
+                        else if (balance < -900) { spanBilancio.className = 'px-2 py-1 rounded-md bg-red-100 text-red-800'; }
+                        else { spanBilancio.className = 'px-2 py-1 rounded-md bg-yellow-100 text-yellow-800'; }
                     } else {
-                        spanBilancio.textContent = '';
-                        spanBilancio.className = '';
+                        spanBilancio.textContent = ''; spanBilancio.className = '';
                     }
                     updateProgressTracking();
                 };
-                
-                inputCalOut.addEventListener('input', calculateBalance);
-                inputCalIn.addEventListener('input', calculateBalance);
-                calculateBalance(); // Calcolo iniziale
 
-                tr.appendChild(tdBilancio);
+                const allInputs = [inputPeso, inputFc, inputPasso, inputSonno, inputCalOut, inputCalIn];
+                allInputs.forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        saveData(e.target.id, e.target.value);
+                        if (e.target.dataset.metric === 'peso') {
+                            const weight = parseFloat(e.target.value);
+                            if (!isNaN(weight) && weight <= 95) e.target.classList.add('bg-green-100', 'text-green-800', 'font-bold');
+                            else e.target.classList.remove('bg-green-100', 'text-green-800', 'font-bold');
+                        }
+                        if (['calout', 'calin'].includes(e.target.dataset.metric)) {
+                            calculateBalance();
+                        } else {
+                            updateProgressTracking();
+                        }
+                    });
+                });
                 tbody.appendChild(tr);
             }
-            
+
             function createStaticTable(containerId, title, titleColor, headers, data, headerColor, dataColor) {
                 const container = document.getElementById(containerId);
                 container.innerHTML = `
                     <h2 class="text-lg font-bold text-white text-center p-3 rounded-t-lg" style="background-color: ${titleColor};">${title}</h2>
                     <div class="overflow-x-auto border border-t-0 rounded-b-lg">
-                        <table class="min-w-full">
-                            <thead style="background-color: ${headerColor};">
-                                <tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr>
-                            </thead>
-                            <tbody style="background-color: ${dataColor};">
-                                ${data.map(row => `<tr class="border-t">${row.map(cell => `<td class="px-4 py-2 text-sm text-gray-700">${cell}</td>`).join('')}</tr>`).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
+                        <table class="min-w-full"><thead style="background-color: ${headerColor};"><tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr></thead>
+                            <tbody style="background-color: ${dataColor};">${data.map(row => `<tr class="border-t">${row.map(cell => `<td class="px-4 py-2 text-sm text-gray-700">${cell}</td>`).join('')}</tr>`).join('')}</tbody>
+                        </table></div>`;
             }
 
             function generateProgressTrackingTable() {
                 const container = document.getElementById('progress-tracking');
                 const headers = ["Settimana", "Peso", "Passo Medio", "FC Riposo", "Sonno Medio", "Deficit Medio", "Trend"];
-                const weeks = [
-                    { num: 1, trend: 'Baseline' }, { num: 2, trend: 'Adattamento' },
-                    { num: 4, trend: 'Progressione' }, { num: 6, trend: 'Sviluppo' },
-                    { num: 8, trend: 'Consolidamento' }, { num: 10, trend: 'Intensificazione' },
-                    { num: 12, trend: 'TARGET!' }
-                ];
-                let tableBodyHtml = '';
-                weeks.forEach(week => {
-                    tableBodyHtml += `
-                        <tr class="border-t">
-                            <td class="px-4 py-2 text-sm text-gray-700 font-semibold">Settimana ${week.num}</td>
-                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-peso"></td>
-                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-passo"></td>
-                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-fc"></td>
-                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-sonno"></td>
-                            <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week.num}-deficit"></td>
-                            <td class="px-4 py-2 text-sm text-gray-700">${week.trend}</td>
-                        </tr>
-                    `;
-                });
+                const weeks = [1, 2, 4, 6, 8, 10, 12];
+                const trends = ['Baseline', 'Adattamento', 'Progressione', 'Sviluppo', 'Consolidamento', 'Intensificazione', 'TARGET!'];
+                let tableBodyHtml = weeks.map((week, index) => `
+                    <tr class="border-t">
+                        <td class="px-4 py-2 text-sm text-gray-700 font-semibold">Settimana ${week}</td>
+                        <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-peso"></td>
+                        <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-passo"></td>
+                        <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-fc"></td>
+                        <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-sonno"></td>
+                        <td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-deficit"></td>
+                        <td class="px-4 py-2 text-sm text-gray-700">${trends[index]}</td>
+                    </tr>`).join('');
                 container.innerHTML = `
                     <h2 class="text-lg font-bold text-white text-center p-3 rounded-t-lg" style="background-color: #9b59b6;">📊 TRACKING PROGRESSI E PERFORMANCE</h2>
-                    <div class="overflow-x-auto border border-t-0 rounded-b-lg">
-                        <table class="min-w-full">
-                            <thead style="background-color: #8e44ad;"><tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr></thead>
-                            <tbody style="background-color: #f4f1f7;">${tableBodyHtml}</tbody>
-                        </table>
-                    </div>
-                `;
+                    <div class="overflow-x-auto border border-t-0 rounded-b-lg"><table class="min-w-full">
+                        <thead style="background-color: #8e44ad;"><tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr></thead>
+                        <tbody style="background-color: #f4f1f7;">${tableBodyHtml}</tbody>
+                    </table></div>`;
             }
 
             // --- DATI E LOGICA DI GENERAZIONE DEL PIANO ---
-
             function generatePhase0() {
-                const data = [
-                    ["24/09", "Mer", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g"],
-                    ["25/09", "Gio", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🍚 Riso 80g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 10ml", "🐟 Pesce 150g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml"],
-                    ["26/09", "Ven", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk di recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🍝 Pasta 80g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori"],
-                    ["27/09", "Sab", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Long Walk 10km + test run 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g"],
-                    ["28/09", "Dom", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55' (target 650 kcal)", "😌 Riposo attivo - Stretching", "🥚 Uova 2 + 🥓 Prosciutto 50g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🍚 Riso 80g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 10ml", "🐟 Pesce 150g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml"],
-                    ["29/09", "Lun", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk di recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🍝 Pasta 80g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori"],
-                    ["30/09", "Mar", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55' (target 650 kcal)", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g + 🍎 Mela + ☕ Caffè", "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g"]
-                ];
+                const data = [["24/09", "Mer", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🍞 Pane 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"],["25/09", "Gio", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🍚 Riso 80g + 🥚 Uova 2", "🐟 Pesce 150g + 🍚 Riso 60g"],["26/09", "Ven", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", "🍝 Pasta 80g + 🍅 Pomodoro", "🦃 Tacchino 150g"],["27/09", "Sab", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"],["28/09", "Dom", "☕ Caffè + 🍯 Miele 5g + H2O", "💪 Functional Casa 55'", "😌 Riposo attivo", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🍚 Riso 80g + 🥚 Uova 2", "🐟 Pesce 150g + 🍚 Riso 60g"],["29/09", "Lun", "🥤 BCAA 12g limone + H2O", "💪 Functional Casa 55'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", "🍝 Pasta 80g + 🍅 Pomodoro", "🦃 Tacchino 150g"],["30/09", "Mar", "☕ Caffè + 10g BCAA frutti rossi", "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"]];
                 const startDate = new Date(2025, 8, 24);
-                data.forEach((row, index) => {
-                    const currentDate = new Date(startDate);
-                    currentDate.setDate(startDate.getDate() + index);
-                    addDataRow(row, "#fff5f5", 2075, currentDate);
-                });
+                data.forEach((row, index) => { const currentDate = new Date(startDate); currentDate.setDate(startDate.getDate() + index); addDataRow(row, "#fff5f5", 2075, currentDate); });
             }
-
             function generatePause(startDate, endDate) {
                 const current = new Date(startDate);
-                while (current <= endDate) {
-                    const rowData = [formatDate(current), getDayName(current), "💤 Niente", "😴 Riposo", "🚶‍♂️ Walk leggera 30'", "🧀 Colazione normale + ☕ Caffè", "🍝 Pranzo normale", "🍗 Cena normale"];
-                    addDataRow(rowData, "#f8f9fa", 2200, new Date(current));
-                    current.setDate(current.getDate() + 1);
-                }
+                while (current <= endDate) { const rowData = [formatDate(current), getDayName(current), "💤 Niente", "😴 Riposo", "🚶‍♂️ Walk leggera 30'", "Colazione normale", "Pranzo normale", "Cena normale"]; addDataRow(rowData, "#f8f9fa", 2200, new Date(current)); current.setDate(current.getDate() + 1); }
             }
-
             function generatePhase1() {
-                const startDate = new Date(2025, 9, 5); const endDate = new Date(2025, 9, 31);
-                const preWorkouts = ["☕ Caffè + 10g BCAA frutti rossi", "☕ Caffè + 🍯 Miele 5g + H2O", "🥤 BCAA 12g limone + H2O", "☕ Caffè + 10g BCAA arancia"];
-                const colazioni = ["🧀 Ricotta 110g + 🥓 Prosciutto 50g + 🍞 Pane 45g + 🍎 Mela + ☕ Caffè", "🥚 Uova 2 + 🥓 Prosciutto 50g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🥛 Yogurt Greco 180g + 🥜 Noci 25g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🧀 Ricotta 110g + 🍯 Miele + 🥜 Mandorle 20g + 🍊 Arancia + ☕ Caffè"];
-                const pranzi = ["🍝 Pasta 75g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 10ml", "🍚 Riso 75g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 10ml", "🍝 Pasta 75g + 🍅 Pomodoro + 🧀 Ricotta 80g + 🥬 Rucola", "🫘 Legumi 100g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml"];
-                const cene = ["🍗 Pollo 150g + 🥔 Patate 150g + 🥬 Verdure + 🍞 Pane 30g", "🐟 Pesce 150g + 🍚 Riso 60g + 🥬 Verdure + 🫒 Olio 10ml", "🦃 Tacchino 150g + 🥬 Insalata + 🍞 Pane 40g + 🍅 Pomodori", "🥚 Frittata 3 uova + 🥬 Verdure + 🍞 Pane 40g"];
+                const startDate = new Date(2025, 9, 5), endDate = new Date(2025, 9, 31);
+                const pre = ["☕ Caffè + 10g BCAA", "☕ Caffè + 🍯 Miele 5g", "🥤 BCAA 12g limone", "☕ Caffè + 10g BCAA"];
+                const col = ["🧀 Ricotta 110g + 🥓 Prosciutto 50g", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🥛 Yogurt Greco 180g + 🥜 Noci 25g", "🧀 Ricotta 110g + 🍯 Miele"];
+                const pra = ["🍝 Pasta 75g + 🐟 Tonno 100g", "🍚 Riso 75g + 🥚 Uova 2", "🍝 Pasta 75g + 🍅 Pomodoro", "🫘 Legumi 100g + 🍚 Riso 60g"];
+                const cen = ["🍗 Pollo 150g + 🥔 Patate 150g", "🐟 Pesce 150g + 🍚 Riso 60g", "🦃 Tacchino 150g", "🥚 Frittata 3 uova"];
                 const current = new Date(startDate); let dayCount = 0;
                 while (current <= endDate) {
-                    const dayOfWeek = current.getDay(); const weekInPhase = Math.floor(dayCount / 7);
-                    let functional = "", cardio = "";
-                    if ([1, 3, 5].includes(dayOfWeek)) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = "🚶‍♂️ Walk di recupero 45'"; } 
-                    else if ([2, 4].includes(dayOfWeek)) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = weekInPhase <= 1 ? "🏃‍♂️ 1' run/2' walk x8 + cool down" : "🏃‍♂️ 1'30\" run/2' walk x7 + cool down"; }
-                    else if (dayOfWeek === 6) { functional = "💪 Self Functional 55' (target 650 kcal)"; cardio = "🚶‍♂️ Long Walk 12km + 2x3' run"; } 
-                    else { functional = "😌 Riposo"; cardio = "😌 Riposo attivo - Yoga/Stretching"; }
-                    const rowData = [formatDate(current), getDayName(current), preWorkouts[dayCount % 4], functional, cardio, colazioni[dayCount % 4], pranzi[dayCount % 4], cene[dayCount % 4]];
-                    addDataRow(rowData, "#f0fffe", 2050, new Date(current));
-                    current.setDate(current.getDate() + 1); dayCount++;
+                    const d = current.getDay(), w = Math.floor(dayCount / 7); let fun = "", car = "";
+                    if ([1, 3, 5].includes(d)) { fun = "💪 Self Functional 55'"; car = "🚶‍♂️ Walk recupero 45'"; } else if ([2, 4].includes(d)) { fun = "💪 Self Functional 55'"; car = w <= 1 ? "🏃‍♂️ 1' run/2' walk x8" : "🏃‍♂️ 1.5' run/2' walk x7"; } else if (d === 6) { fun = "💪 Self Functional 55'"; car = "🚶‍♂️ Long Walk 12km + 2x3' run"; } else { fun = "😌 Riposo"; car = "😌 Yoga/Stretching"; }
+                    const rowData = [formatDate(current), getDayName(current), pre[dayCount % 4], fun, car, col[dayCount % 4], pra[dayCount % 4], cen[dayCount % 4]];
+                    addDataRow(rowData, "#f0fffe", 2050, new Date(current)); current.setDate(current.getDate() + 1); dayCount++;
                 }
             }
-
             function generatePhase2() {
-                 const startDate = new Date(2025, 10, 4); const endDate = new Date(2025, 11, 20);
-                 const preWorkouts = ["☕ Caffè + 10g BCAA frutti rossi", "☕ Caffè + 🍯 Miele 5g", "🥤 BCAA 12g limone + H2O", "☕ Caffè + 10g BCAA arancia", "🥤 BCAA 10g + ☕ Caffè"];
-                 const colazioni = ["🧀 Ricotta 100g + 🥓 Prosciutto 45g + 🍞 Pane 40g + 🍎 Mela + ☕ Caffè", "🥚 Uova 2 + 🥓 Prosciutto 45g + 🍞 Toast 2 + 🍌 Banana + ☕ Caffè", "🥛 Yogurt Greco 170g + 🥜 Noci 22g + 🍯 Miele + 🫐 Frutti bosco + ☕ Caffè", "🧀 Ricotta 100g + 🍯 Miele + 🥜 Mandorle 18g + 🍊 Arancia + ☕ Caffè", "🥚 Frittata 2 uova + 🍞 Pane 35g + 🍅 Pomodori + 🥬 Rucola + ☕ Caffè"];
-                 const pranzi = ["🍝 Pasta 70g + 🐟 Tonno 100g + 🥬 Insalata + 🫒 Olio 8ml", "🍚 Riso 70g + 🥚 Uova 2 + 🥬 Verdure + 🫒 Olio 8ml", "🍝 Pasta 70g + 🍅 Pomodoro + 🧀 Ricotta 70g + 🥬 Rucola", "🫘 Legumi 100g + 🍚 Riso 55g + 🥬 Verdure + 🫒 Olio 8ml", "🍲 Minestrone + 🍞 Pane 40g + 🧀 Parmigiano 20g"];
-                 const cene = ["🍗 Pollo 140g + 🥔 Patate 120g + 🥬 Verdure + 🍞 Pane 25g", "🐟 Pesce 140g + 🍚 Riso 50g + 🥬 Verdure + 🫒 Olio 8ml", "🦃 Tacchino 140g + 🥬 Insalata + 🍞 Pane 35g + 🍅 Pomodori", "🥚 Frittata 3 uova + 🥬 Verdure + 🍞 Pane 30g", "🐟 Salmone 120g + 🥬 Verdure + 🥔 Patate 100g"];
+                 const startDate = new Date(2025, 10, 4), endDate = new Date(2025, 11, 20);
+                 const pre = ["☕ Caffè + 10g BCAA", "☕ Caffè + 🍯 Miele 5g", "🥤 BCAA 12g limone", "☕ Caffè + 10g BCAA", "🥤 BCAA 10g + ☕ Caffè"];
+                 const col = ["🧀 Ricotta 100g + 🥓 Prosciutto 45g", "🥚 Uova 2 + 🥓 Prosciutto 45g", "🥛 Yogurt Greco 170g + 🥜 Noci 22g", "🧀 Ricotta 100g + 🍯 Miele", "🥚 Frittata 2 uova"];
+                 const pra = ["🍝 Pasta 70g + 🐟 Tonno 100g", "🍚 Riso 70g + 🥚 Uova 2", "🍝 Pasta 70g + 🍅 Pomodoro", "🫘 Legumi 100g + 🍚 Riso 55g", "🍲 Minestrone + 🍞 Pane 40g"];
+                 const cen = ["🍗 Pollo 140g + 🥔 Patate 120g", "🐟 Pesce 140g + 🍚 Riso 50g", "🦃 Tacchino 140g", "🥚 Frittata 3 uova", "🐟 Salmone 120g + 🥬 Verdure"];
                  const current = new Date(startDate); let dayCount = 0;
                  while (current <= endDate) {
-                    const dayOfWeek = current.getDay(); const weekInPhase = Math.floor(dayCount / 7);
-                    let functional = "", cardio = "";
-                    if ([1, 3, 5].includes(dayOfWeek)) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; cardio = "🚶‍♂️ Walk di recupero 45'"; } 
-                    else if ([2, 4].includes(dayOfWeek)) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; if (weekInPhase <= 2) { cardio = "🏃‍♂️ 5' run/1' walk x5 + warm/cool"; } else if (weekInPhase <= 4) { cardio = "🏃‍♂️ Corsa continua 25' + warm/cool"; } else { cardio = "🏃‍♂️ Corsa continua 35' + warm/cool"; } } 
-                    else if (dayOfWeek === 6) { functional = "💪 Functional Palestra 55' (target 650 kcal)"; cardio = "🚶‍♂️ Long Walk 15km + 2x5' run"; } 
-                    else { functional = "😌 Riposo"; cardio = "😌 Riposo attivo - Recovery"; }
-                    const rowData = [formatDate(current), getDayName(current), preWorkouts[dayCount % 5], functional, cardio, colazioni[dayCount % 5], pranzi[dayCount % 5], cene[dayCount % 5]];
-                    addDataRow(rowData, "#f0f8ff", 2000, new Date(current));
-                    current.setDate(current.getDate() + 1); dayCount++;
+                    const d = current.getDay(), w = Math.floor(dayCount / 7); let fun = "", car = "";
+                    if ([1, 3, 5].includes(d)) { fun = "💪 Functional Palestra 55'"; car = "🚶‍♂️ Walk recupero 45'"; } else if ([2, 4].includes(d)) { fun = "💪 Functional Palestra 55'"; if (w <= 2) car = "🏃‍♂️ 5' run/1' walk x5"; else if (w <= 4) car = "🏃‍♂️ Corsa continua 25'"; else car = "🏃‍♂️ Corsa continua 35'"; } else if (d === 6) { fun = "💪 Functional Palestra 55'"; car = "🚶‍♂️ Long Walk 15km + 2x5' run"; } else { fun = "😌 Riposo"; car = "😌 Recovery"; }
+                    const rowData = [formatDate(current), getDayName(current), pre[dayCount % 5], fun, car, col[dayCount % 5], pra[dayCount % 5], cen[dayCount % 5]];
+                    addDataRow(rowData, "#f0f8ff", 2000, new Date(current)); current.setDate(current.getDate() + 1); dayCount++;
                 }
             }
             
             function generateAnalyticalSections() {
                 generateProgressTrackingTable();
-                createStaticTable('nutrition-guide', '🥗 GUIDA NUTRIZIONALE E TIMING BCAA', '#27ae60', ["Timing", "Cosa", "Macro", "Obiettivo"], [["06:15", "Pre-workout", "☕ Caffè + 10g BCAA", "Energia + protezione muscolare"], ["08:00", "Post-workout", "Colazione completa", "Recovery + sazietà"], ["13:00", "Pranzo", "Proteine + Carboidrati", "Energia pomeriggio"], ["20:00", "Cena", "Proteine + Verdure", "Recovery notturno"]], '#229954', '#eafaf1');
-                createStaticTable('advanced-goals', '🎯 OBIETTIVI E MILESTONE', '#e74c3c', ["Corsa", "Peso", "Fitness", "Focus"], [["Sett 2: 1' run continuo", "Sett 2: -1.5kg (102.5)", "FC <85 bpm", "Consistenza"], ["Sett 4: 5' run continuo", "Sett 4: -3kg (101kg)", "Passo <18:00", "Progressione"], ["Sett 8: 20' run continuo", "Sett 8: -6kg (98kg)", "Passo <17:00", "Velocità"], ["Sett 12: 35' run continuo", "Sett 12: -9kg (95kg)", "Passo <16:30", "TARGET!"]], '#c0392b', '#fadbd8');
+                createStaticTable('nutrition-guide', '🥗 GUIDA NUTRIZIONALE E TIMING BCAA', '#27ae60', ["Timing", "Cosa", "Macro", "Obiettivo"], [["06:15", "Pre-workout", "☕ Caffè + 10g BCAA", "Energia + prot. muscolare"], ["08:00", "Post-workout", "Colazione completa", "Recovery + sazietà"], ["13:00", "Pranzo", "Proteine + Carboidrati", "Energia pomeriggio"], ["20:00", "Cena", "Proteine + Verdure", "Recovery notturno"]], '#229954', '#eafaf1');
+                createStaticTable('advanced-goals', '🎯 OBIETTIVI E MILESTONE', '#e74c3c', ["Corsa", "Peso", "Fitness", "Focus"], [["Sett 2: 1' run", "Sett 2: -1.5kg (102.5)", "FC <85 bpm", "Consistenza"], ["Sett 4: 5' run", "Sett 4: -3kg (101kg)", "Passo <18:00", "Progressione"], ["Sett 8: 20' run", "Sett 8: -6kg (98kg)", "Passo <17:00", "Velocità"], ["Sett 12: 35' run", "Sett 12: -9kg (95kg)", "Passo <16:30", "TARGET!"]], '#c0392b', '#fadbd8');
             }
 
             // --- ESECUZIONE ---
@@ -515,6 +407,7 @@
             addPhaseSection("FASE 2 (04/11 - 20/12/2025): Intensificazione + Target", "#45b7d1");
             generatePhase2();
             generateAnalyticalSections();
+            loadAndApplyData(); // Carica i dati salvati alla fine
         });
     </script>
 </body>
