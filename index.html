@@ -6,6 +6,7 @@
     <title>Piano Coaching Avanzato 2025 (EAA)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -84,11 +85,41 @@
             padding: 1.5rem;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
+        #timer-display {
+            font-size: clamp(4rem, 15vw, 6rem);
+            font-weight: bold;
+            font-family: monospace;
+        }
+        .timer-status-work {
+            color: #16a34a; /* green-600 */
+        }
+        .timer-status-rest {
+            color: #2563eb; /* blue-600 */
+        }
+        .timer-status-prep {
+            color: #f59e0b; /* amber-500 */
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            background: #000;
+            border-radius: 0.5rem;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body class="p-2 sm:p-4 md:p-8">
 
-    <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+    <div class="max-w-screen-2xl mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-6">
         <!-- Main Header -->
         <header class="w-full p-4 mb-6 rounded-lg bg-[#2c3e50] text-white text-center">
             <h1 class="text-xl sm:text-2xl font-bold">🏃‍♂️ PIANO COACHING AVANZATO 2025: 104kg → 95kg | 0' → 35' CORSA | TIMING OTTIMIZZATO EAA 🎯</h1>
@@ -99,6 +130,12 @@
             <nav class="-mb-px flex flex-wrap" aria-label="Tabs">
                 <button data-tab="piano" class="whitespace-nowrap py-4 px-3 sm:px-4 border-b-2 font-semibold text-sm text-blue-600 border-blue-600">
                     Dashboard
+                </button>
+                 <button data-tab="timer" class="whitespace-nowrap py-4 px-3 sm:px-4 border-b-2 font-semibold text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Workout Timer
+                </button>
+                 <button data-tab="videos" class="whitespace-nowrap py-4 px-3 sm:px-4 border-b-2 font-semibold text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Workout Videos
                 </button>
                  <button data-tab="spesa" class="whitespace-nowrap py-4 px-3 sm:px-4 border-b-2 font-semibold text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
                     Lista Spesa
@@ -139,27 +176,88 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-[#34495e] sticky-header">
                             <tr>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[90px]">📅 Data</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">📋 Giorno</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[120px]">⚡ Pre-Workout</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[140px]">🌅 Functional</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[160px]">🌆 Cardio/Corsa</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🥣 Colazione</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🍝 Pranzo</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[130px]">🍗 Cena</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">⚖️ Peso</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">💓 FC Med</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">⏱️ Passo</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[70px]">😴 Sonno</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[80px]">🔥 Cal Bruciate (TDEE)</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[80px]">🍽️ Cal Ingerite</th>
-                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider w-[90px]">📊 Bilancio</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Data</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Giorno</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Pre-Workout</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Functional</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Yoga/Stretching</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Cardio/Corsa</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Colazione</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Spuntino Matt.</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Pranzo</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Spuntino Pom.</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Cena</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Peso</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">FC Med</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Passo</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Sonno</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Cal Bruciate</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Cal Ingerite</th>
+                                <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Bilancio</th>
                             </tr>
                         </thead>
                         <tbody id="training-plan-body" class="bg-white divide-y divide-gray-200">
                             <!-- Rows will be inserted here by JavaScript -->
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- Workout Timer Tab -->
+             <div data-tab-content="timer" class="hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Timer Configuration -->
+                    <div id="timer-config-panel" class="card">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">🔧 Imposta Workout</h2>
+                        <div class="grid grid-cols-4 gap-2 mb-2 text-center text-sm font-semibold text-gray-600">
+                            <span>Stazione</span>
+                            <span>Lavoro (s)</span>
+                            <span>Recupero (s)</span>
+                            <span>Set</span>
+                        </div>
+                        <div id="stations-container" class="space-y-4">
+                            <!-- Station templates will be inserted here -->
+                        </div>
+                        <div class="mt-4 border-t pt-4 space-y-4">
+                            <div class="flex items-center gap-4">
+                               <label for="transition-rest" class="font-semibold text-gray-700">Pausa tra stazioni (s):</label>
+                               <input type="number" id="transition-rest" class="data-input w-24" value="30">
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <button id="add-station-btn" class="btn btn-secondary">Aggiungi Stazione</button>
+                                 <div class="flex flex-col gap-2 items-start">
+                                    <div class="flex items-center">
+                                        <input id="countdown-sound-check" type="checkbox" checked class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <label for="countdown-sound-check" class="ml-2 block text-sm text-gray-900">Beep Countdown 3-2-1</label>
+                                    </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Timer Display -->
+                    <div class="card flex flex-col items-center justify-center text-center">
+                         <div id="timer-info" class="mb-4 text-gray-600 h-16">
+                            <p id="info-station" class="text-xl font-semibold"></p>
+                            <p id="info-set" class="text-lg"></p>
+                         </div>
+                         <div id="timer-display" class="text-gray-800">00:00</div>
+                         <div id="timer-status" class="text-2xl font-bold mt-2">PRONTO</div>
+                         <div class="mt-8 flex items-center gap-4">
+                            <button id="start-timer-btn" class="btn btn-primary px-6 py-3 text-lg">AVVIA</button>
+                            <button id="pause-timer-btn" class="btn btn-secondary px-6 py-3 text-lg hidden">PAUSA</button>
+                            <button id="reset-timer-btn" class="btn btn-secondary px-6 py-3 text-lg">RESET</button>
+                         </div>
+                    </div>
+                </div>
+             </div>
+             
+            <!-- Videos Tab -->
+            <div data-tab-content="videos" class="hidden">
+                <div class="card">
+                     <h2 class="text-2xl font-bold text-gray-800 mb-6">🎥 Libreria Video Workout</h2>
+                     <div id="video-library" class="space-y-8">
+                        <!-- Video sections will be populated by JS -->
+                     </div>
                 </div>
             </div>
             
@@ -169,7 +267,7 @@
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">🛒 Lista della Spesa</h2>
                     <div class="flex items-center gap-4 mb-6">
                          <button id="generateShoppingListBtn" class="btn btn-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.5A5.002 5.002 0 0 0 8 3zM3.5 13A5.002 5.002 0 0 0 8 15c1.552 0 2.94-.707 3.857-1.818a.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.5A5.002 5.002 0 0 0 8 13z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.5A5.002 5.002 0 0 0 8 3zM3.5 13A5.002 5.002 0 0 0 8 15c1.552 0 2.94-.707-3.857-1.818a.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.5A5.002 5.002 0 0 0 8 13z"/></svg>
                             Genera per i prossimi 3 giorni
                          </button>
                     </div>
@@ -228,6 +326,7 @@
                 <div class="space-y-8">
                     <section id="metabolic-parameters" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm"></section>
                     <section id="nutrition-guide"></section>
+                    <section id="user-guide" class="card"></section>
                 </div>
             </div>
         </div>
@@ -250,7 +349,7 @@
                 const labels = allRows.map(row => row.dataset.date.substring(5));
                 
                 weightChart.data.labels = labels;
-                weightChart.data.datasets[0].data = allRows.map(row => { const input = row.querySelector('input[data-metric="peso"]'); return (input && input.value) ? parseFloat(input.value) : null; });
+                weightChart.data.datasets[0].data = allRows.map(row => { const input = row.querySelector('input[data-metric="peso"]'); return (input && input.value) ? parseFloat(input.value.replace(',', '.')) : null; });
                 weightChart.update();
                 
                 const balances = [], balanceColors = [];
@@ -265,12 +364,12 @@
                 balanceChart.data.labels = labels; balanceChart.data.datasets[0].data = balances; balanceChart.data.datasets[0].backgroundColor = balanceColors; balanceChart.update();
 
                 paceChart.data.labels = labels;
-                paceChart.data.datasets[0].data = allRows.map(row => { const input = row.querySelector('input[data-metric="passo"]'); return (input && input.value) ? parseFloat(input.value) : null; });
+                paceChart.data.datasets[0].data = allRows.map(row => { const input = row.querySelector('input[data-metric="passo"]'); return (input && input.value) ? parseFloat(input.value.replace(',', '.')) : null; });
                 paceChart.update();
             }
 
             // --- DATA PERSISTENCE LOGIC ---
-            const STORAGE_KEY = 'pianoCoachingData2025_EAA_v4';
+            const STORAGE_KEY = 'pianoCoachingData2025_EAA_v6';
             const getStoredData = () => { try { const d = localStorage.getItem(STORAGE_KEY); return d ? JSON.parse(d) : {}; } catch { return {}; } };
             const saveData = (key, value) => { const d = getStoredData(); d[key] = value; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); };
             function loadAndApplyData(isImport = false) {
@@ -332,11 +431,11 @@
                     const dailyRows = document.querySelectorAll(`tr[data-week='${weekNum}']`);
                     if (dailyRows.length === 0) return;
                     let lastWeight = '';
-                    for (let i = dailyRows.length - 1; i >= 0; i--) { const weightInput = dailyRows[i].querySelector('input[data-metric="peso"]'); if (weightInput && weightInput.value) { lastWeight = parseFloat(weightInput.value).toFixed(1) + ' kg'; break; } }
+                    for (let i = dailyRows.length - 1; i >= 0; i--) { const weightInput = dailyRows[i].querySelector('input[data-metric="peso"]'); if (weightInput && weightInput.value) { lastWeight = parseFloat(weightInput.value.replace(',', '.')).toFixed(1) + ' kg'; break; } }
                     const pesoCell = document.getElementById(`track-w${weekNum}-peso`); if (pesoCell) pesoCell.textContent = lastWeight;
                     const metricsToAverage = [{ key: 'passo', unit: ' min/km' }, { key: 'fc', unit: ' bpm' }, { key: 'sonno', unit: ' ore' }];
                     metricsToAverage.forEach(metricInfo => {
-                        const values = Array.from(dailyRows).map(row => parseFloat(row.querySelector(`input[data-metric="${metricInfo.key}"]`)?.value)).filter(v => !isNaN(v));
+                        const values = Array.from(dailyRows).map(row => parseFloat(row.querySelector(`input[data-metric="${metricInfo.key}"]`)?.value.replace(',', '.'))).filter(v => !isNaN(v));
                         const targetCell = document.getElementById(`track-w${weekNum}-${metricInfo.key}`);
                         if (targetCell) { if (values.length > 0) { const sum = values.reduce((a, b) => a + b, 0); const avg = sum / values.length; const formattedAvg = metricInfo.key === 'passo' ? avg.toFixed(2) : Math.round(avg); targetCell.textContent = formattedAvg + (metricInfo.unit || ''); } else { targetCell.textContent = ''; } }
                     });
@@ -355,20 +454,20 @@
 
             function addPhaseSection(title, color) {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="15" class="py-3 px-4 text-center text-sm font-bold text-white" style="background-color: ${color};">${title}</td>`;
+                tr.innerHTML = `<td colspan="18" class="py-3 px-4 text-center text-sm font-bold text-white" style="background-color: ${color};">${title}</td>`;
                 tbody.appendChild(tr);
             }
 
             function addDataRow(data, color, kcalTarget, currentDate) {
                 const tr = document.createElement('tr'); const daysSinceStart = (currentDate - planStartDate) / (1000 * 3600 * 24); const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
                 tr.dataset.week = Math.floor(daysSinceStart / 7) + 1; tr.dataset.date = dateKey; tr.style.backgroundColor = color; tr.className = 'text-xs text-gray-700 align-middle';
-                data.slice(0, 8).forEach(cellData => { const td = document.createElement('td'); td.className = 'px-2 py-3 border-b border-gray-200'; td.innerHTML = cellData; tr.appendChild(td); });
-                const createInputCell = (metric, type = 'number', placeholder = '') => { const td = document.createElement('td'); td.className = 'px-2 py-3 border-b border-gray-200'; const input = document.createElement('input'); input.type = type; input.className = 'data-input'; input.placeholder = placeholder; input.dataset.metric = metric; input.id = `${dateKey}-${metric}`; if(type === 'number') input.step = '0.1'; td.appendChild(input); return { td, input }; };
-                const { td: tdPeso, input: inputPeso } = createInputCell('peso'); tr.appendChild(tdPeso); const { td: tdFc, input: inputFc } = createInputCell('fc', 'text'); tr.appendChild(tdFc); const { td: tdPasso, input: inputPasso } = createInputCell('passo', 'text', 'min.dec'); tr.appendChild(tdPasso); const { td: tdSonno, input: inputSonno } = createInputCell('sonno', 'text', 'ore.dec'); tr.appendChild(tdSonno); const { td: tdCalOut, input: inputCalOut } = createInputCell('calout'); tr.appendChild(tdCalOut); const { td: tdCalIn, input: inputCalIn } = createInputCell('calin'); tr.appendChild(tdCalIn);
+                data.slice(0, 11).forEach(cellData => { const td = document.createElement('td'); td.className = 'px-2 py-3 border-b border-gray-200'; td.innerHTML = cellData; tr.appendChild(td); });
+                const createInputCell = (metric, placeholder = '') => { const td = document.createElement('td'); td.className = 'px-2 py-3 border-b border-gray-200'; const input = document.createElement('input'); input.type = 'tel'; input.inputMode = 'decimal'; input.className = 'data-input'; input.placeholder = placeholder; input.dataset.metric = metric; input.id = `${dateKey}-${metric}`; td.appendChild(input); return { td, input }; };
+                const { td: tdPeso, input: inputPeso } = createInputCell('peso'); tr.appendChild(tdPeso); const { td: tdFc, input: inputFc } = createInputCell('fc'); tr.appendChild(tdFc); const { td: tdPasso, input: inputPasso } = createInputCell('passo', 'min.dec'); tr.appendChild(tdPasso); const { td: tdSonno, input: inputSonno } = createInputCell('sonno', 'ore.dec'); tr.appendChild(tdSonno); const { td: tdCalOut, input: inputCalOut } = createInputCell('calout'); tr.appendChild(tdCalOut); const { td: tdCalIn, input: inputCalIn } = createInputCell('calin'); tr.appendChild(tdCalIn);
                 inputCalIn.value = kcalTarget;
                 const tdBilancio = document.createElement('td'); tdBilancio.className = 'px-2 py-3 border-b border-gray-200 text-center font-semibold'; const spanBilancio = document.createElement('span'); tdBilancio.appendChild(spanBilancio); tr.appendChild(tdBilancio);
                 const calculateBalance = () => {
-                    const calOutVal = parseFloat(inputCalOut.value); const calInVal = parseFloat(inputCalIn.value);
+                    const calOutVal = parseFloat(inputCalOut.value.replace(',', '.')); const calInVal = parseFloat(inputCalIn.value.replace(',', '.'));
                     if (!isNaN(calOutVal) && !isNaN(calInVal)) { const balance = calOutVal - calInVal; spanBilancio.textContent = balance > 0 ? `+${Math.round(balance)}` : Math.round(balance); if (balance <= -700 && balance >= -900) { spanBilancio.className = 'px-2 py-1 rounded-md bg-green-100 text-green-800'; } else if (balance < -900) { spanBilancio.className = 'px-2 py-1 rounded-md bg-red-100 text-red-800'; } else { spanBilancio.className = 'px-2 py-1 rounded-md bg-yellow-100 text-yellow-800'; }
                     } else { spanBilancio.textContent = ''; spanBilancio.className = ''; }
                     updateProgressTracking(); updateCharts();
@@ -377,7 +476,7 @@
                     input.addEventListener('input', (e) => {
                         saveData(e.target.id, e.target.value);
                         const quickInput = document.querySelector(`input[data-target-id="${e.target.id}"]`); if (quickInput) { quickInput.value = e.target.value; }
-                        if (e.target.dataset.metric === 'peso') { const w = parseFloat(e.target.value); if (!isNaN(w) && w <= 95) e.target.classList.add('bg-green-100', 'text-green-800'); else e.target.classList.remove('bg-green-100', 'text-green-800'); }
+                        if (e.target.dataset.metric === 'peso') { const w = parseFloat(e.target.value.replace(',', '.')); if (!isNaN(w) && w <= 95) e.target.classList.add('bg-green-100', 'text-green-800'); else e.target.classList.remove('bg-green-100', 'text-green-800'); }
                         if (['calout', 'calin'].includes(e.target.dataset.metric)) calculateBalance();
                         else { updateProgressTracking(); updateCharts(); }
                     });
@@ -400,38 +499,65 @@
 
             // --- PLAN GENERATION LOGIC ---
             function generatePhase0() {
-                const data = [ ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"], ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🍚 Riso 80g + 🥚 Uova 2", "🐟 Pesce 150g + 🍚 Riso 60g"], ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", "🍝 Pasta 80g + 🍅 Pomodoro", "🦃 Tacchino 150g"], ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"], ["A piacere / Niente", "😌 Riposo attivo", "😌 Stretching leggero", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🍚 Riso 80g + 🥚 Uova 2", "🐟 Pesce 150g + 🍚 Riso 60g"], ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", "🍝 Pasta 80g + 🍅 Pomodoro", "🦃 Tacchino 150g"], ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", "🍝 Pasta 80g + 🐟 Tonno 100g", "🍗 Pollo 150g + 🥔 Patate 150g"] ];
+                const snacks = ["☀️ Yogurt Greco 150g + Noci 15g", "🌙 Mela + Mandorle 20g", "☀️ Pane integrale 40g + Tacchino 60g", "🌙 2 Gallette di riso + Ricotta 60g"];
+                const data = [
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[0], "🍝 Pasta 80g + 🐟 Tonno 100g", snacks[1], "🍗 Pollo 150g + 🥔 Patate 150g"], // 24/9
+                    ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g"], // 25/9
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[0], "🍝 Pasta 80g + 🍅 Pomodoro", snacks[1], "🦃 Tacchino 150g"], // 26/9
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[2], "🍝 Pasta 80g + 🐟 Tonno 100g", snacks[3], "🍗 Pollo 150g + 🥔 Patate 150g"], // 27/9
+                    ["A piacere / Niente", "😌 Riposo attivo", "-", "😌 Stretching leggero", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[0], "🍚 Riso 80g + 🥚 Uova 2", snacks[1], "🐟 Pesce 150g + 🍚 Riso 60g"], // 28/9
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[2], "🍝 Pasta 80g + 🍅 Pomodoro", snacks[3], "🦃 Tacchino 150g"], // 29/9
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[0], "🍝 Pasta 80g + 🐟 Tonno 100g", snacks[1], "🍗 Pollo 150g + 🥔 Patate 150g"], // 30/9
+                    ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g"], // 1/10
+                    ["Riposo per viaggio", "😌 Riposo", "-", "😌 Stretching leggero", "Pasti normali", "-", "Pasti normali", "-", "Pasti normali"], // Oct 2nd
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[0], "🍝 Pasta 80g + 🍅 Pomodoro", snacks[1], "🦃 Tacchino 150g"], // 3/10
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[2], "🍝 Pasta 80g + 🐟 Tonno 100g", snacks[3], "🍗 Pollo 150g + 🥔 Patate 150g"] // 4/10
+                ];
                 const startDate = new Date(2025, 8, 24);
                 data.forEach((row, index) => { const currentDate = new Date(startDate); currentDate.setDate(startDate.getDate() + index); const rowData = [formatDate(currentDate), getDayName(currentDate), ...row]; addDataRow(rowData, "#fff5f5", 2075, currentDate); });
             }
-            function generatePause(startDate, endDate) { const current = new Date(startDate); while (current <= endDate) { const rowData = [formatDate(current), getDayName(current), "💤 Niente", "😴 Riposo", "🚶‍♂️ Walk leggera 30'", "Colazione normale", "Pranzo normale", "Cena normale"]; addDataRow(rowData, "#f8f9fa", 2200, new Date(current)); current.setDate(current.getDate() + 1); } }
+
+            function generatePause(startDate, endDate) { const current = new Date(startDate); while (current <= endDate) { const rowData = [formatDate(current), getDayName(current), "💤 Niente", "😴 Riposo","-", "🚶‍♂️ Walk leggera 30'", "Colazione normale", "-", "Pranzo normale", "-", "Cena normale"]; addDataRow(rowData, "#f8f9fa", 2200, new Date(current)); current.setDate(current.getDate() + 1); } }
+            
             function generatePhase1() {
                 const startDate = new Date(2025, 9, 5), endDate = new Date(2025, 9, 31);
-                const pre = ["☕ Caffè + 5 cpr EAA", "🍯 Miele 5g + 5 cpr EAA"]; const col = ["🧀 Ricotta 110g + 🥓 Prosciutto 50g", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🥛 Yogurt Greco 180g + 🥜 Noci 25g", "🧀 Ricotta 110g + 🍯 Miele"]; const pra = ["🍝 Pasta 75g + 🐟 Tonno 100g", "🍚 Riso 75g + 🥚 Uova 2", "🍝 Pasta 75g + 🍅 Pomodoro", "🫘 Legumi 100g + 🍚 Riso 60g"]; const cen = ["🍗 Pollo 150g + 🥔 Patate 150g", "🐟 Pesce 150g + 🍚 Riso 60g", "🦃 Tacchino 150g", "🥚 Frittata 3 uova"]; const current = new Date(startDate); let trainingDayCounter = 0;
+                const pre = ["☕ Caffè + 5 cpr EAA", "🍯 Miele 5g + 5 cpr EAA"]; 
+                const snacks = ["☀️ Yogurt Greco 150g + Noci 15g", "🌙 Mela + Mandorle 20g", "☀️ Pane integrale 40g + Tacchino 60g", "🌙 2 Gallette di riso + Ricotta 60g"];
+                const col = ["🧀 Ricotta 110g + 🥓 Prosciutto 50g", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🥛 Yogurt Greco 180g + 🥜 Noci 25g", "🧀 Ricotta 110g + 🍯 Miele"]; 
+                const pra = ["🍝 Pasta 75g + 🐟 Tonno 100g", "🍚 Riso 75g + 🥚 Uova 2", "🍝 Pasta 75g + 🍅 Pomodoro", "🫘 Legumi 100g + 🍚 Riso 60g"]; 
+                const cen = ["🍗 Pollo 150g + 🥔 Patate 150g", "🐟 Pesce 150g + 🍚 Riso 60g", "🦃 Tacchino 150g", "🥚 Frittata 3 uova"]; 
+                const current = new Date(startDate); 
+                let dayCounter = 0;
                 while (current <= endDate) { 
-                    const d = current.getDay(); let fun = "", car = "", preWorkout = "";
+                    const d = current.getDay(); 
+                    let fun = "", yoga = "-", car = "", preWorkout = "", sp1 = snacks[dayCounter%4], sp2 = snacks[(dayCounter+1)%4];
                     if (d === 0) { preWorkout = "A piacere / Niente"; fun = "😌 Riposo"; car = "😌 Yoga/Stretching"; } 
-                    else { const weekInPhase = Math.floor(trainingDayCounter / 6); preWorkout = pre[trainingDayCounter % 2];
+                    else { const weekInPhase = Math.floor(dayCounter / 6); preWorkout = pre[dayCounter % 2]; yoga = "🧘‍♂️ Stretching 15'";
                         if ([1, 3, 5].includes(d)) { fun = "💪 Self Functional 55'"; car = "🚶‍♂️ Walk recupero 45'"; }  else if ([2, 4].includes(d)) { fun = "💪 Self Functional 55'"; car = weekInPhase <= 1 ? "🏃‍♂️ 1' run/2' walk x8" : "🏃‍♂️ 1.5' run/2' walk x7"; }  else if (d === 6) { fun = "💪 Self Functional 55'"; car = "🚶‍♂️ Long Walk 12km + 2x3' run"; }
-                        trainingDayCounter++;
+                        dayCounter++;
                     }
-                    const mealIndex = Math.floor(trainingDayCounter / 1.5);
-                    const rowData = [formatDate(current), getDayName(current), preWorkout, fun, car, col[mealIndex % 4], pra[mealIndex % 4], cen[mealIndex % 4]]; 
+                    const mealIndex = Math.floor(dayCounter / 1.5);
+                    const rowData = [formatDate(current), getDayName(current), preWorkout, fun, yoga, car, col[mealIndex % 4], sp1, pra[mealIndex % 4], sp2, cen[mealIndex % 4]]; 
                     addDataRow(rowData, "#f0fffe", 2050, new Date(current)); current.setDate(current.getDate() + 1); 
                 }
             }
             function generatePhase2() {
                  const startDate = new Date(2025, 10, 4), endDate = new Date(2025, 11, 20);
-                 const pre = ["☕ Caffè + 5 cpr EAA", "🍯 Miele 5g + 5 cpr EAA"]; const col = ["🧀 Ricotta 100g + 🥓 Prosciutto 45g", "🥚 Uova 2 + 🥓 Prosciutto 45g", "🥛 Yogurt Greco 170g + 🥜 Noci 22g", "🧀 Ricotta 100g + 🍯 Miele", "🥚 Frittata 2 uova"]; const pra = ["🍝 Pasta 70g + 🐟 Tonno 100g", "🍚 Riso 70g + 🥚 Uova 2", "🍝 Pasta 70g + 🍅 Pomodoro", "🫘 Legumi 100g + 🍚 Riso 55g", "🍲 Minestrone + 🍞 Pane 40g"]; const cen = ["🍗 Pollo 140g + 🥔 Patate 120g", "🐟 Pesce 140g + 🍚 Riso 50g", "🦃 Tacchino 140g", "🥚 Frittata 3 uova", "🐟 Salmone 120g + 🥬 Verdure"]; const current = new Date(startDate); let trainingDayCounter = 0;
+                 const pre = ["☕ Caffè + 5 cpr EAA", "🍯 Miele 5g + 5 cpr EAA"];
+                 const snacks = ["☀️ Yogurt Greco 150g + Noci 15g", "🌙 Mela + Mandorle 20g", "☀️ Pane integrale 40g + Tacchino 60g", "🌙 2 Gallette di riso + Ricotta 60g"];
+                 const col = ["🧀 Ricotta 100g + 🥓 Prosciutto 45g", "🥚 Uova 2 + 🥓 Prosciutto 45g", "🥛 Yogurt Greco 170g + 🥜 Noci 22g", "🧀 Ricotta 100g + 🍯 Miele", "🥚 Frittata 2 uova"]; 
+                 const pra = ["🍝 Pasta 70g + 🐟 Tonno 100g", "🍚 Riso 70g + 🥚 Uova 2", "🍝 Pasta 70g + 🍅 Pomodoro", "🫘 Legumi 100g + 🍚 Riso 55g", "🍲 Minestrone + 🍞 Pane 40g"]; 
+                 const cen = ["🍗 Pollo 140g + 🥔 Patate 120g", "🐟 Pesce 140g + 🍚 Riso 50g", "🦃 Tacchino 140g", "🥚 Frittata 3 uova", "🐟 Salmone 120g + 🥬 Verdure"]; 
+                 const current = new Date(startDate); let dayCounter = 0;
                  while (current <= endDate) { 
-                    const d = current.getDay(); let fun = "", car = "", preWorkout = "";
+                    const d = current.getDay(); let fun = "", yoga="-", car = "", preWorkout = "", sp1 = snacks[dayCounter%4], sp2 = snacks[(dayCounter+1)%4];
                     if (d === 0) { preWorkout = "A piacere / Niente"; fun = "😌 Riposo"; car = "😌 Recovery"; } 
-                    else { const weekInPhase = Math.floor(trainingDayCounter / 6); preWorkout = pre[trainingDayCounter % 2];
+                    else { const weekInPhase = Math.floor(dayCounter / 6); preWorkout = pre[dayCounter % 2]; yoga="🧘‍♂️ Stretching 15'";
                         if ([1, 3, 5].includes(d)) { fun = "💪 Functional Palestra 55'"; car = "🚶‍♂️ Walk recupero 45'"; } else if ([2, 4].includes(d)) { fun = "💪 Functional Palestra 55'"; if (weekInPhase <= 2) car = "🏃‍♂️ 5' run/1' walk x5"; else if (weekInPhase <= 4) car = "🏃‍♂️ Corsa continua 25'"; else car = "🏃‍♂️ Corsa continua 35'"; } else if (d === 6) { fun = "💪 Functional Palestra 55'"; car = "🚶‍♂️ Long Walk 15km + 2x5' run"; }
-                        trainingDayCounter++;
+                        dayCounter++;
                     }
-                    const mealIndex = Math.floor(trainingDayCounter / 1.2);
-                    const rowData = [formatDate(current), getDayName(current), preWorkout, fun, car, col[mealIndex % 5], pra[mealIndex % 5], cen[mealIndex % 5]]; 
+                    const mealIndex = Math.floor(dayCounter / 1.2);
+                    const rowData = [formatDate(current), getDayName(current), preWorkout, fun, yoga, car, col[mealIndex % 5], sp1, pra[mealIndex % 5], sp2, cen[mealIndex % 5]]; 
                     addDataRow(rowData, "#f0f8ff", 2000, new Date(current)); current.setDate(current.getDate() + 1); 
                  }
             }
@@ -440,6 +566,38 @@
                 generateProgressTrackingTable();
                 createStaticTable('nutrition-guide', '🥗 GUIDA NUTRIZIONALE E TIMING', '#27ae60', ["Timing", "Cosa", "Macro", "Obiettivo"], [["06:15", "Pre-workout", "☕ Caffè / Miele + 5 cpr EAA", "Supporto completo muscolare"], ["08:00", "Post-workout", "Colazione completa", "Recovery + sazietà"], ["13:00", "Pranzo", "Proteine + Carboidrati", "Energia pomeriggio"], ["20:00", "Cena", "Proteine + Verdure", "Recovery notturno"]], '#229954', '#eafaf1');
                 createStaticTable('advanced-goals', '🎯 OBIETTIVI E MILESTONE', '#e74c3c', ["Corsa", "Peso", "Fitness", "Focus"], [["Sett 2: 1' run", "Sett 2: -1.5kg (102.5)", "FC <85 bpm", "Consistenza"], ["Sett 4: 5' run", "Sett 4: -3kg (101kg)", "Passo <18:00", "Progressione"], ["Sett 8: 20' run", "Sett 8: -6kg (98kg)", "Passo <17:00", "Velocità"], ["Sett 12: 35' run", "Sett 12: -9kg (95kg)", "Passo <16:30", "TARGET!"]], '#c0392b', '#fadbd8');
+                generateUserGuide();
+            }
+            
+            function generateUserGuide() {
+                const container = document.getElementById('user-guide');
+                container.innerHTML = `
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">💡 Guida all'Uso dell'App</h2>
+                    <div class="space-y-4 text-gray-700">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">1. Come Inserire Numeri con la Virgola (Es. 102,8)</h3>
+                            <p>Quando inserisci dati come il peso o il passo da cellulare, puoi usare sia il <strong>punto (.)</strong> che la <strong>virgola (,)</strong> per i decimali. Il campo è stato ottimizzato per accettare entrambi i formati senza cancellare il numero, e ti mostrerà una comoda tastiera numerica.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">2. Come Salvare e Trasferire i Dati (CSV)</h3>
+                            <p>Questa app salva i dati localmente nel browser. Per spostarli tra dispositivi (es. da mobile a PC), usa le funzioni di Import/Export:</p>
+                            <h4 class="font-semibold mt-3 mb-1">Su iPhone (iOS):</h4>
+                            <ol class="list-decimal list-inside space-y-1 pl-2">
+                                <li>Vai su "Statistiche" e premi <strong>"Esporta CSV"</strong>.</li>
+                                <li>Tocca l'icona di download nel browser per vedere il file.</li>
+                                <li>Seleziona il file e poi tocca l'icona di <strong>condivisione</strong> (quadrato con freccia).</li>
+                                <li>Scegli dove inviarlo: "Salva su File" per iCloud, "Copia in Fogli" per Google Sheets, oppure invialo via Mail o altre app.</li>
+                            </ol>
+                            <h4 class="font-semibold mt-3 mb-1">Su Android:</h4>
+                            <ol class="list-decimal list-inside space-y-1 pl-2">
+                                <li>Vai su "Statistiche" e premi <strong>"Esporta CSV"</strong>.</li>
+                                <li>Apri la barra delle notifiche e tocca il file scaricato.</li>
+                                <li>Il sistema ti chiederà con quale app aprirlo. Scegli <strong>Fogli</strong>, <strong>Drive</strong> o il tuo gestore di file.</li>
+                                <li>Da lì, puoi salvarlo sul cloud o condividerlo per recuperarlo facilmente dal PC.</li>
+                            </ol>
+                        </div>
+                    </div>
+                `;
             }
 
             // --- DASHBOARD AND SHOPPING LIST LOGIC ---
@@ -456,7 +614,15 @@
                     summaryContainer.innerHTML = `
                         <p><strong>Pre-Workout:</strong> ${cells[2].textContent}</p>
                         <p><strong>Functional:</strong> ${cells[3].textContent}</p>
-                        <p><strong>Cardio/Corsa:</strong> ${cells[4].textContent}</p>
+                        <p><strong>Yoga/Stretching:</strong> ${cells[4].textContent}</p>
+                        <p><strong>Cardio/Corsa:</strong> ${cells[5].textContent}</p>
+                        <hr class="my-2">
+                        <p><strong>Colazione:</strong> ${cells[6].textContent}</p>
+                        <p><strong>Spuntino Mattina:</strong> ${cells[7].textContent}</p>
+                        <p><strong>Pranzo:</strong> ${cells[8].textContent}</p>
+                        <p><strong>Spuntino Pomeriggio:</strong> ${cells[9].textContent}</p>
+                        <p><strong>Cena:</strong> ${cells[10].textContent}</p>
+                        <hr class="my-2">
                         <p><strong>Target Calorie:</strong> <span class="font-bold text-blue-600">${todayRow.querySelector('input[data-metric=calin]').value} kcal</span></p>`;
                     
                     const metrics = ['peso', 'fc', 'passo', 'sonno', 'calout', 'calin'];
@@ -465,17 +631,20 @@
                         const originalInput = todayRow.querySelector(`input[data-metric=${m}]`);
                         return `<div class="flex flex-col">
                                     <label for="quick-${m}" class="text-sm font-medium text-gray-600 mb-1">${labels[m]}</label>
-                                    <input type="${originalInput.type}" id="quick-${m}" data-target-id="${originalInput.id}" class="data-input" placeholder="${originalInput.placeholder}">
+                                    <input type="${originalInput.type}" id="quick-${m}" data-target-id="${originalInput.id}" class="data-input" placeholder="${originalInput.placeholder}" inputmode="${originalInput.inputMode}">
                                 </div>`
                     }).join('');
 
                     document.querySelectorAll('#quickInputs input').forEach(quickInput => {
                         const targetInput = document.getElementById(quickInput.dataset.targetId);
-                        quickInput.value = targetInput.value;
-                        quickInput.addEventListener('input', () => {
-                            targetInput.value = quickInput.value;
-                            targetInput.dispatchEvent(new Event('input', { bubbles: true }));
-                        });
+                        if (targetInput) {
+                            quickInput.value = targetInput.value;
+                            targetInput.addEventListener('input', () => { quickInput.value = targetInput.value; }); // Sync from table to quick input
+                            quickInput.addEventListener('input', () => { // Sync from quick input to table
+                                targetInput.value = quickInput.value;
+                                targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            });
+                        }
                     });
 
                 } else {
@@ -492,7 +661,7 @@
                 let dailyBreakdownHTML = '<div class="space-y-4">';
 
                 const parseAndAggregate = (mealText) => {
-                    if (!mealText) return;
+                    if (!mealText || mealText === "-") return;
                     mealText.split('+').forEach(part => {
                         const cleanedPart = part.replace(/[\d\.]+(\s)?(g|ml|cpr)/gi, '').replace(/[^\w\s.,-]/g, '').trim();
                         const quantityMatch = part.match(/([\d\.]+)\s*(g|ml|cpr|uova)?/i);
@@ -524,12 +693,14 @@
                         dailyBreakdownHTML += `<div>
                             <h3 class="text-lg font-semibold text-gray-700 border-b pb-1 mb-2">${getDayName(date)} - ${formatDate(date)}</h3>
                             <ul class="list-none text-sm space-y-1 pl-2">
-                                <li><strong>🥣 Colazione:</strong> ${cells[5].textContent}</li>
-                                <li><strong>🍝 Pranzo:</strong> ${cells[6].textContent}</li>
-                                <li><strong>🍗 Cena:</strong> ${cells[7].textContent}</li>
+                                <li><strong>🥣 Colazione:</strong> ${cells[6].textContent}</li>
+                                <li><strong>☀️ Spuntino:</strong> ${cells[7].textContent}</li>
+                                <li><strong>🍝 Pranzo:</strong> ${cells[8].textContent}</li>
+                                <li><strong>🌙 Spuntino:</strong> ${cells[9].textContent}</li>
+                                <li><strong>🍗 Cena:</strong> ${cells[10].textContent}</li>
                             </ul>
                         </div>`;
-                        [cells[5], cells[6], cells[7]].forEach(cell => parseAndAggregate(cell.textContent));
+                        [cells[6], cells[7], cells[8], cells[9], cells[10]].forEach(cell => parseAndAggregate(cell.textContent));
                     }
                 }
                 dailyBreakdownHTML += '</div>';
@@ -549,9 +720,245 @@
                 container.innerHTML = dailyBreakdownHTML + summaryHTML;
             }
             document.getElementById('generateShoppingListBtn').addEventListener('click', generateShoppingList);
+            
+            // --- WORKOUT TIMER LOGIC ---
+            const stationsContainer = document.getElementById('stations-container');
+            const addStationBtn = document.getElementById('add-station-btn');
+            const startBtn = document.getElementById('start-timer-btn');
+            const pauseBtn = document.getElementById('pause-timer-btn');
+            const resetBtn = document.getElementById('reset-timer-btn');
+            const timerDisplay = document.getElementById('timer-display');
+            const timerStatus = document.getElementById('timer-status');
+            const infoStation = document.getElementById('info-station');
+            const infoSet = document.getElementById('info-set');
+            const countdownSoundCheck = document.getElementById('countdown-sound-check');
+            const transitionRestInput = document.getElementById('transition-rest');
+
+
+            let stationCount = 0;
+            let timerInterval;
+            let workoutPlan = [];
+            let currentPhaseIndex = 0;
+            let timeLeft = 0;
+            let isPaused = false;
+            let synth;
+
+            function playSound(note, duration, time) {
+                if (Tone.context.state !== 'running') Tone.start();
+                synth = synth || new Tone.Synth().toDestination();
+                synth.triggerAttackRelease(note, duration, time);
+            }
+
+            function addStation() {
+                if (stationCount >= 14) return;
+                stationCount++;
+                const stationHTML = `
+                    <div class="station-item grid grid-cols-4 gap-2 items-center">
+                        <span class="font-bold text-gray-700">Stazione ${stationCount}</span>
+                        <input type="number" class="data-input work-time" value="45">
+                        <input type="number" class="data-input rest-time" value="15">
+                        <div class="flex items-center">
+                            <input type="number" class="data-input sets" value="3">
+                            <button class="remove-station-btn ml-2 text-red-500 hover:text-red-700 text-2xl font-bold">&times;</button>
+                        </div>
+                    </div>`;
+                stationsContainer.insertAdjacentHTML('beforeend', stationHTML);
+                stationsContainer.querySelector('.remove-station-btn:last-of-type').addEventListener('click', (e) => {
+                    e.target.closest('.station-item').remove();
+                    stationCount--;
+                    let count = 1;
+                    stationsContainer.querySelectorAll('.station-item span').forEach(span => {
+                       span.textContent = `Stazione ${count++}`;
+                    });
+                });
+            }
+            
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+
+            function buildWorkoutPlan() {
+                workoutPlan = [];
+                const transitionRest = parseInt(transitionRestInput.value) || 30;
+                const stationItems = stationsContainer.querySelectorAll('.station-item');
+                stationItems.forEach((item, index) => {
+                    const workTime = parseInt(item.querySelector('.work-time').value) || 0;
+                    const restTime = parseInt(item.querySelector('.rest-time').value) || 0;
+                    const sets = parseInt(item.querySelector('.sets').value) || 0;
+                    if (workTime > 0 && sets > 0) {
+                        for (let i = 1; i <= sets; i++) {
+                            workoutPlan.push({ type: 'LAVORO', duration: workTime, station: index + 1, set: i, totalSets: sets });
+                            if (i < sets && restTime > 0) {
+                                workoutPlan.push({ type: 'RECUPERO', duration: restTime, station: index + 1, set: i, totalSets: sets });
+                            } else if (i === sets && index < stationItems.length - 1 && transitionRest > 0) {
+                                workoutPlan.push({ type: 'PAUSA', duration: transitionRest, station: index + 1, set: i, totalSets: sets, isTransition: true });
+                            }
+                        }
+                    }
+                });
+            }
+
+            function updateTimerDisplay() {
+                timerDisplay.textContent = formatTime(timeLeft);
+                if (countdownSoundCheck.checked && timeLeft <= 3 && timeLeft > 0) {
+                    playSound(timeLeft === 1 ? 'C5' : 'C4', '8n');
+                }
+            }
+            
+            function startInitialCountdown() {
+                if(Tone.context.state !== 'running') Tone.start();
+                buildWorkoutPlan();
+                if (workoutPlan.length === 0) { alert("Aggiungi almeno una stazione valida."); return; }
+                
+                isPaused = false;
+                startBtn.classList.add('hidden');
+                pauseBtn.classList.remove('hidden');
+                document.getElementById('timer-config-panel').classList.add('opacity-50', 'pointer-events-none');
+
+                timeLeft = 15;
+                timerStatus.textContent = "PREPARATI!";
+                timerStatus.className = 'text-2xl font-bold mt-2 timer-status-prep';
+                infoStation.textContent = '';
+                infoSet.textContent = '';
+                playSound('A4', '0.5s');
+
+                timerInterval = setInterval(() => {
+                    if (isPaused) return;
+                    timeLeft--;
+                    updateTimerDisplay();
+                    if(timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        currentPhaseIndex = 0;
+                        runNextPhase();
+                    }
+                }, 1000);
+                updateTimerDisplay();
+            }
+
+            function runNextPhase() {
+                if (currentPhaseIndex >= workoutPlan.length) {
+                    finishWorkout();
+                    return;
+                }
+                const phase = workoutPlan[currentPhaseIndex];
+                timeLeft = phase.duration;
+                timerStatus.textContent = phase.type;
+                timerStatus.className = `text-2xl font-bold mt-2 ${phase.type === 'LAVORO' ? 'timer-status-work' : 'timer-status-rest'}`;
+                
+                infoStation.textContent = `Stazione ${phase.station}`;
+                infoSet.textContent = `Set ${phase.set} di ${phase.totalSets}`;
+
+                playSound(phase.type === 'LAVORO' ? 'G5' : 'C4', '0.5s');
+
+                timerInterval = setInterval(() => {
+                    if (isPaused) return;
+                    timeLeft--;
+                    updateTimerDisplay();
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        currentPhaseIndex++;
+                        runNextPhase();
+                    }
+                }, 1000);
+                updateTimerDisplay();
+            }
+            
+            function pauseTimer() {
+                isPaused = !isPaused;
+                pauseBtn.textContent = isPaused ? "RIPRENDI" : "PAUSA";
+            }
+            
+            function resetTimer() {
+                clearInterval(timerInterval);
+                isPaused = false;
+                workoutPlan = [];
+                currentPhaseIndex = 0;
+                timeLeft = 0;
+                
+                timerDisplay.textContent = "00:00";
+                timerStatus.textContent = "PRONTO";
+                timerStatus.className = 'text-2xl font-bold mt-2';
+                infoStation.textContent = '';
+                infoSet.textContent = '';
+                
+                startBtn.classList.remove('hidden');
+                pauseBtn.classList.add('hidden');
+                pauseBtn.textContent = "PAUSA";
+                document.getElementById('timer-config-panel').classList.remove('opacity-50', 'pointer-events-none');
+            }
+            
+            function finishWorkout() {
+                playSound('C6', '1s');
+                resetTimer();
+                timerStatus.textContent = "FINITO!";
+            }
+            
+            addStationBtn.addEventListener('click', addStation);
+            startBtn.addEventListener('click', startInitialCountdown);
+            pauseBtn.addEventListener('click', pauseTimer);
+            resetBtn.addEventListener('click', resetTimer);
+            
+            for(let i=0; i<8; i++){ addStation(); }
+
+            // --- VIDEO LIBRARY ---
+            function generateVideoLibrary() {
+                const libraryContainer = document.getElementById('video-library');
+                const videoData = {
+                    "F45 Workouts": [
+                        "uJRLM-1NZEo", "wFRtOd8yqtg", "Th0D5jQbyRo",
+                        "LU-aptMaFVE", "jLb3VFcYf8k", "LfvPL1DLmek"
+                    ],
+                    "DAREBEE Workouts": [
+                        "r0uXE8_1dl4", "PyUP10dh8CE", "M6TUlRGyjA4",
+                        "EQWiqhVSHdw", "cc6aPyz-qwg", "fy_v8Gndf8g", "wPqofIk8n_0"
+                    ],
+                    "Esercizi Specifici": [
+                        { id: "B2Bi9Xr6d2A", title: "Jumps" },
+                        { id: "JhLlu2FMueo", title: "Burpees" }
+                    ],
+                    "Stretching": [
+                        "4PfVFPBgo5s"
+                    ]
+                };
+
+                for (const category in videoData) {
+                    let categoryHtml = `<div>
+                        <h3 class="text-xl font-bold text-gray-800 border-b-2 border-gray-200 pb-2 mb-4">${category}</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+                    
+                    videoData[category].forEach((video, index) => {
+                        const videoId = typeof video === 'string' ? video : video.id;
+                        const videoTitle = typeof video === 'string' ? `${category} #${index + 1}` : video.title;
+                        categoryHtml += `
+                            <div>
+                                <h4 class="font-semibold mb-2 text-gray-700">${videoTitle}</h4>
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
+                            </div>`;
+                    });
+
+                    categoryHtml += `</div></div>`;
+                    libraryContainer.innerHTML += categoryHtml;
+                }
+            }
 
             // --- EXECUTION ---
-            addMetabolicParameters(); addPhaseSection("FASE 0 (24/09 - 30/09/2025): Adattamento + Test Baseline", "#ff6b6b"); generatePhase0(); addPhaseSection("PAUSA (01/10 - 04/10/2025): Recupero Attivo", "#95a5a6"); generatePause(new Date(2025, 9, 1), new Date(2025, 9, 4)); addPhaseSection("FASE 1 (05/10 - 31/10/2025): Build Aerobico", "#4ecdc4"); generatePhase1(); addPhaseSection("PAUSA (01/11 - 03/11/2025): Recupero Attivo", "#95a5a6"); generatePause(new Date(2025, 10, 1), new Date(2025, 10, 3)); addPhaseSection("FASE 2 (04/11 - 20/12/2025): Intensificazione + Target", "#45b7d1"); generatePhase2(); generateAnalyticalSections(); initializeCharts(); loadAndApplyData();
+            addMetabolicParameters(); 
+            addPhaseSection("FASE 0 (24/09 - 04/10/2025): Adattamento + Test Baseline", "#ff6b6b"); 
+            generatePhase0(); 
+            addPhaseSection("FASE 1 (05/10 - 31/10/2025): Build Aerobico", "#4ecdc4"); 
+            generatePhase1(); 
+            addPhaseSection("PAUSA (01/11 - 03/11/2025): Recupero Attivo", "#95a5a6"); 
+            generatePause(new Date(2025, 10, 1), new Date(2025, 10, 3)); 
+            addPhaseSection("FASE 2 (04/11 - 20/12/2025): Intensificazione + Target", "#45b7d1"); 
+            generatePhase2(); 
+            generateAnalyticalSections(); 
+            initializeCharts(); 
+            generateVideoLibrary(); 
+            loadAndApplyData();
         });
     </script>
 </body>
