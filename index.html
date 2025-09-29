@@ -369,7 +369,7 @@
             }
 
             // --- DATA PERSISTENCE LOGIC ---
-            const STORAGE_KEY = 'pianoCoachingData2025_EAA_v6';
+            const STORAGE_KEY = 'pianoCoachingData2025_EAA_v7';
             const getStoredData = () => { try { const d = localStorage.getItem(STORAGE_KEY); return d ? JSON.parse(d) : {}; } catch { return {}; } };
             const saveData = (key, value) => { const d = getStoredData(); d[key] = value; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); };
             function loadAndApplyData(isImport = false) {
@@ -407,7 +407,11 @@
                 document.body.appendChild(link); link.click(); document.body.removeChild(link);
             });
             importInput.addEventListener('change', (e) => {
-                const file = e.target.files[0]; if (!file) return;
+                const file = e.target.files[0]; 
+                if (!file) {
+                    alert("Nessun file selezionato. L'importazione è stata annullata.");
+                    return;
+                };
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     let importedData = getStoredData();
@@ -415,7 +419,7 @@
                     const headers = rows[0].split(',').map(h => h.replace(/"/g, '').trim());
 
                     rows.slice(1).forEach(rowStr => {
-                        if (!rowStr) return;
+                        if (!rowStr) return; 
                         const cols = rowStr.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g).map(c => c.replace(/"/g, '').trim());
                         const rowData = headers.reduce((obj, header, index) => {
                             obj[header] = cols[index];
@@ -521,17 +525,17 @@
             function generatePhase0() {
                 const snacks = ["☀️ Yogurt Greco 150g + Noci 15g", "🌙 Mela + Mandorle 20g", "☀️ Pane integrale 40g + Tacchino 60g", "🌙 2 Gallette di riso + Ricotta 60g"];
                 const data = [
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[0], "🍝 Pasta 80g + 🐟 Tonno 100g", snacks[1], "🍗 Pollo 150g + 🥔 Patate 150g"], // 24/9
-                    ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g"], // 25/9
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[0], "🍝 Pasta 80g + 🍅 Pomodoro", snacks[1], "🦃 Tacchino 150g"], // 26/9
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[2], "🍝 Pasta 80g + 🐟 Tonno 100g", snacks[3], "🍗 Pollo 150g + 🥔 Patate 150g"], // 27/9
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[0], "🍚 Riso 80g + 🥚 Uova 2", snacks[1], "🐟 Pesce 150g + 🍚 Riso 60g"], // 28/9
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[2], "🍝 Pasta 80g + 🍅 Pomodoro", snacks[3], "🦃 Tacchino 150g"], // 29/9
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[0], "🍝 Pasta 80g + 🐟 Tonno 100g", snacks[1], "🍗 Pollo 150g + 🥔 Patate 150g"], // 30/9
-                    ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g"], // 1/10
-                    ["Riposo per viaggio", "😌 Riposo", "-", "😌 Stretching leggero", "Pasti normali", "-", "Pasti normali", "-", "Pasti normali"], // Oct 2nd
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[0], "🍝 Pasta 80g + 🍅 Pomodoro", snacks[1], "🦃 Tacchino 150g"], // 3/10
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[2], "🍝 Pasta 80g + 🐟 Tonno 100g", snacks[3], "🍗 Pollo 150g + 🥔 Patate 150g"] // 4/10
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🥦 Verdure", snacks[0], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[1], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"],
+                    ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2 + 🥦 Verdure", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g + 🥦 Verdure"],
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[0], "🍝 Pasta 80g + 🍅 Pomodoro + 🥬 Insalata", snacks[1], "🦃 Tacchino 150g + 🥬 Insalata"],
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[2], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[3], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"],
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[0], "🍚 Riso 80g + 🥚 Uova 2 + 🥦 Verdure", snacks[1], "🐟 Pesce 150g + 🍚 Riso 60g + 🥦 Verdure"],
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[2], "🍝 Pasta 80g + 🍅 Pomodoro + 🥬 Insalata", snacks[3], "🦃 Tacchino 150g + 🥬 Insalata"],
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[0], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[1], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"],
+                    ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2 + 🥦 Verdure", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g + 🥦 Verdure"],
+                    ["Riposo per viaggio", "😌 Riposo", "-", "😌 Stretching leggero", "Pasti normali", "-", "Pasti normali", "-", "Pasti normali"],
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[0], "🍝 Pasta 80g + 🍅 Pomodoro + 🥬 Insalata", snacks[1], "🦃 Tacchino 150g + 🥬 Insalata"],
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[2], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[3], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"]
                 ];
                 const startDate = new Date(2025, 8, 24);
                 data.forEach((row, index) => { const currentDate = new Date(startDate); currentDate.setDate(startDate.getDate() + index); const rowData = [formatDate(currentDate), getDayName(currentDate), ...row]; addDataRow(rowData, "#fff5f5", 2075, currentDate); });
@@ -544,8 +548,8 @@
                 const pre = ["☕ Caffè + 5 cpr EAA", "🍯 Miele 5g + 5 cpr EAA"]; 
                 const snacks = ["☀️ Yogurt Greco 150g + Noci 15g", "🌙 Mela + Mandorle 20g", "☀️ Pane integrale 40g + Tacchino 60g", "🌙 2 Gallette di riso + Ricotta 60g"];
                 const col = ["🧀 Ricotta 110g + 🥓 Prosciutto 50g", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🥛 Yogurt Greco 180g + 🥜 Noci 25g", "🧀 Ricotta 110g + 🍯 Miele"]; 
-                const pra = ["🍝 Pasta 75g + 🐟 Tonno 100g", "🍚 Riso 75g + 🥚 Uova 2", "🍝 Pasta 75g + 🍅 Pomodoro", "🫘 Legumi 100g + 🍚 Riso 60g"]; 
-                const cen = ["🍗 Pollo 150g + 🥔 Patate 150g", "🐟 Pesce 150g + 🍚 Riso 60g", "🦃 Tacchino 150g", "🥚 Frittata 3 uova"]; 
+                const pra = ["🍝 Pasta 75g + 🐟 Tonno 100g + 🥬 Insalata", "🍚 Riso 75g + 🥚 Uova 2 + 🥦 Verdure", "🍝 Pasta 75g + 🍅 Pomodoro + 🥬 Insalata", "🫘 Legumi 100g + 🍚 Riso 60g + 🥦 Verdure"]; 
+                const cen = ["🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure", "🐟 Pesce 150g + 🍚 Riso 60g + 🥦 Verdure", "🦃 Tacchino 150g + 🥬 Insalata", "🥚 Frittata 3 uova + 🥦 Verdure"]; 
                 const current = new Date(startDate); 
                 let dayCounter = 0;
                 while (current <= endDate) { 
@@ -566,8 +570,8 @@
                  const pre = ["☕ Caffè + 5 cpr EAA", "🍯 Miele 5g + 5 cpr EAA"];
                  const snacks = ["☀️ Yogurt Greco 150g + Noci 15g", "🌙 Mela + Mandorle 20g", "☀️ Pane integrale 40g + Tacchino 60g", "🌙 2 Gallette di riso + Ricotta 60g"];
                  const col = ["🧀 Ricotta 100g + 🥓 Prosciutto 45g", "🥚 Uova 2 + 🥓 Prosciutto 45g", "🥛 Yogurt Greco 170g + 🥜 Noci 22g", "🧀 Ricotta 100g + 🍯 Miele", "🥚 Frittata 2 uova"]; 
-                 const pra = ["🍝 Pasta 70g + 🐟 Tonno 100g", "🍚 Riso 70g + 🥚 Uova 2", "🍝 Pasta 70g + 🍅 Pomodoro", "🫘 Legumi 100g + 🍚 Riso 55g", "🍲 Minestrone + 🍞 Pane 40g"]; 
-                 const cen = ["🍗 Pollo 140g + 🥔 Patate 120g", "🐟 Pesce 140g + 🍚 Riso 50g", "🦃 Tacchino 140g", "🥚 Frittata 3 uova", "🐟 Salmone 120g + 🥬 Verdure"]; 
+                 const pra = ["🍝 Pasta 70g + 🐟 Tonno 100g + 🥬 Insalata", "🍚 Riso 70g + 🥚 Uova 2 + 🥦 Verdure", "🍝 Pasta 70g + 🍅 Pomodoro + 🥬 Insalata", "🫘 Legumi 100g + 🍚 Riso 55g + 🥦 Verdure", "🍲 Minestrone + 🍞 Pane 40g"]; 
+                 const cen = ["🍗 Pollo 140g + 🥔 Patate 120g + 🥦 Verdure", "🐟 Pesce 140g + 🍚 Riso 50g + 🥦 Verdure", "🦃 Tacchino 140g + 🥬 Insalata", "🥚 Frittata 3 uova + 🥦 Verdure", "🐟 Salmone 120g + 🥬 Verdure"]; 
                  const current = new Date(startDate); let dayCounter = 0;
                  while (current <= endDate) { 
                     const d = current.getDay(); let fun = "", yoga="-", car = "", preWorkout = "", sp1 = snacks[dayCounter%4], sp2 = snacks[(dayCounter+1)%4];
