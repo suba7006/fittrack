@@ -399,7 +399,10 @@
             exportBtn.addEventListener('click', () => {
                 const headers = ['date', 'peso', 'fc', 'passo', 'sonno', 'calout', 'calin'];
                 let csv = headers.join(',') + '\n';
-                document.querySelectorAll('#training-plan-body tr[data-date]').forEach(r => { csv += [r.dataset.date, ...headers.slice(1).map(m => r.querySelector(`input[data-metric="${m}"]`)?.value || '')].join(',') + '\n'; });
+                document.querySelectorAll('#training-plan-body tr[data-date]').forEach(r => { 
+                    const rowValues = [r.dataset.date, ...headers.slice(1).map(m => r.querySelector(`input[data-metric="${m}"]`)?.value || '')];
+                    csv += rowValues.map(value => `"${String(value).replace(/"/g, '""')}"`).join(',') + '\n';
+                });
                 const link = document.createElement("a"); link.href = encodeURI("data:text/csv;charset=utf-8," + csv); link.download = "piano_coaching_data.csv";
                 document.body.appendChild(link); link.click(); document.body.removeChild(link);
             });
@@ -408,12 +411,29 @@
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     let importedData = getStoredData();
-                    event.target.result.split('\n').slice(1).forEach(rowStr => {
-                        if (!rowStr) return; const cols = rowStr.split(','); const date = cols[0]; if (!date) return;
-                        ['peso', 'fc', 'passo', 'sonno', 'calout', 'calin'].forEach((m, i) => { if (cols[i + 1] !== undefined) importedData[`${date}-${m}`] = cols[i + 1].trim(); });
+                    const rows = event.target.result.split('\n');
+                    const headers = rows[0].split(',').map(h => h.replace(/"/g, '').trim());
+
+                    rows.slice(1).forEach(rowStr => {
+                        if (!rowStr) return;
+                        const cols = rowStr.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g).map(c => c.replace(/"/g, '').trim());
+                        const rowData = headers.reduce((obj, header, index) => {
+                            obj[header] = cols[index];
+                            return obj;
+                        }, {});
+
+                        const date = rowData.date;
+                        if (!date) return;
+                        
+                        headers.slice(1).forEach(metric => {
+                            if (rowData[metric] !== undefined) {
+                                importedData[`${date}-${metric}`] = rowData[metric];
+                            }
+                        });
                     });
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(importedData));
-                    loadAndApplyData(true); alert('Dati importati con successo!');
+                    loadAndApplyData(true); 
+                    alert('Dati importati con successo!');
                 };
                 reader.readAsText(file); e.target.value = '';
             });
@@ -505,7 +525,7 @@
                     ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g"], // 25/9
                     ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[0], "🍝 Pasta 80g + 🍅 Pomodoro", snacks[1], "🦃 Tacchino 150g"], // 26/9
                     ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[2], "🍝 Pasta 80g + 🐟 Tonno 100g", snacks[3], "🍗 Pollo 150g + 🥔 Patate 150g"], // 27/9
-                    ["A piacere / Niente", "😌 Riposo attivo", "-", "😌 Stretching leggero", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[0], "🍚 Riso 80g + 🥚 Uova 2", snacks[1], "🐟 Pesce 150g + 🍚 Riso 60g"], // 28/9
+                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[0], "🍚 Riso 80g + 🥚 Uova 2", snacks[1], "🐟 Pesce 150g + 🍚 Riso 60g"], // 28/9
                     ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[2], "🍝 Pasta 80g + 🍅 Pomodoro", snacks[3], "🦃 Tacchino 150g"], // 29/9
                     ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[0], "🍝 Pasta 80g + 🐟 Tonno 100g", snacks[1], "🍗 Pollo 150g + 🥔 Patate 150g"], // 30/9
                     ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g"], // 1/10
