@@ -120,12 +120,10 @@
 <body class="p-2 sm:p-4 md:p-8">
 
     <div class="max-w-screen-2xl mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-6">
-        <!-- Main Header -->
         <header class="w-full p-4 mb-6 rounded-lg bg-[#2c3e50] text-white text-center">
             <h1 class="text-xl sm:text-2xl font-bold">🏃‍♂️ PIANO COACHING AVANZATO 2025: 104kg → 95kg | 0' → 35' CORSA | TIMING OTTIMIZZATO EAA 🎯</h1>
         </header>
 
-        <!-- Tab Navigation -->
         <div class="border-b border-gray-200 mb-6">
             <nav class="-mb-px flex flex-wrap" aria-label="Tabs">
                 <button data-tab="piano" class="whitespace-nowrap py-4 px-3 sm:px-4 border-b-2 font-semibold text-sm text-blue-600 border-blue-600">
@@ -152,22 +150,18 @@
             </nav>
         </div>
 
-        <!-- Tab Content -->
         <div>
-            <!-- Daily Plan / Dashboard Tab -->
             <div data-tab-content="piano">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                     <div class="card lg:col-span-2">
                         <h2 class="text-xl font-bold text-gray-800 mb-4">🎯 Obiettivi di Oggi (<span id="todayDate"></span>)</h2>
                         <div id="todaySummary" class="space-y-3 text-gray-700">
-                            <!-- Summary will be populated by JS -->
-                        </div>
+                            </div>
                     </div>
                     <div class="card">
                          <h2 class="text-xl font-bold text-gray-800 mb-4">⚡ Inserimento Rapido</h2>
                          <div id="quickInputs" class="grid grid-cols-2 gap-4">
-                            <!-- Quick inputs will be populated by JS -->
-                         </div>
+                            </div>
                     </div>
                 </div>
 
@@ -197,16 +191,13 @@
                             </tr>
                         </thead>
                         <tbody id="training-plan-body" class="bg-white divide-y divide-gray-200">
-                            <!-- Rows will be inserted here by JavaScript -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Workout Timer Tab -->
-             <div data-tab-content="timer" class="hidden">
+            <div data-tab-content="timer" class="hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Timer Configuration -->
                     <div id="timer-config-panel" class="card">
                         <h2 class="text-2xl font-bold text-gray-800 mb-4">🔧 Imposta Workout</h2>
                         <div class="grid grid-cols-4 gap-2 mb-2 text-center text-sm font-semibold text-gray-600">
@@ -216,8 +207,7 @@
                             <span>Set</span>
                         </div>
                         <div id="stations-container" class="space-y-4">
-                            <!-- Station templates will be inserted here -->
-                        </div>
+                            </div>
                         <div class="mt-4 border-t pt-4 space-y-4">
                             <div class="flex items-center gap-4">
                                <label for="transition-rest" class="font-semibold text-gray-700">Pausa tra stazioni (s):</label>
@@ -226,15 +216,14 @@
                             <div class="flex justify-between items-center">
                                 <button id="add-station-btn" class="btn btn-secondary">Aggiungi Stazione</button>
                                  <div class="flex flex-col gap-2 items-start">
-                                    <div class="flex items-center">
-                                        <input id="countdown-sound-check" type="checkbox" checked class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                        <label for="countdown-sound-check" class="ml-2 block text-sm text-gray-900">Beep Countdown 3-2-1</label>
-                                    </div>
-                                 </div>
+                                     <div class="flex items-center">
+                                         <input id="countdown-sound-check" type="checkbox" checked class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                         <label for="countdown-sound-check" class="ml-2 block text-sm text-gray-900">Beep Countdown 3-2-1</label>
+                                     </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Timer Display -->
                     <div class="card flex flex-col items-center justify-center text-center">
                          <div id="timer-info" class="mb-4 text-gray-600 h-16">
                             <p id="info-station" class="text-xl font-semibold"></p>
@@ -251,17 +240,14 @@
                 </div>
              </div>
              
-            <!-- Videos Tab -->
             <div data-tab-content="videos" class="hidden">
                 <div class="card">
                      <h2 class="text-2xl font-bold text-gray-800 mb-6">🎥 Libreria Video Workout</h2>
                      <div id="video-library" class="space-y-8">
-                        <!-- Video sections will be populated by JS -->
-                     </div>
+                         </div>
                 </div>
             </div>
             
-            <!-- Shopping List Tab -->
             <div data-tab-content="spesa" class="hidden">
                 <div class="card max-w-3xl mx-auto">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">🛒 Lista della Spesa</h2>
@@ -272,12 +258,10 @@
                          </button>
                     </div>
                     <div id="shoppingListContainer" class="space-y-6">
-                        <!-- Shopping list will be generated here -->
-                    </div>
+                        </div>
                 </div>
             </div>
 
-            <!-- Stats Tab -->
             <div data-tab-content="statistiche" class="hidden">
                 <div class="mb-6 p-4 border rounded-lg bg-gray-50 flex flex-wrap items-center justify-center gap-4">
                      <h3 class="text-lg font-semibold text-gray-800">Gestione Dati</h3>
@@ -313,15 +297,13 @@
                 </div>
             </div>
 
-            <!-- Progress & Goals Tab -->
             <div data-tab-content="progressi" class="hidden">
                  <div class="space-y-8">
-                    <section id="progress-tracking"></section>
-                    <section id="advanced-goals"></section>
-                </div>
+                     <section id="progress-tracking"></section>
+                     <section id="advanced-goals"></section>
+                 </div>
             </div>
 
-            <!-- Guides & Parameters Tab -->
             <div data-tab-content="guide" class="hidden">
                 <div class="space-y-8">
                     <section id="metabolic-parameters" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm"></section>
@@ -374,7 +356,23 @@
             const saveData = (key, value) => { const d = getStoredData(); d[key] = value; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); };
             function loadAndApplyData(isImport = false) {
                 const data = getStoredData();
-                document.querySelectorAll('.data-input').forEach(i => { if (data[i.id] !== undefined) { i.value = data[i.id]; if (!isImport) i.dispatchEvent(new Event('input', { bubbles: true })); } });
+                document.querySelectorAll('.data-input').forEach(i => {
+                    const storedValue = data[i.id];
+                     if (i.dataset.metric === 'peso') {
+                         const numValue = parseFloat(String(storedValue).replace(',', '.'));
+                         if (storedValue === undefined || storedValue === null || isNaN(numValue) || numValue <= 0) {
+                             i.value = ''; // Clear invalid or zero weight values
+                         } else {
+                             i.value = storedValue;
+                         }
+                     } else if (storedValue !== undefined) {
+                         i.value = storedValue;
+                     } else {
+                         i.value = ''; // Ensure other fields are also cleared if undefined
+                     }
+
+                    if (!isImport) i.dispatchEvent(new Event('input', { bubbles: true }));
+                });
                 if (isImport) { document.querySelectorAll('input[data-metric="calout"]').forEach(i => i.dispatchEvent(new Event('input', { bubbles: true }))); }
                 updateProgressTracking(); updateCharts(); updateDashboard();
             }
@@ -524,21 +522,32 @@
             // --- PLAN GENERATION LOGIC ---
             function generatePhase0() {
                 const snacks = ["☀️ Yogurt Greco 150g + Noci 15g", "🌙 Mela + Mandorle 20g", "☀️ Pane integrale 40g + Tacchino 60g", "🌙 2 Gallette di riso + Ricotta 60g"];
-                const data = [
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🥦 Verdure", snacks[0], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[1], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"],
-                    ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2 + 🥦 Verdure", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g + 🥦 Verdure"],
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[0], "🍝 Pasta 80g + 🍅 Pomodoro + 🥬 Insalata", snacks[1], "🦃 Tacchino 150g + 🥬 Insalata"],
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[2], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[3], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"],
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[0], "🍚 Riso 80g + 🥚 Uova 2 + 🥦 Verdure", snacks[1], "🐟 Pesce 150g + 🍚 Riso 60g + 🥦 Verdure"],
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[2], "🍝 Pasta 80g + 🍅 Pomodoro + 🥬 Insalata", snacks[3], "🦃 Tacchino 150g + 🥬 Insalata"],
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[0], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[1], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"],
-                    ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2 + 🥦 Verdure", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g + 🥦 Verdure"],
-                    ["Riposo per viaggio", "😌 Riposo", "-", "😌 Stretching leggero", "Pasti normali", "-", "Pasti normali", "-", "Pasti normali"],
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[0], "🍝 Pasta 80g + 🍅 Pomodoro + 🥬 Insalata", snacks[1], "🦃 Tacchino 150g + 🥬 Insalata"],
-                    ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[2], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[3], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"]
-                ];
                 const startDate = new Date(2025, 8, 24);
-                data.forEach((row, index) => { const currentDate = new Date(startDate); currentDate.setDate(startDate.getDate() + index); const rowData = [formatDate(currentDate), getDayName(currentDate), ...row]; addDataRow(rowData, "#fff5f5", 2075, currentDate); });
+                const endDate = new Date(2025, 9, 4);
+                const current = new Date(startDate);
+                let dayCounter = 0;
+                while(current <= endDate) {
+                    let row;
+                    const dateString = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
+                    
+                    if (dateString === '2025-10-02') {
+                        row = ["Riposo per viaggio", "😌 Riposo", "-", "😌 Stretching leggero", "Pasti normali", "-", "Pasti normali", "-", "Pasti normali"];
+                        const rowData = [formatDate(current), getDayName(current), ...row];
+                        addDataRow(rowData, "#f8f9fa", 2200, current);
+                    } else {
+                        const trainingDayData = [
+                             ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🥦 Verdure", snacks[0], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[1], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"],
+                             ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2 + 🥦 Verdure", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g + 🥦 Verdure"],
+                             ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[0], "🍝 Pasta 80g + 🍅 Pomodoro + 🥬 Insalata", snacks[1], "🦃 Tacchino 150g + 🥬 Insalata"],
+                             ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[2], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[3], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"],
+                        ];
+                        row = trainingDayData[dayCounter % trainingDayData.length];
+                        const rowData = [formatDate(current), getDayName(current), ...row];
+                        addDataRow(rowData, "#fff5f5", 2075, current);
+                        dayCounter++;
+                    }
+                     current.setDate(current.getDate() + 1);
+                }
             }
 
             function generatePause(startDate, endDate) { const current = new Date(startDate); while (current <= endDate) { const rowData = [formatDate(current), getDayName(current), "💤 Niente", "😴 Riposo","-", "🚶‍♂️ Walk leggera 30'", "Colazione normale", "-", "Pranzo normale", "-", "Cena normale"]; addDataRow(rowData, "#f8f9fa", 2200, new Date(current)); current.setDate(current.getDate() + 1); } }
@@ -574,15 +583,15 @@
                  const cen = ["🍗 Pollo 140g + 🥔 Patate 120g + 🥦 Verdure", "🐟 Pesce 140g + 🍚 Riso 50g + 🥦 Verdure", "🦃 Tacchino 140g + 🥬 Insalata", "🥚 Frittata 3 uova + 🥦 Verdure", "🐟 Salmone 120g + 🥬 Verdure"]; 
                  const current = new Date(startDate); let dayCounter = 0;
                  while (current <= endDate) { 
-                    const d = current.getDay(); let fun = "", yoga="-", car = "", preWorkout = "", sp1 = snacks[dayCounter%4], sp2 = snacks[(dayCounter+1)%4];
-                    if (d === 0) { preWorkout = "A piacere / Niente"; fun = "😌 Riposo"; car = "😌 Recovery"; } 
-                    else { const weekInPhase = Math.floor(dayCounter / 6); preWorkout = pre[dayCounter % 2]; yoga="🧘‍♂️ Stretching 15'";
-                        if ([1, 3, 5].includes(d)) { fun = "💪 Functional Palestra 55'"; car = "🚶‍♂️ Walk recupero 45'"; } else if ([2, 4].includes(d)) { fun = "💪 Functional Palestra 55'"; if (weekInPhase <= 2) car = "🏃‍♂️ 5' run/1' walk x5"; else if (weekInPhase <= 4) car = "🏃‍♂️ Corsa continua 25'"; else car = "🏃‍♂️ Corsa continua 35'"; } else if (d === 6) { fun = "💪 Functional Palestra 55'"; car = "🚶‍♂️ Long Walk 15km + 2x5' run"; }
-                        dayCounter++;
-                    }
-                    const mealIndex = Math.floor(dayCounter / 1.2);
-                    const rowData = [formatDate(current), getDayName(current), preWorkout, fun, yoga, car, col[mealIndex % 5], sp1, pra[mealIndex % 5], sp2, cen[mealIndex % 5]]; 
-                    addDataRow(rowData, "#f0f8ff", 2000, new Date(current)); current.setDate(current.getDate() + 1); 
+                     const d = current.getDay(); let fun = "", yoga="-", car = "", preWorkout = "", sp1 = snacks[dayCounter%4], sp2 = snacks[(dayCounter+1)%4];
+                     if (d === 0) { preWorkout = "A piacere / Niente"; fun = "😌 Riposo"; car = "😌 Recovery"; } 
+                     else { const weekInPhase = Math.floor(dayCounter / 6); preWorkout = pre[dayCounter % 2]; yoga="🧘‍♂️ Stretching 15'";
+                         if ([1, 3, 5].includes(d)) { fun = "💪 Functional Palestra 55'"; car = "🚶‍♂️ Walk recupero 45'"; } else if ([2, 4].includes(d)) { fun = "💪 Functional Palestra 55'"; if (weekInPhase <= 2) car = "🏃‍♂️ 5' run/1' walk x5"; else if (weekInPhase <= 4) car = "🏃‍♂️ Corsa continua 25'"; else car = "🏃‍♂️ Corsa continua 35'"; } else if (d === 6) { fun = "💪 Functional Palestra 55'"; car = "🚶‍♂️ Long Walk 15km + 2x5' run"; }
+                         dayCounter++;
+                     }
+                     const mealIndex = Math.floor(dayCounter / 1.2);
+                     const rowData = [formatDate(current), getDayName(current), preWorkout, fun, yoga, car, col[mealIndex % 5], sp1, pra[mealIndex % 5], sp2, cen[mealIndex % 5]]; 
+                     addDataRow(rowData, "#f0f8ff", 2000, new Date(current)); current.setDate(current.getDate() + 1); 
                  }
             }
             
@@ -987,4 +996,3 @@
     </script>
 </body>
 </html>
-
