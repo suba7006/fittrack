@@ -1,4 +1,4 @@
-html<!DOCTYPE >
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -385,9 +385,8 @@ html<!DOCTYPE >
                         }
                     } else if (storedValue !== undefined) {
                         i.value = storedValue;
-                    } else {
-                        i.value = ''; // Ensure other fields are also cleared if undefined
-                    }
+                    } 
+                    // REMOVED 'ELSE' block that was clearing default values
 
                     if (!isImport) i.dispatchEvent(new Event('input', { bubbles: true }));
                 });
