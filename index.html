@@ -1,4 +1,4 @@
-
+html<!DOCTYPE >
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -369,12 +369,12 @@
             }
 
             // --- DATA PERSISTENCE LOGIC ---
-            const STORAGE_KEY = 'pianoCoachingData2025_EAA_v7';
+            const STORAGE_KEY = 'pianoCoachingData2025_EAA_v8'; // Incremented key to clear old data
             const getStoredData = () => { try { const d = localStorage.getItem(STORAGE_KEY); return d ? JSON.parse(d) : {}; } catch { return {}; } };
             const saveData = (key, value) => { const d = getStoredData(); d[key] = value; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); };
             function loadAndApplyData(isImport = false) {
                 const data = getStoredData();
-                document.querySelectorAll('.data-input').forEach(i => {
+                document.querySelectorAll('#training-plan-body .data-input').forEach(i => {
                     const storedValue = data[i.id];
                      if (i.dataset.metric === 'peso') {
                         const numValue = parseFloat(String(storedValue).replace(',', '.'));
