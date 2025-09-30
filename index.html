@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -35,6 +35,7 @@
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
         }
         
+        /* Hide arrows from number inputs */
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -90,17 +91,17 @@
             font-family: monospace;
         }
         .timer-status-work {
-            color: #16a34a;
+            color: #16a34a; /* green-600 */
         }
         .timer-status-rest {
-            color: #2563eb;
+            color: #2563eb; /* blue-600 */
         }
         .timer-status-prep {
-            color: #f59e0b;
+            color: #f59e0b; /* amber-500 */
         }
         .video-container {
             position: relative;
-            padding-bottom: 56.25%;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
             height: 0;
             overflow: hidden;
             max-width: 100%;
@@ -119,10 +120,12 @@
 <body class="p-2 sm:p-4 md:p-8">
 
     <div class="max-w-screen-2xl mx-auto bg-white rounded-2xl shadow-lg p-4 sm:p-6">
+        <!-- Main Header -->
         <header class="w-full p-4 mb-6 rounded-lg bg-[#2c3e50] text-white text-center">
             <h1 class="text-xl sm:text-2xl font-bold">🏃‍♂️ PIANO COACHING AVANZATO 2025: 104kg → 95kg | 0' → 35' CORSA | TIMING OTTIMIZZATO EAA 🎯</h1>
         </header>
 
+        <!-- Tab Navigation -->
         <div class="border-b border-gray-200 mb-6">
             <nav class="-mb-px flex flex-wrap" aria-label="Tabs">
                 <button data-tab="piano" class="whitespace-nowrap py-4 px-3 sm:px-4 border-b-2 font-semibold text-sm text-blue-600 border-blue-600">
@@ -149,16 +152,22 @@
             </nav>
         </div>
 
+        <!-- Tab Content -->
         <div>
+            <!-- Daily Plan / Dashboard Tab -->
             <div data-tab-content="piano">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                     <div class="card lg:col-span-2">
                         <h2 class="text-xl font-bold text-gray-800 mb-4">🎯 Obiettivi di Oggi (<span id="todayDate"></span>)</h2>
-                        <div id="todaySummary" class="space-y-3 text-gray-700"></div>
+                        <div id="todaySummary" class="space-y-3 text-gray-700">
+                            <!-- Summary will be populated by JS -->
+                        </div>
                     </div>
                     <div class="card">
                          <h2 class="text-xl font-bold text-gray-800 mb-4">⚡ Inserimento Rapido</h2>
-                         <div id="quickInputs" class="grid grid-cols-2 gap-4"></div>
+                         <div id="quickInputs" class="grid grid-cols-2 gap-4">
+                            <!-- Quick inputs will be populated by JS -->
+                         </div>
                     </div>
                 </div>
 
@@ -187,13 +196,17 @@
                                 <th class="px-2 py-3 text-center text-xs font-bold text-white uppercase tracking-wider">Bilancio</th>
                             </tr>
                         </thead>
-                        <tbody id="training-plan-body" class="bg-white divide-y divide-gray-200"></tbody>
+                        <tbody id="training-plan-body" class="bg-white divide-y divide-gray-200">
+                            <!-- Rows will be inserted here by JavaScript -->
+                        </tbody>
                     </table>
                 </div>
             </div>
 
+            <!-- Workout Timer Tab -->
              <div data-tab-content="timer" class="hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Timer Configuration -->
                     <div id="timer-config-panel" class="card">
                         <h2 class="text-2xl font-bold text-gray-800 mb-4">🔧 Imposta Workout</h2>
                         <div class="grid grid-cols-4 gap-2 mb-2 text-center text-sm font-semibold text-gray-600">
@@ -202,7 +215,9 @@
                             <span>Recupero (s)</span>
                             <span>Set</span>
                         </div>
-                        <div id="stations-container" class="space-y-4"></div>
+                        <div id="stations-container" class="space-y-4">
+                            <!-- Station templates will be inserted here -->
+                        </div>
                         <div class="mt-4 border-t pt-4 space-y-4">
                             <div class="flex items-center gap-4">
                                <label for="transition-rest" class="font-semibold text-gray-700">Pausa tra stazioni (s):</label>
@@ -219,6 +234,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Timer Display -->
                     <div class="card flex flex-col items-center justify-center text-center">
                          <div id="timer-info" class="mb-4 text-gray-600 h-16">
                             <p id="info-station" class="text-xl font-semibold"></p>
@@ -235,13 +251,17 @@
                 </div>
              </div>
              
+            <!-- Videos Tab -->
             <div data-tab-content="videos" class="hidden">
                 <div class="card">
                      <h2 class="text-2xl font-bold text-gray-800 mb-6">🎥 Libreria Video Workout</h2>
-                     <div id="video-library" class="space-y-8"></div>
+                     <div id="video-library" class="space-y-8">
+                        <!-- Video sections will be populated by JS -->
+                     </div>
                 </div>
             </div>
             
+            <!-- Shopping List Tab -->
             <div data-tab-content="spesa" class="hidden">
                 <div class="card max-w-3xl mx-auto">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">🛒 Lista della Spesa</h2>
@@ -251,10 +271,13 @@
                             Genera per i prossimi 3 giorni
                          </button>
                     </div>
-                    <div id="shoppingListContainer" class="space-y-6"></div>
+                    <div id="shoppingListContainer" class="space-y-6">
+                        <!-- Shopping list will be generated here -->
+                    </div>
                 </div>
             </div>
 
+            <!-- Stats Tab -->
             <div data-tab-content="statistiche" class="hidden">
                 <div class="mb-6 p-4 border rounded-lg bg-gray-50 flex flex-wrap items-center justify-center gap-4">
                      <h3 class="text-lg font-semibold text-gray-800">Gestione Dati</h3>
@@ -290,6 +313,7 @@
                 </div>
             </div>
 
+            <!-- Progress & Goals Tab -->
             <div data-tab-content="progressi" class="hidden">
                  <div class="space-y-8">
                     <section id="progress-tracking"></section>
@@ -297,6 +321,7 @@
                 </div>
             </div>
 
+            <!-- Guides & Parameters Tab -->
             <div data-tab-content="guide" class="hidden">
                 <div class="space-y-8">
                     <section id="metabolic-parameters" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm"></section>
@@ -309,6 +334,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- CHART.JS INITIALIZATION ---
             let weightChart, balanceChart, paceChart;
 
             function initializeCharts() {
@@ -342,6 +368,7 @@
                 paceChart.update();
             }
 
+            // --- DATA PERSISTENCE LOGIC ---
             const STORAGE_KEY = 'pianoCoachingData2025_EAA_v7';
             const getStoredData = () => { try { const d = localStorage.getItem(STORAGE_KEY); return d ? JSON.parse(d) : {}; } catch { return {}; } };
             const saveData = (key, value) => { const d = getStoredData(); d[key] = value; localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); };
@@ -352,14 +379,14 @@
                      if (i.dataset.metric === 'peso') {
                         const numValue = parseFloat(String(storedValue).replace(',', '.'));
                         if (storedValue === undefined || storedValue === null || isNaN(numValue) || numValue <= 0) {
-                            i.value = '';
+                            i.value = ''; // Clear invalid or zero weight values
                         } else {
                             i.value = storedValue;
                         }
                     } else if (storedValue !== undefined) {
                         i.value = storedValue;
                     } else {
-                        i.value = '';
+                        i.value = ''; // Ensure other fields are also cleared if undefined
                     }
 
                     if (!isImport) i.dispatchEvent(new Event('input', { bubbles: true }));
@@ -368,6 +395,7 @@
                 updateProgressTracking(); updateCharts(); updateDashboard();
             }
 
+            // --- TAB NAVIGATION LOGIC ---
             document.querySelectorAll('[data-tab]').forEach(tab => {
                 tab.addEventListener('click', () => {
                     const targetTab = tab.dataset.tab;
@@ -379,6 +407,7 @@
                 });
             });
             
+            // --- CSV Import/Export LOGIC ---
             const exportBtn = document.getElementById('exportCsvBtn');
             const importBtn = document.getElementById('importCsvBtn');
             const importInput = document.getElementById('importCsvInput');
@@ -429,4 +458,560 @@
                 reader.readAsText(file); e.target.value = '';
             });
 
-            const planStartDate = new Date(
+            // --- UTILITY FUNCTIONS ---
+            const planStartDate = new Date(2025, 8, 24);
+            const formatDate = (date) => `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
+            const getDayName = (date) => ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"][date.getDay()];
+            const tbody = document.getElementById('training-plan-body');
+
+            // --- DYNAMIC UPDATE LOGIC ---
+            function updateProgressTracking() {
+                const trackingWeeks = [1, 2, 4, 6, 8, 10, 12];
+                trackingWeeks.forEach(weekNum => {
+                    const dailyRows = document.querySelectorAll(`tr[data-week='${weekNum}']`);
+                    if (dailyRows.length === 0) return;
+                    let lastWeight = '';
+                    for (let i = dailyRows.length - 1; i >= 0; i--) { const weightInput = dailyRows[i].querySelector('input[data-metric="peso"]'); if (weightInput && weightInput.value) { lastWeight = parseFloat(weightInput.value.replace(',', '.')).toFixed(1) + ' kg'; break; } }
+                    const pesoCell = document.getElementById(`track-w${weekNum}-peso`); if (pesoCell) pesoCell.textContent = lastWeight;
+                    const metricsToAverage = [{ key: 'passo', unit: ' min/km' }, { key: 'fc', unit: ' bpm' }, { key: 'sonno', unit: ' ore' }];
+                    metricsToAverage.forEach(metricInfo => {
+                        const values = Array.from(dailyRows).map(row => parseFloat(row.querySelector(`input[data-metric="${metricInfo.key}"]`)?.value.replace(',', '.'))).filter(v => !isNaN(v));
+                        const targetCell = document.getElementById(`track-w${weekNum}-${metricInfo.key}`);
+                        if (targetCell) { if (values.length > 0) { const sum = values.reduce((a, b) => a + b, 0); const avg = sum / values.length; const formattedAvg = metricInfo.key === 'passo' ? avg.toFixed(2) : Math.round(avg); targetCell.textContent = formattedAvg + (metricInfo.unit || ''); } else { targetCell.textContent = ''; } }
+                    });
+                    const deficitValues = Array.from(dailyRows).map(row => parseFloat(row.querySelector('td:last-child span')?.textContent)).filter(v => !isNaN(v));
+                    const deficitCell = document.getElementById(`track-w${weekNum}-deficit`);
+                    if (deficitCell) { if (deficitValues.length > 0) { const sum = deficitValues.reduce((a, b) => a + b, 0); const avgDeficit = sum / deficitValues.length; deficitCell.textContent = Math.round(avgDeficit) + ' kcal'; } else { deficitCell.textContent = ''; } }
+                });
+            }
+
+            // --- UI ELEMENT CREATION FUNCTIONS ---
+            function addMetabolicParameters() {
+                const container = document.getElementById('metabolic-parameters');
+                const paramData = [ { title: "📊 PARAMETRI METABOLICI", items: [["BMR stimato:", "2100 kcal"],["TDEE attuale:", "2900 kcal"],["Intake target:", "2075 kcal"],["Proteine target:", "165g (1.6g/kg)"],["Colazione timing:", "POST-workout 08:00"]]}, { title: "🎯 TARGET SETTIMANALI", items: [["Deficit:", "-825 kcal/giorno"],["Perdita:", "-0.75 kg"],["Controllo peso:", "Giovedì mattina"],["Idratazione:", "3L + 500ml/ora sport"],["Window anabolica:", "30' post-functional"]]}, { title: "📈 PROGRESSIONE CORSA", items: [["Settimana 1-2:", "Walk + 30\" run x10"],["Settimana 3-4:", "1' run / 2' walk x8"],["Settimana 5-6:", "2' run / 1' walk x8"],["Settimana 7-8:", "5' run / 1' walk x5"],["Settimana 9-12:", "35' corsa continua"]]}, { title: "💊 TIMING EAA", items: [["06:15 Pre-workout"],["5 cpr EAA / Caffè"],["Supporto completo"],["Protezione muscolare"],["Massima ossidazione 🔥"]]} ];
+                paramData.forEach(section => { const sectionDiv = document.createElement('div'); sectionDiv.className = 'bg-[#ecf0f1] rounded-lg p-3'; const titleEl = document.createElement('h3'); titleEl.className = 'text-sm font-bold bg-[#34495e] text-white -mt-3 -mx-3 mb-3 p-2 rounded-t-lg'; titleEl.textContent = section.title; sectionDiv.appendChild(titleEl); const list = document.createElement('ul'); list.className = 'space-y-1'; section.items.forEach(item => { const li = document.createElement('li'); li.className = 'flex justify-between'; const key = document.createElement('span'); key.className = 'font-semibold'; key.textContent = item[0]; li.appendChild(key); if (item[1]) { const value = document.createElement('span'); value.textContent = item[1]; li.appendChild(value); } list.appendChild(li); }); sectionDiv.appendChild(list); container.appendChild(sectionDiv); });
+            }
+
+            function addPhaseSection(title, color) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="18" class="py-3 px-4 text-center text-sm font-bold text-white" style="background-color: ${color};">${title}</td>`;
+                tbody.appendChild(tr);
+            }
+
+            function addDataRow(data, color, kcalTarget, currentDate) {
+                const tr = document.createElement('tr'); const daysSinceStart = (currentDate - planStartDate) / (1000 * 3600 * 24); const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+                tr.dataset.week = Math.floor(daysSinceStart / 7) + 1; tr.dataset.date = dateKey; tr.style.backgroundColor = color; tr.className = 'text-xs text-gray-700 align-middle';
+                data.slice(0, 11).forEach(cellData => { const td = document.createElement('td'); td.className = 'px-2 py-3 border-b border-gray-200'; td.innerHTML = cellData; tr.appendChild(td); });
+                const createInputCell = (metric, placeholder = '') => { const td = document.createElement('td'); td.className = 'px-2 py-3 border-b border-gray-200'; const input = document.createElement('input'); input.type = 'tel'; input.inputMode = 'decimal'; input.className = 'data-input'; input.placeholder = placeholder; input.dataset.metric = metric; input.id = `${dateKey}-${metric}`; td.appendChild(input); return { td, input }; };
+                const { td: tdPeso, input: inputPeso } = createInputCell('peso'); tr.appendChild(tdPeso); const { td: tdFc, input: inputFc } = createInputCell('fc'); tr.appendChild(tdFc); const { td: tdPasso, input: inputPasso } = createInputCell('passo', 'min.dec'); tr.appendChild(tdPasso); const { td: tdSonno, input: inputSonno } = createInputCell('sonno', 'ore.dec'); tr.appendChild(tdSonno); const { td: tdCalOut, input: inputCalOut } = createInputCell('calout'); tr.appendChild(tdCalOut); const { td: tdCalIn, input: inputCalIn } = createInputCell('calin'); tr.appendChild(tdCalIn);
+                inputCalIn.value = kcalTarget;
+                const tdBilancio = document.createElement('td'); tdBilancio.className = 'px-2 py-3 border-b border-gray-200 text-center font-semibold'; const spanBilancio = document.createElement('span'); tdBilancio.appendChild(spanBilancio); tr.appendChild(tdBilancio);
+                const calculateBalance = () => {
+                    const calOutVal = parseFloat(inputCalOut.value.replace(',', '.')); const calInVal = parseFloat(inputCalIn.value.replace(',', '.'));
+                    if (!isNaN(calOutVal) && !isNaN(calInVal)) { const balance = calOutVal - calInVal; spanBilancio.textContent = balance > 0 ? `+${Math.round(balance)}` : Math.round(balance); if (balance <= -700 && balance >= -900) { spanBilancio.className = 'px-2 py-1 rounded-md bg-green-100 text-green-800'; } else if (balance < -900) { spanBilancio.className = 'px-2 py-1 rounded-md bg-red-100 text-red-800'; } else { spanBilancio.className = 'px-2 py-1 rounded-md bg-yellow-100 text-yellow-800'; }
+                    } else { spanBilancio.textContent = ''; spanBilancio.className = ''; }
+                    updateProgressTracking(); updateCharts();
+                };
+                [inputPeso, inputFc, inputPasso, inputSonno, inputCalOut, inputCalIn].forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        saveData(e.target.id, e.target.value);
+                        const quickInput = document.querySelector(`input[data-target-id="${e.target.id}"]`); if (quickInput) { quickInput.value = e.target.value; }
+                        if (e.target.dataset.metric === 'peso') { const w = parseFloat(e.target.value.replace(',', '.')); if (!isNaN(w) && w <= 95) e.target.classList.add('bg-green-100', 'text-green-800'); else e.target.classList.remove('bg-green-100', 'text-green-800'); }
+                        if (['calout', 'calin'].includes(e.target.dataset.metric)) calculateBalance();
+                        else { updateProgressTracking(); updateCharts(); }
+                    });
+                });
+                tbody.appendChild(tr);
+            }
+
+            function createStaticTable(containerId, title, titleColor, headers, data, headerColor, dataColor) {
+                const container = document.getElementById(containerId);
+                container.innerHTML = `<h2 class="text-lg font-bold text-white text-center p-3 rounded-t-lg" style="background-color: ${titleColor};">${title}</h2><div class="overflow-x-auto border border-t-0 rounded-b-lg"><table class="min-w-full"><thead style="background-color: ${headerColor};"><tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr></thead><tbody style="background-color: ${dataColor};">${data.map(row => `<tr class="border-t">${row.map(cell => `<td class="px-4 py-2 text-sm text-gray-700">${cell}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+            }
+
+            function generateProgressTrackingTable() {
+                const container = document.getElementById('progress-tracking');
+                const headers = ["Settimana", "Peso", "Passo Medio", "FC Riposo", "Sonno Medio", "Deficit Medio", "Trend"];
+                const weeks = [1, 2, 4, 6, 8, 10, 12]; const trends = ['Baseline', 'Adattamento', 'Progressione', 'Sviluppo', 'Consolidamento', 'Intensificazione', 'TARGET!'];
+                let tableBodyHtml = weeks.map((week, index) => `<tr class="border-t"><td class="px-4 py-2 text-sm text-gray-700 font-semibold">Settimana ${week}</td><td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-peso"></td><td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-passo"></td><td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-fc"></td><td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-sonno"></td><td class="px-4 py-2 text-sm text-gray-700" id="track-w${week}-deficit"></td><td class="px-4 py-2 text-sm text-gray-700">${trends[index]}</td></tr>`).join('');
+                container.innerHTML = `<h2 class="text-lg font-bold text-white text-center p-3 rounded-t-lg" style="background-color: #9b59b6;">📊 TRACKING PROGRESSI E PERFORMANCE</h2><div class="overflow-x-auto border border-t-0 rounded-b-lg"><table class="min-w-full"><thead style="background-color: #8e44ad;"><tr>${headers.map(h => `<th class="px-4 py-2 text-left text-xs font-bold text-white uppercase">${h}</th>`).join('')}</tr></thead><tbody style="background-color: #f4f1f7;">${tableBodyHtml}</tbody></table></div>`;
+            }
+
+            // --- PLAN GENERATION LOGIC ---
+            function generatePhase0() {
+                const snacks = ["☀️ Yogurt Greco 150g + Noci 15g", "🌙 Mela + Mandorle 20g", "☀️ Pane integrale 40g + Tacchino 60g", "🌙 2 Gallette di riso + Ricotta 60g"];
+                const startDate = new Date(2025, 8, 24);
+                const endDate = new Date(2025, 9, 4);
+                const current = new Date(startDate);
+                let dayCounter = 0;
+                while(current <= endDate) {
+                    let row;
+                    const dateString = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
+                    
+                    if (dateString === '2025-10-02') {
+                        row = ["Riposo per viaggio", "😌 Riposo", "-", "😌 Stretching leggero", "Pasti normali", "-", "Pasti normali", "-", "Pasti normali"];
+                        const rowData = [formatDate(current), getDayName(current), ...row];
+                        addDataRow(rowData, "#f8f9fa", 2200, current);
+                    } else {
+                        const trainingDayData = [
+                             ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🧀 Ricotta 120g + 🥓 Prosciutto 50g + 🥦 Verdure", snacks[0], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[1], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"],
+                             ["🍯 Miele 5g + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk 6km + 30\" run x10", "🥚 Uova 2 + 🥓 Prosciutto 50g", snacks[2], "🍚 Riso 80g + 🥚 Uova 2 + 🥦 Verdure", snacks[3], "🐟 Pesce 150g + 🍚 Riso 60g + 🥦 Verdure"],
+                             ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Walk recupero 45'", "🥛 Yogurt Greco 200g + 🥜 Noci 25g", snacks[0], "🍝 Pasta 80g + 🍅 Pomodoro + 🥬 Insalata", snacks[1], "🦃 Tacchino 150g + 🥬 Insalata"],
+                             ["☕ Caffè + 5 cpr EAA", "💪 Functional Casa 55'", "🧘‍♂️ Stretching 15'", "🚶‍♂️ Long Walk 10km + 2'", "🧀 Ricotta 120g + 🥓 Prosciutto 50g", snacks[2], "🍝 Pasta 80g + 🐟 Tonno 100g + 🥬 Insalata", snacks[3], "🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure"],
+                        ];
+                        row = trainingDayData[dayCounter % trainingDayData.length];
+                        const rowData = [formatDate(current), getDayName(current), ...row];
+                        addDataRow(rowData, "#fff5f5", 2075, current);
+                        dayCounter++;
+                    }
+                     current.setDate(current.getDate() + 1);
+                }
+            }
+
+            function generatePause(startDate, endDate) { const current = new Date(startDate); while (current <= endDate) { const rowData = [formatDate(current), getDayName(current), "💤 Niente", "😴 Riposo","-", "🚶‍♂️ Walk leggera 30'", "Colazione normale", "-", "Pranzo normale", "-", "Cena normale"]; addDataRow(rowData, "#f8f9fa", 2200, new Date(current)); current.setDate(current.getDate() + 1); } }
+            
+            function generatePhase1() {
+                const startDate = new Date(2025, 9, 5), endDate = new Date(2025, 9, 31);
+                const pre = ["☕ Caffè + 5 cpr EAA", "🍯 Miele 5g + 5 cpr EAA"]; 
+                const snacks = ["☀️ Yogurt Greco 150g + Noci 15g", "🌙 Mela + Mandorle 20g", "☀️ Pane integrale 40g + Tacchino 60g", "🌙 2 Gallette di riso + Ricotta 60g"];
+                const col = ["🧀 Ricotta 110g + 🥓 Prosciutto 50g", "🥚 Uova 2 + 🥓 Prosciutto 50g", "🥛 Yogurt Greco 180g + 🥜 Noci 25g", "🧀 Ricotta 110g + 🍯 Miele"]; 
+                const pra = ["🍝 Pasta 75g + 🐟 Tonno 100g + 🥬 Insalata", "🍚 Riso 75g + 🥚 Uova 2 + 🥦 Verdure", "🍝 Pasta 75g + 🍅 Pomodoro + 🥬 Insalata", "🫘 Legumi 100g + 🍚 Riso 60g + 🥦 Verdure"]; 
+                const cen = ["🍗 Pollo 150g + 🥔 Patate 150g + 🥦 Verdure", "🐟 Pesce 150g + 🍚 Riso 60g + 🥦 Verdure", "🦃 Tacchino 150g + 🥬 Insalata", "🥚 Frittata 3 uova + 🥦 Verdure"]; 
+                const current = new Date(startDate); 
+                let dayCounter = 0;
+                while (current <= endDate) { 
+                    const d = current.getDay(); 
+                    let fun = "", yoga = "-", car = "", preWorkout = "", sp1 = snacks[dayCounter%4], sp2 = snacks[(dayCounter+1)%4];
+                    if (d === 0) { preWorkout = "A piacere / Niente"; fun = "😌 Riposo"; car = "😌 Yoga/Stretching"; } 
+                    else { const weekInPhase = Math.floor(dayCounter / 6); preWorkout = pre[dayCounter % 2]; yoga = "🧘‍♂️ Stretching 15'";
+                        if ([1, 3, 5].includes(d)) { fun = "💪 Self Functional 55'"; car = "🚶‍♂️ Walk recupero 45'"; }  else if ([2, 4].includes(d)) { fun = "💪 Self Functional 55'"; car = weekInPhase <= 1 ? "🏃‍♂️ 1' run/2' walk x8" : "🏃‍♂️ 1.5' run/2' walk x7"; }  else if (d === 6) { fun = "💪 Self Functional 55'"; car = "🚶‍♂️ Long Walk 12km + 2x3' run"; }
+                        dayCounter++;
+                    }
+                    const mealIndex = Math.floor(dayCounter / 1.5);
+                    const rowData = [formatDate(current), getDayName(current), preWorkout, fun, yoga, car, col[mealIndex % 4], sp1, pra[mealIndex % 4], sp2, cen[mealIndex % 4]]; 
+                    addDataRow(rowData, "#f0fffe", 2050, new Date(current)); current.setDate(current.getDate() + 1); 
+                }
+            }
+            function generatePhase2() {
+                 const startDate = new Date(2025, 10, 4), endDate = new Date(2025, 11, 20);
+                 const pre = ["☕ Caffè + 5 cpr EAA", "🍯 Miele 5g + 5 cpr EAA"];
+                 const snacks = ["☀️ Yogurt Greco 150g + Noci 15g", "🌙 Mela + Mandorle 20g", "☀️ Pane integrale 40g + Tacchino 60g", "🌙 2 Gallette di riso + Ricotta 60g"];
+                 const col = ["🧀 Ricotta 100g + 🥓 Prosciutto 45g", "🥚 Uova 2 + 🥓 Prosciutto 45g", "🥛 Yogurt Greco 170g + 🥜 Noci 22g", "🧀 Ricotta 100g + 🍯 Miele", "🥚 Frittata 2 uova"]; 
+                 const pra = ["🍝 Pasta 70g + 🐟 Tonno 100g + 🥬 Insalata", "🍚 Riso 70g + 🥚 Uova 2 + 🥦 Verdure", "🍝 Pasta 70g + 🍅 Pomodoro + 🥬 Insalata", "🫘 Legumi 100g + 🍚 Riso 55g + 🥦 Verdure", "🍲 Minestrone + 🍞 Pane 40g"]; 
+                 const cen = ["🍗 Pollo 140g + 🥔 Patate 120g + 🥦 Verdure", "🐟 Pesce 140g + 🍚 Riso 50g + 🥦 Verdure", "🦃 Tacchino 140g + 🥬 Insalata", "🥚 Frittata 3 uova + 🥦 Verdure", "🐟 Salmone 120g + 🥬 Verdure"]; 
+                 const current = new Date(startDate); let dayCounter = 0;
+                 while (current <= endDate) { 
+                    const d = current.getDay(); let fun = "", yoga="-", car = "", preWorkout = "", sp1 = snacks[dayCounter%4], sp2 = snacks[(dayCounter+1)%4];
+                    if (d === 0) { preWorkout = "A piacere / Niente"; fun = "😌 Riposo"; car = "😌 Recovery"; } 
+                    else { const weekInPhase = Math.floor(dayCounter / 6); preWorkout = pre[dayCounter % 2]; yoga="🧘‍♂️ Stretching 15'";
+                        if ([1, 3, 5].includes(d)) { fun = "💪 Functional Palestra 55'"; car = "🚶‍♂️ Walk recupero 45'"; } else if ([2, 4].includes(d)) { fun = "💪 Functional Palestra 55'"; if (weekInPhase <= 2) car = "🏃‍♂️ 5' run/1' walk x5"; else if (weekInPhase <= 4) car = "🏃‍♂️ Corsa continua 25'"; else car = "🏃‍♂️ Corsa continua 35'"; } else if (d === 6) { fun = "💪 Functional Palestra 55'"; car = "🚶‍♂️ Long Walk 15km + 2x5' run"; }
+                        dayCounter++;
+                    }
+                    const mealIndex = Math.floor(dayCounter / 1.2);
+                    const rowData = [formatDate(current), getDayName(current), preWorkout, fun, yoga, car, col[mealIndex % 5], sp1, pra[mealIndex % 5], sp2, cen[mealIndex % 5]]; 
+                    addDataRow(rowData, "#f0f8ff", 2000, new Date(current)); current.setDate(current.getDate() + 1); 
+                 }
+            }
+            
+            function generateAnalyticalSections() {
+                generateProgressTrackingTable();
+                createStaticTable('nutrition-guide', '🥗 GUIDA NUTRIZIONALE E TIMING', '#27ae60', ["Timing", "Cosa", "Macro", "Obiettivo"], [["06:15", "Pre-workout", "☕ Caffè / Miele + 5 cpr EAA", "Supporto completo muscolare"], ["08:00", "Post-workout", "Colazione completa", "Recovery + sazietà"], ["13:00", "Pranzo", "Proteine + Carboidrati", "Energia pomeriggio"], ["20:00", "Cena", "Proteine + Verdure", "Recovery notturno"]], '#229954', '#eafaf1');
+                createStaticTable('advanced-goals', '🎯 OBIETTIVI E MILESTONE', '#e74c3c', ["Corsa", "Peso", "Fitness", "Focus"], [["Sett 2: 1' run", "Sett 2: -1.5kg (102.5)", "FC <85 bpm", "Consistenza"], ["Sett 4: 5' run", "Sett 4: -3kg (101kg)", "Passo <18:00", "Progressione"], ["Sett 8: 20' run", "Sett 8: -6kg (98kg)", "Passo <17:00", "Velocità"], ["Sett 12: 35' run", "Sett 12: -9kg (95kg)", "Passo <16:30", "TARGET!"]], '#c0392b', '#fadbd8');
+                generateUserGuide();
+            }
+            
+            function generateUserGuide() {
+                const container = document.getElementById('user-guide');
+                container.innerHTML = `
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">💡 Guida all'Uso dell'App</h2>
+                    <div class="space-y-4 text-gray-700">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">1. Come Inserire Numeri con la Virgola (Es. 102,8)</h3>
+                            <p>Quando inserisci dati come il peso o il passo da cellulare, puoi usare sia il <strong>punto (.)</strong> che la <strong>virgola (,)</strong> per i decimali. Il campo è stato ottimizzato per accettare entrambi i formati senza cancellare il numero, e ti mostrerà una comoda tastiera numerica.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">2. Come Salvare e Trasferire i Dati (CSV)</h3>
+                            <p>Questa app salva i dati localmente nel browser. Per spostarli tra dispositivi (es. da mobile a PC), usa le funzioni di Import/Export:</p>
+                            <h4 class="font-semibold mt-3 mb-1">Su iPhone (iOS):</h4>
+                            <ol class="list-decimal list-inside space-y-1 pl-2">
+                                <li>Vai su "Statistiche" e premi <strong>"Esporta CSV"</strong>.</li>
+                                <li>Tocca l'icona di download nel browser per vedere il file.</li>
+                                <li>Seleziona il file e poi tocca l'icona di <strong>condivisione</strong> (quadrato con freccia).</li>
+                                <li>Scegli dove inviarlo: "Salva su File" per iCloud, "Copia in Fogli" per Google Sheets, oppure invialo via Mail o altre app.</li>
+                            </ol>
+                            <h4 class="font-semibold mt-3 mb-1">Su Android:</h4>
+                            <ol class="list-decimal list-inside space-y-1 pl-2">
+                                <li>Vai su "Statistiche" e premi <strong>"Esporta CSV"</strong>.</li>
+                                <li>Apri la barra delle notifiche e tocca il file scaricato.</li>
+                                <li>Il sistema ti chiederà con quale app aprirlo. Scegli <strong>Fogli</strong>, <strong>Drive</strong> o il tuo gestore di file.</li>
+                                <li>Da lì, puoi salvarlo sul cloud o condividerlo per recuperarlo facilmente dal PC.</li>
+                            </ol>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // --- DASHBOARD AND SHOPPING LIST LOGIC ---
+            function updateDashboard() {
+                const today = new Date();
+                const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                document.getElementById('todayDate').textContent = formatDate(today);
+                const todayRow = document.querySelector(`tr[data-date="${todayKey}"]`);
+                const summaryContainer = document.getElementById('todaySummary');
+                const quickInputsContainer = document.getElementById('quickInputs');
+
+                if (todayRow) {
+                    const cells = todayRow.querySelectorAll('td');
+                    summaryContainer.innerHTML = `
+                        <p><strong>Pre-Workout:</strong> ${cells[2].textContent}</p>
+                        <p><strong>Functional:</strong> ${cells[3].textContent}</p>
+                        <p><strong>Yoga/Stretching:</strong> ${cells[4].textContent}</p>
+                        <p><strong>Cardio/Corsa:</strong> ${cells[5].textContent}</p>
+                        <hr class="my-2">
+                        <p><strong>Colazione:</strong> ${cells[6].textContent}</p>
+                        <p><strong>Spuntino Mattina:</strong> ${cells[7].textContent}</p>
+                        <p><strong>Pranzo:</strong> ${cells[8].textContent}</p>
+                        <p><strong>Spuntino Pomeriggio:</strong> ${cells[9].textContent}</p>
+                        <p><strong>Cena:</strong> ${cells[10].textContent}</p>
+                        <hr class="my-2">
+                        <p><strong>Target Calorie:</strong> <span class="font-bold text-blue-600">${todayRow.querySelector('input[data-metric=calin]').value} kcal</span></p>`;
+                    
+                    const metrics = ['peso', 'fc', 'passo', 'sonno', 'calout', 'calin'];
+                    const labels = { peso: '⚖️ Peso', fc: '💓 FC Med', passo: '⏱️ Passo', sonno: '😴 Sonno', calout: '🔥 Cal Bruciate', calin: '🍽️ Cal Ingerite' };
+                    quickInputsContainer.innerHTML = metrics.map(m => {
+                        const originalInput = todayRow.querySelector(`input[data-metric=${m}]`);
+                        return `<div class="flex flex-col">
+                                    <label for="quick-${m}" class="text-sm font-medium text-gray-600 mb-1">${labels[m]}</label>
+                                    <input type="${originalInput.type}" id="quick-${m}" data-target-id="${originalInput.id}" class="data-input" placeholder="${originalInput.placeholder}" inputmode="${originalInput.inputMode}">
+                                </div>`
+                    }).join('');
+
+                    document.querySelectorAll('#quickInputs input').forEach(quickInput => {
+                        const targetInput = document.getElementById(quickInput.dataset.targetId);
+                        if (targetInput) {
+                            quickInput.value = targetInput.value;
+                            targetInput.addEventListener('input', () => { quickInput.value = targetInput.value; }); // Sync from table to quick input
+                            quickInput.addEventListener('input', () => { // Sync from quick input to table
+                                targetInput.value = quickInput.value;
+                                targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            });
+                        }
+                    });
+
+                } else {
+                    summaryContainer.innerHTML = '<p>Nessun allenamento previsto per oggi.</p>';
+                    quickInputsContainer.innerHTML = '';
+                }
+            }
+
+            function generateShoppingList() {
+                const container = document.getElementById('shoppingListContainer');
+                container.innerHTML = ''; // Clear previous list
+                const today = new Date();
+                const aggregatedList = {};
+                let dailyBreakdownHTML = '<div class="space-y-4">';
+
+                const parseAndAggregate = (mealText) => {
+                    if (!mealText || mealText === "-") return;
+                    mealText.split('+').forEach(part => {
+                        const cleanedPart = part.replace(/[\d\.]+(\s)?(g|ml|cpr)/gi, '').replace(/[^\w\s.,-]/g, '').trim();
+                        const quantityMatch = part.match(/([\d\.]+)\s*(g|ml|cpr|uova)?/i);
+                        
+                        let name = cleanedPart;
+                        let quantity = quantityMatch ? parseFloat(quantityMatch[1]) : 1;
+                        let unit = 'pz';
+                        if (quantityMatch && quantityMatch[2]) {
+                            unit = quantityMatch[2].toLowerCase() === 'uova' ? 'pz' : quantityMatch[2].toLowerCase();
+                        }
+                        
+                        if (!name) return;
+                        name = name.charAt(0).toUpperCase() + name.slice(1);
+                        const key = name.toLowerCase();
+
+                        if (!aggregatedList[key]) { aggregatedList[key] = { name: name, units: {} }; }
+                        if (!aggregatedList[key].units[unit]) { aggregatedList[key].units[unit] = 0; }
+                        aggregatedList[key].units[unit] += quantity;
+                    });
+                };
+
+                for (let i = 0; i < 3; i++) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() + i);
+                    const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                    const row = document.querySelector(`tr[data-date="${dateKey}"]`);
+                    if (row) {
+                        const cells = row.querySelectorAll('td');
+                        dailyBreakdownHTML += `<div>
+                            <h3 class="text-lg font-semibold text-gray-700 border-b pb-1 mb-2">${getDayName(date)} - ${formatDate(date)}</h3>
+                            <ul class="list-none text-sm space-y-1 pl-2">
+                                <li><strong>🥣 Colazione:</strong> ${cells[6].textContent}</li>
+                                <li><strong>☀️ Spuntino:</strong> ${cells[7].textContent}</li>
+                                <li><strong>🍝 Pranzo:</strong> ${cells[8].textContent}</li>
+                                <li><strong>🌙 Spuntino:</strong> ${cells[9].textContent}</li>
+                                <li><strong>🍗 Cena:</strong> ${cells[10].textContent}</li>
+                            </ul>
+                        </div>`;
+                        [cells[6], cells[7], cells[8], cells[9], cells[10]].forEach(cell => parseAndAggregate(cell.textContent));
+                    }
+                }
+                dailyBreakdownHTML += '</div>';
+
+                let summaryHTML = `<div class="mt-8">
+                    <h3 class="text-xl font-bold text-gray-800 border-b pb-2 mb-3">📋 Riepilogo Spesa Totale</h3>
+                    <ul class="space-y-2 list-disc list-inside text-gray-700 columns-1 sm:columns-2">`;
+                if (Object.keys(aggregatedList).length > 0) {
+                    Object.values(aggregatedList).sort((a, b) => a.name.localeCompare(b.name)).forEach(item => {
+                        let quantityStr = Object.entries(item.units).map(([unit, quantity]) => `${quantity} ${unit}`).join(', ');
+                        summaryHTML += `<li><strong>${item.name}:</strong> ${quantityStr}</li>`;
+                    });
+                } else {
+                    summaryHTML += '<li>Nessun pasto trovato per generare una lista.</li>';
+                }
+                summaryHTML += '</ul></div>';
+                container.innerHTML = dailyBreakdownHTML + summaryHTML;
+            }
+            document.getElementById('generateShoppingListBtn').addEventListener('click', generateShoppingList);
+            
+            // --- WORKOUT TIMER LOGIC ---
+            const stationsContainer = document.getElementById('stations-container');
+            const addStationBtn = document.getElementById('add-station-btn');
+            const startBtn = document.getElementById('start-timer-btn');
+            const pauseBtn = document.getElementById('pause-timer-btn');
+            const resetBtn = document.getElementById('reset-timer-btn');
+            const timerDisplay = document.getElementById('timer-display');
+            const timerStatus = document.getElementById('timer-status');
+            const infoStation = document.getElementById('info-station');
+            const infoSet = document.getElementById('info-set');
+            const countdownSoundCheck = document.getElementById('countdown-sound-check');
+            const transitionRestInput = document.getElementById('transition-rest');
+
+
+            let stationCount = 0;
+            let timerInterval;
+            let workoutPlan = [];
+            let currentPhaseIndex = 0;
+            let timeLeft = 0;
+            let isPaused = false;
+            let synth;
+
+            function playSound(note, duration, time) {
+                if (Tone.context.state !== 'running') Tone.start();
+                synth = synth || new Tone.Synth().toDestination();
+                synth.triggerAttackRelease(note, duration, time);
+            }
+
+            function addStation() {
+                if (stationCount >= 14) return;
+                stationCount++;
+                const stationHTML = `
+                    <div class="station-item grid grid-cols-4 gap-2 items-center">
+                        <span class="font-bold text-gray-700">Stazione ${stationCount}</span>
+                        <input type="number" class="data-input work-time" value="45">
+                        <input type="number" class="data-input rest-time" value="15">
+                        <div class="flex items-center">
+                            <input type="number" class="data-input sets" value="3">
+                            <button class="remove-station-btn ml-2 text-red-500 hover:text-red-700 text-2xl font-bold">&times;</button>
+                        </div>
+                    </div>`;
+                stationsContainer.insertAdjacentHTML('beforeend', stationHTML);
+                stationsContainer.querySelector('.remove-station-btn:last-of-type').addEventListener('click', (e) => {
+                    e.target.closest('.station-item').remove();
+                    stationCount--;
+                    let count = 1;
+                    stationsContainer.querySelectorAll('.station-item span').forEach(span => {
+                       span.textContent = `Stazione ${count++}`;
+                    });
+                });
+            }
+            
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+
+            function buildWorkoutPlan() {
+                workoutPlan = [];
+                const transitionRest = parseInt(transitionRestInput.value) || 30;
+                const stationItems = stationsContainer.querySelectorAll('.station-item');
+                stationItems.forEach((item, index) => {
+                    const workTime = parseInt(item.querySelector('.work-time').value) || 0;
+                    const restTime = parseInt(item.querySelector('.rest-time').value) || 0;
+                    const sets = parseInt(item.querySelector('.sets').value) || 0;
+                    if (workTime > 0 && sets > 0) {
+                        for (let i = 1; i <= sets; i++) {
+                            workoutPlan.push({ type: 'LAVORO', duration: workTime, station: index + 1, set: i, totalSets: sets });
+                            if (i < sets && restTime > 0) {
+                                workoutPlan.push({ type: 'RECUPERO', duration: restTime, station: index + 1, set: i, totalSets: sets });
+                            } else if (i === sets && index < stationItems.length - 1 && transitionRest > 0) {
+                                workoutPlan.push({ type: 'PAUSA', duration: transitionRest, station: index + 1, set: i, totalSets: sets, isTransition: true });
+                            }
+                        }
+                    }
+                });
+            }
+
+            function updateTimerDisplay() {
+                timerDisplay.textContent = formatTime(timeLeft);
+                if (countdownSoundCheck.checked && timeLeft <= 3 && timeLeft > 0) {
+                    playSound(timeLeft === 1 ? 'C5' : 'C4', '8n');
+                }
+            }
+            
+            function startInitialCountdown() {
+                if(Tone.context.state !== 'running') Tone.start();
+                buildWorkoutPlan();
+                if (workoutPlan.length === 0) { alert("Aggiungi almeno una stazione valida."); return; }
+                
+                isPaused = false;
+                startBtn.classList.add('hidden');
+                pauseBtn.classList.remove('hidden');
+                document.getElementById('timer-config-panel').classList.add('opacity-50', 'pointer-events-none');
+
+                timeLeft = 15;
+                timerStatus.textContent = "PREPARATI!";
+                timerStatus.className = 'text-2xl font-bold mt-2 timer-status-prep';
+                infoStation.textContent = '';
+                infoSet.textContent = '';
+                playSound('A4', '0.5s');
+
+                timerInterval = setInterval(() => {
+                    if (isPaused) return;
+                    timeLeft--;
+                    updateTimerDisplay();
+                    if(timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        currentPhaseIndex = 0;
+                        runNextPhase();
+                    }
+                }, 1000);
+                updateTimerDisplay();
+            }
+
+            function runNextPhase() {
+                if (currentPhaseIndex >= workoutPlan.length) {
+                    finishWorkout();
+                    return;
+                }
+                const phase = workoutPlan[currentPhaseIndex];
+                timeLeft = phase.duration;
+                timerStatus.textContent = phase.type;
+                timerStatus.className = `text-2xl font-bold mt-2 ${phase.type === 'LAVORO' ? 'timer-status-work' : 'timer-status-rest'}`;
+                
+                infoStation.textContent = `Stazione ${phase.station}`;
+                infoSet.textContent = `Set ${phase.set} di ${phase.totalSets}`;
+
+                playSound(phase.type === 'LAVORO' ? 'G5' : 'C4', '0.5s');
+
+                timerInterval = setInterval(() => {
+                    if (isPaused) return;
+                    timeLeft--;
+                    updateTimerDisplay();
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        currentPhaseIndex++;
+                        runNextPhase();
+                    }
+                }, 1000);
+                updateTimerDisplay();
+            }
+            
+            function pauseTimer() {
+                isPaused = !isPaused;
+                pauseBtn.textContent = isPaused ? "RIPRENDI" : "PAUSA";
+            }
+            
+            function resetTimer() {
+                clearInterval(timerInterval);
+                isPaused = false;
+                workoutPlan = [];
+                currentPhaseIndex = 0;
+                timeLeft = 0;
+                
+                timerDisplay.textContent = "00:00";
+                timerStatus.textContent = "PRONTO";
+                timerStatus.className = 'text-2xl font-bold mt-2';
+                infoStation.textContent = '';
+                infoSet.textContent = '';
+                
+                startBtn.classList.remove('hidden');
+                pauseBtn.classList.add('hidden');
+                pauseBtn.textContent = "PAUSA";
+                document.getElementById('timer-config-panel').classList.remove('opacity-50', 'pointer-events-none');
+            }
+            
+            function finishWorkout() {
+                playSound('C6', '1s');
+                resetTimer();
+                timerStatus.textContent = "FINITO!";
+            }
+            
+            addStationBtn.addEventListener('click', addStation);
+            startBtn.addEventListener('click', startInitialCountdown);
+            pauseBtn.addEventListener('click', pauseTimer);
+            resetBtn.addEventListener('click', resetTimer);
+            
+            for(let i=0; i<8; i++){ addStation(); }
+
+            // --- VIDEO LIBRARY ---
+            function generateVideoLibrary() {
+                const libraryContainer = document.getElementById('video-library');
+                const videoData = {
+                    "F45 Workouts": [
+                        "uJRLM-1NZEo", "wFRtOd8yqtg", "Th0D5jQbyRo",
+                        "LU-aptMaFVE", "jLb3VFcYf8k", "LfvPL1DLmek"
+                    ],
+                    "DAREBEE Workouts": [
+                        "r0uXE8_1dl4", "PyUP10dh8CE", "M6TUlRGyjA4",
+                        "EQWiqhVSHdw", "cc6aPyz-qwg", "fy_v8Gndf8g", "wPqofIk8n_0"
+                    ],
+                    "Esercizi Specifici": [
+                        { id: "B2Bi9Xr6d2A", title: "Jumps" },
+                        { id: "JhLlu2FMueo", title: "Burpees" }
+                    ],
+                    "Stretching": [
+                        "4PfVFPBgo5s"
+                    ]
+                };
+
+                for (const category in videoData) {
+                    let categoryHtml = `<div>
+                        <h3 class="text-xl font-bold text-gray-800 border-b-2 border-gray-200 pb-2 mb-4">${category}</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+                    
+                    videoData[category].forEach((video, index) => {
+                        const videoId = typeof video === 'string' ? video : video.id;
+                        const videoTitle = typeof video === 'string' ? `${category} #${index + 1}` : video.title;
+                        categoryHtml += `
+                            <div>
+                                <h4 class="font-semibold mb-2 text-gray-700">${videoTitle}</h4>
+                                <div class="video-container">
+                                    <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
+                            </div>`;
+                    });
+
+                    categoryHtml += `</div></div>`;
+                    libraryContainer.innerHTML += categoryHtml;
+                }
+            }
+
+            // --- EXECUTION ---
+            addMetabolicParameters(); 
+            addPhaseSection("FASE 0 (24/09 - 04/10/2025): Adattamento + Test Baseline", "#ff6b6b"); 
+            generatePhase0(); 
+            addPhaseSection("FASE 1 (05/10 - 31/10/2025): Build Aerobico", "#4ecdc4"); 
+            generatePhase1(); 
+            addPhaseSection("PAUSA (01/11 - 03/11/2025): Recupero Attivo", "#95a5a6"); 
+            generatePause(new Date(2025, 10, 1), new Date(2025, 10, 3)); 
+            addPhaseSection("FASE 2 (04/11 - 20/12/2025): Intensificazione + Target", "#45b7d1"); 
+            generatePhase2(); 
+            generateAnalyticalSections(); 
+            initializeCharts(); 
+            generateVideoLibrary(); 
+            loadAndApplyData();
+        });
+    </script>
+</body>
+</html>
+
